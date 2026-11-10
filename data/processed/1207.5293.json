@@ -1,0 +1,384 @@
+{
+  "paper_id": "1207.5293",
+  "title": "Probability Bracket Notation: Multivariable Systems and Static Bayesian Networks",
+  "abstract": "We extend Probability Bracket Notation (PBN), inspired by the Dirac notation in quantum mechanics, to multivariable probability systems and static Bayesian networks (BNs). By defining probability distributions and conditional expectations in a unified, basis-independent algebraic form, PBN provides a systematic way to represent and manipulate dependencies among random variables. Using the well-known Student BN as an illustrative probabilistic graphical model, we demonstrate prediction, bottom-up and top-down inference, and expectation calculations within the PBN framework. We show that, for a large N-node binary BN, after a one-time preprocessing, inference along a d-separable chain with k intermediate nodes requires O(k2^k) operations, compared to O(N2^N) for direct computation from the full joint distribution. We further extend PBN to networks with continuous variables, including linear Gaussian models, and introduce a hybrid Healthcare BN that combines discrete and continuous variables. In this model, discrete-display nodes serve as proxies for continuous parents, enabling user-specific predictions. Overall, PBN provides an operator-based framework that unifies representation and computation, with potential applications in education, data analytics, and machine learning.",
+  "categories": "cs.AI math.PR",
+  "sections": [
+    {
+      "heading": "Body",
+      "text": "2026-05-09 PBN & Static Bayesian Network Page 1 of 28 Probability Bracket Notation: Multivariable Systems and Static Bayesian Networks Xing M. Wang1 Abstract We extend Probability Bracket Notation (PBN), inspired by the Dirac notation in quantum mechanics, to multivariable probability systems and static Bayesian networks (BNs). By defining probability distributions and conditional expectations in a unified, basis-independent algebraic form, PBN provides a systematic way to represent and manipulate dependencies among random variables. Using the well-known Student BN as an illustrative probabilistic graphical model, we demonstrate prediction, bottom-up and top-down inference, and expectation calculations within the PBN framework. We show that, for a large N-node binary BN, after a one-time preprocessing, inference along a d- separable chain with k intermediate nodes requires O(k·2k) operations, compared to O(N·2N) for direct computation from the full joint distribution. We further extend PBN to networks with continuous variables, including linear Gaussian models, and introduce a hybrid Healthcare BN that combines discrete and continuous variables. In this model, discrete-display nodes serve as proxies for continuous parents, enabling user-specific predictions. Overall, PBN provides an operator-based framework that unifies representation and computation, with potential applications in education, data analytics, and machine learning. Keywords: static Bayesian network; directed acyclic graph; d-separable chain; extended polytree; discrete-display node 1. Introduction Inspired by Dirac’s notation, the Probability Bracket Notation (PBN) was introduced for probability modeling, in which we consider systems with a single variable or mutually independent variables [1]. We now apply PBN to multivariable systems within static Bayesian networks (BNs) [2-6]. For simplicity, we will not discuss dynamic Bayesian networks with PBN here; that topic will be addressed in our ongoing work [7]. In the next section, we introduce various probability distributions (PDs), including joint, marginal, intermediate, and conditional probability distributions (JPD, MPD, IPD, and CPD) [2]. We explore in more detail the relationships among the different PDs of the subnets of the well-known Student BN [3-6] using PBN. In Section 3, we analyze the dependency, local independence, and reasoning capabilities of the entire Student BN, including a set of reasoning exercises, and demonstrate how to use PBN to manipulate various probability expressions within the network. In §3.4, we investigate the power and the rule of inserting P-identities by introducing d-separable chains. We show that, after preparation, in a large N-node binary Bayesian network, PBN can reduce the number of calculations from O(N·2N) using full JPD to O(k·2k) for a d-separable inference chain with k intermediate nodes. The two-phase procedure is particularly effective for d-separable chains in extended polytrees with pendant subnets, 1 Sherman Visual Lab, Sunnyvale, CA 94085, USA, xmwang@shermanlab.com; ORCID:0000-0001-8673-925X 2026-05-09 PBN & Static Bayesian Network Page 2 of 28 highlighting the role of network structure in reducing computational complexity (see Fig. 8). Section 4 examines BNs with both continuous and discrete random variables [9-15]. After reviewing linear Gaussian networks, we propose a Healthcare BN that accepts user-specific inputs and produces customized predictions using discrete-display (DD) nodes (see Fig. 11). Appendix A provides details of the two-phase inference procedure. 2. Probability Bracket Notation and Multivariable Systems In PBN, the random variables and their corresponding P-identities are all treated as operators, which can be inserted into suitable P-brackets [1]. In this section, we will examine multivariate probability spaces in PBN, with a particular focus on P-identities. For definitions of P-bra, P-ket, P-bracket, P-identity, and P-basis, we refer readers to Eqs. (8-22) of [1]. We will use the subnets of the Student BN [3-5] as examples. Let’s begin with the system of two variables. 2.1. Two–Variable Systems and the Student I-S Example Assume two discrete random variables, X and Y. Their sample spaces (domains) and X Y   form a joint sample space { , } X Y =   , having the following P-basis: For { , } : | , ) | , ), | , ) | , ), ( | , ) 1 x y X x y x x y Y x y y x y P x y   = =  = ' ' Orthonormality: ( , | ', ') ; x x y y P x y x y   = (1) , , Completeness: | , ) ( , | X Y x y x y P x y I  ="
+    },
+    {
+      "heading": "",
+      "text": "2.1.1. The Definitions and Properties of Two-Variable PDs: The (full) joint probability distribution (JPD) [2] is defined by: , ( , ) ( , ) ( , | ) ( , | ), for { , } X Y P x y P x y P x y P X x Y y x y = = = = =    { , } {( ) ( )} X Y x y x y     (2) The full JPD has the following property: ( , ) 0, if { , } ; ( , ) 0, if { , } P x y x y P x y x y   =  (3) Its normalization can be obtained by inserting the P-identity as follows: , , , 1 ( | ) ( | | ) ( | , ) ( , | ) ( , ) X Y x y x y P P I P x y P x y P x y   = =  =  ="
+    },
+    {
+      "heading": "",
+      "text": "(4) The expectation value of a well-defined real function ( , ) F X Y is given by: , , [ ( , )] ( | ( , ) | ) ( | ( , ) | ) ( , ) ( , ) X Y x y E F X Y P F X Y P F X Y I P x y F x y    = "
+    },
+    {
+      "heading": "= ",
+      "text": "(5) The conditional expectation of ( , ) F X Y given a subset H  can be easily derived: 2026-05-09 PBN & Static Bayesian Network Page 3 of 28 , { , } { , } [ ( , ) | ] ( | ( , ) | ) ( | ( , ) | ) ( , ) ( , | ) ( , ) ( , ) / ( ) X Y x y H x y H E F X Y H P F X Y H P F X Y I H F x y P x y H F x y P x y P H     =  = ="
+    },
+    {
+      "heading": "",
+      "text": "(6) From the JPD in Eq. (2), we obtain the MPDs [2] for x and y: ( ) ( , | ) ( , ), ( ) ( , | ) ( , ) y y x x P x P x y P x y P y P x y P x y = = = ="
+    },
+    {
+      "heading": "",
+      "text": "(7) In addition, we have the CPD [2] of X given Y and the CPD of Y given X: | | ( | ) ( | ) ( | ), ( | ) ( | ) X Y Y X P x y P X x Y y P x y P y x P y x  = = = = (8) Please do not confuse Eq. (8) with P(x | x’), where both event x and evidence 'x are the observed values of the same random variable (X). Definition 2.1.1: Event X = x is independent of event Y = y in a distribution P, denoted | P x y = ⊥ , if ( | ) ( ) P x y P x = or if ( ) 0 P y = (§2.1.4.1 of [3]). (9) Definition 2.1.2: variables X and Y are independent in a distribution P, denoted | P X Y = ⊥ , if | P x y = ⊥ for ,x y  . (10) Proposition 2.1.1: | P X Y = ⊥ if and only if ( , ) ( ) ( ) ( ) P x y P x y P x P y   = . (11) Its proof can be found in §2.1.4.3 of Ref [3]. Graphically, it is represented in Fig. 1: Fig. 1: | P X Y = ⊥ The joint distribution is the product of the distributions of each node in Fig. 1: ( , ) ( ) ( ) P X Y P X P Y = (12) In many cases, they are dependent, and the joint PD is unknown. We need to derive it. Suppose we are given ( | ) P x y and ( ) P y , then we can use Bayes’ chain rule to get it: ( , ) ( | ) ( ) P x y P x y P y = (13) Then, we can derive the MPD for X: ( | ) ( ) ( , ) ( | ) ( ) ( | ) ( | ) y y y P x P x P x y P x y P y P x y P y = = = = "
+    },
+    {
+      "heading": "",
+      "text": "(14) X Y P(Y) P(X) 2026-05-09 PBN & Static Bayesian Network Page 4 of 28 Because Eq. (14) is valid for x , we have recovered the P-identity for the corresponding marginal probability distribution of( , , ) Y Y P  :"
+    },
+    {
+      "heading": "",
+      "text": "( | ) ( | ) ( | ) ( | | ) ( | | ) ( | | ) Y y y P x P x y P y P x y P y P x I = = = "
+    },
+    {
+      "heading": "",
+      "text": "(15) Or: | ( ) ( | ) ( | | ), | ) ( | X Y Y y P x P x P x I I y P y  = = "
+    },
+    {
+      "heading": "= ",
+      "text": "(16) Similarly, we get the following P-identity for X: | ( ) ( | ) ( | | ), | ) ( | Y X X x P y P y P y I I x P x  = = "
+    },
+    {
+      "heading": "= ",
+      "text": "(17) Using the P-identities, we obtain the normalizations of Conditional PDs (CPs): 1 ( | ) ( | | ) ( | ) ( | ) ( | ) 1 ( | ) ( | | ) ( | ) ( | ) ( | ) Y y y X x x P x P I x P y P y x P y x P y P I y P x P x x P x y =  =  =  = =  =  =  ="
+    },
+    {
+      "heading": "",
+      "text": "(18) The normalization of the full JPD can also be found by inserting P-identities: 1 ( | ) ( | | ) ( | ) ( | | ) X Y x x P P I P x P x I   = =  = = "
+    },
+    {
+      "heading": "",
+      "text": "( ) , , , 13 ( | ) ( | ) ( , ) ( | | ) X Y x y x y P x y P y P x y P I   = = =  "
+    },
+    {
+      "heading": "",
+      "text": "(19) 2.1.2. The I→S Example of the Student Bayesian Network: Consider an example from the Student BN [3], containing variables I (student Interagency scores) and S (student SAT scores). We assume S depends only on I. It is represented graphically in Fig. 2. Fig. 2: S is dependent on I The primary probability distribution ( ) P I and the CPD ( | ) P S I are given in Fig. 7 (p. 12). The joint distribution can be computed by using Bayes’ chain rule: ( , ) ( ) ( | ) P I S P I P S I = (20) It equals the product of the distributions at each node in Fig. 2. Its four numerical values can be calculated from Table 1-2. They are: 0 0 0 0 0 ( , ) ( ) ( | ) 0.7 0.95 0.665 P i s P i P s i = =  = (21) Similarly: 0 1 1 0 1 1 { ( , ), ( , ), ( , )} {0.035,0.06,0.24} P i s P i s P i s = I S P(I) P(S|I) 2026-05-09 PBN & Static Bayesian Network Page 5 of 28 It is easy to check numerically that we have a consistent MPD of ( ) P I : 0 0 1 ( ) ( , ) 0.665 0.035 0.7, ( ) 0.3, ( ) 1 s P i P i s P i P i  = = + = = ="
+    },
+    {
+      "heading": "",
+      "text": "(22) This consistency is not surprising because: (18) ( , ) ( ) ( | ) ( ) ( | ) ( ) s s s P i s P i P s i P i P s i P i       = = ="
+    },
+    {
+      "heading": "",
+      "text": "(23) In the same way, we can derive the MPD of ( ) P S ( ) ( , ) ( ) ( | ) P s P i s P i P s i         = ="
+    },
+    {
+      "heading": "",
+      "text": "(24) Their numerical values are calculated as follows, which are also consistent. 2 2 0 0 1 1 1 ( ) ( , ) 0.665 0.06 0.725, ( ) 0.275; ( ) 1 P s P i s P s P s     = = = = + = = ="
+    },
+    {
+      "heading": "",
+      "text": "(25) Note that Eq. (24) recovers the P-identity II for( , , ) I I P  : ( ) ( , ) ( ) ( | ) ( | ) ( | ) ( | | ) k I P s P i s P i P s i P s i P i P s I             = = = = "
+    },
+    {
+      "heading": "",
+      "text": "| ( ) ( | ) ( | ) ( | | ), | ) ( | S I I P s P s P s P s I I i P i          = = = "
+    },
+    {
+      "heading": "= ",
+      "text": "(26) By definition, the CPD ( | ) P I S and its numerical values are given by: ( | ) ( , ) / ( ) P I S P I S P S = (27) 0 0 0 0 0 ( | ) ( , ) / ( ) 0.665 / 0.725 0.917 P i s P i s P s = = = (28) Similarly: 1 0 0 1 1 1 { ( | ), ( | ), ( | )} {0.083,0.127,0.873} P i s P i s P i s = Using Eq. (7) and (20), we can recalculate ( ) P I , matching Eq. (22): 0 0 0 ( ) ( , ) ( ) ( | ) 0.665 0.035 0.7 P i P i s P s P i s      = = = + ="
+    },
+    {
+      "heading": "",
+      "text": "1 1 1 ( ) ( , ) ( ) ( | ) 0.06 0.24 0.3 P i P i s P s P i s      = = = + ="
+    },
+    {
+      "heading": "",
+      "text": "We can also re-derive the P-identity SI in ( , , ) S S P  as follows: ( ) ( , ) ( | ) ( ) ( | ) ( | ) ( | | ) S P i P i s P i s P s P i s P s P i I              = = = = "
+    },
+    {
+      "heading": "",
+      "text": "| ( ) ( | ) ( | ) ( | | ), | ) ( | I S S P i P i P i P i I I s P s          = = = "
+    },
+    {
+      "heading": "= ",
+      "text": "(29) 2.1.3. The first Restriction on Inserting P-identities: The two P-identities ( II and SI ) are derived from the expressions of cross-domain probability distributions. Therefore, they can be inserted into cross-domain probability brackets as follows: 2026-05-09 PBN & Static Bayesian Network Page 6 of 28 ( ) ( | ) ( | | ) ( | ) ( | ) ( , ) ( ) k k k k k S P i P i P i I P i s P s P i s P s       = = = ="
+    },
+    {
+      "heading": "",
+      "text": "( ) ( | ) ( | | ) ( | ) ( | ) ( , ) ( ) I P s P s P s I P s i P i P i s P i            = = = ="
+    },
+    {
+      "heading": "",
+      "text": "(30) ( | ) ( | | ) ( | ) ( | ) ( | ) ( | ) k k k k k S P i s P i I s P i s P s s P i s P i s            = = = ="
+    },
+    {
+      "heading": "",
+      "text": "Of course, II ( SI ) can also be used to manipulate probabilities in its domain I ( S ) of a single variable I (S). Eqs. (18, 26, 29) show that a multivariable system’s JPD, IPD, and MPD are cross-domain P-brackets. But there are restrictions. First of all, one cannot insert IY into a basis P-bracket in ΩX: ( | ) ( | | ) ( | ) ( | ) ik i k i Y k i k P x x P x I x P x y P y x     = "
+    },
+    {
+      "heading": "=",
+      "text": "(31) We can validate the inequality of Eq. (31) for P(xi, yμ) > 0 as follows: If i ≠ k, 0 ( | ), i k P x x = while: ( | | ) ( | ) ( | ) 0 i Y k i s s k s P x I x P x y P y x = "
+    },
+    {
+      "heading": "",
+      "text": "If i = k, 1 ( | ), i i P x x = while: (2.1.19) ( | | ) ( | ) ( | ) ( | ) 1 i Y i i s s i s i s s P x I x P x y P y x P y x =  ="
+    },
+    {
+      "heading": "",
+      "text": ". In §3.4, we will deliver a general rule for inserting P-identities between nodes. 2.1.4. Bridged expectation in PBN: Assuming , X X y y A B  , we have: ( | ) ( | | ) ( | ) ( | ) ( | ) X X X X X x x A P A y P A I y P A x P x y P x y  = = ="
+    },
+    {
+      "heading": "",
+      "text": "(32) ( | ) ( | | ) ( | ) ( | ) ( | ) ( ) / ( ) X X X X X X x x B P y B P y I B P y x P x B P y x P x P B  = = ="
+    },
+    {
+      "heading": "",
+      "text": "(33) (32) , ( | | ) ( | ) ( | ) ( , ) / ( ) X X X Y X Y Y y x A y B P A Y B yP A y P y B yP x y P B   = ="
+    },
+    {
+      "heading": "",
+      "text": "(34) (32) ( | ) ( | | ) ( | ) ( | ) ( , ) / ( ) X X X Y Y Y Y X Y Y y x A y B P A B P A I B P A y P y B P x y P B   = = ="
+    },
+    {
+      "heading": "",
+      "text": "(35) Hence, the bridged expectation can be defined as: [ | | ] ( | | ) / ( | ) ( | | ) / ( | ) X X X X Y Y X Y Y Y E A Y B P A Y B P A B P B Y A P B A  = (36) Note that PBN can construct legitimate and useful bridged expressions, such as Eq. (34, 36), that cannot be directly identified with conventional probability notations. 2.2   Three-Variable Systems and Dependencies of Three-Node Chains Suppose we have three discrete random variables, X, Y, and Z, each with its respective sample space. They form a joint sample space { , , } X Y Z =    , having the following P-basis for any event{ , , } { , , } X Y Z x y z   : | , , ) | , , ), | , , ) | , , ), | , , ) | , , ), ( | , , ) 1 X x y z x x y z Y x y z y x y z Z x y z z x y z P x y z = = =  = (37) 2026-05-09 PBN & Static Bayesian Network Page 7 of 28 ' ' ' , , , , Orthonormality: ( , , '| ', ', ') Completeness: | , , ) ( , , | x x y y z z X Y Z x y z P x y z x y z x y z P x y z I     = ="
+    },
+    {
+      "heading": "",
+      "text": "(38) 2.2.1. The definitions and Properties of Three-Variable PDs: The full joint probability distribution (JPD) is defined by: ( , , ) ( , , | ) ( , , | ), { , , } ( , , ) 0, if { , , } ; ( , , ) 0, if { , , } P x y z P x y z P X x Y y Z z x y z P x y z x y z P x y z x y z = = = = =     =  (39) In addition to the properties and definitions we have seen for two observables, there are CPDs related to three observables. For example, here is the CPD over X and Y given Z: , | ( , | ) ( , | ) ( , | ) X Y Z P x y z P X x Y y Z z P x y z  = = = = (40) Definition 2.2.1: Event X = x is conditionally independent of event Y = y given Z= z and Y = y in a distribution P (§2.1.4.2 of [3]), denoted | ( | ) P x y z = ⊥ , if ( | ) ( | , ) ( | ) P x y z P x y z P x z   = (41) Definition 2.2.2: Random variables X and Y are conditionally independent given variable Z in a distribution P, denoted by if | ( | ) P x y z = ⊥ for , , x y z  . (42) Proposition 2.2.1: | ( | ) P X Y Z = ⊥ if and only if ( , | ) ( | ) ( | ) P X Y Z P X Z P Y Z = . (43) Proof (): ( , | ) ( , , ) / ( ) ( | , ) ( , ) / ( ) P x y z P x y z P z P x y z P y z P z = = (41) ( | , ) ( | ) ( | ) ( | ) P x y z P y z P x z P y z = = (): ( | , ) ( , , ) / ( , ) ( , | ) ( ) / ( , ) P x y z P x y z P y z P x y z P z P y z = = (43) ( | ) ( | ) / ( / ) ( | ) P x z P y z P y z P x z = = QED Fig. 3: Common Cause: | ( | ) P X Y Z = ⊥ If | ( | ) P X Y Z = ⊥ , then using Bayes’ rule and Eq. (43), we get the following JPD, as in Fig. 3. ( , , ) ( , | ) ( ) ( | ) ( | ) ( ) P x y z P x y z P z P x z P y z P z = = (44) Fig. 4 and Bayes’ chain rule produce the following two JPDs: ( , , ) ( ) ( | ) ( | ), ( , , ) ( ) ( | ) ( | , ) P x y z P x P y x P z y P x y z P x P y x P z x y = = (45) X Z P(X) P(Y|X) Y P(Z|Y) 2026-05-09 PBN & Static Bayesian Network Page 8 of 28 Fig. 4: Causal Chain: Y depends on X, and Z depends on Y Comparing the two expressions, we get a conditional independence: ( | , ) ( | ) | ( | ) P z x y P z y P Z X Y =  = ⊥ (46) 2.2.2. The D→G←I example of the Student Bayesian network [3]: It has three variables: D (the difficulty of a course), I (the intelligence of a student), and G (the student’s grade in the course), as shown in Fig. 5. The primary MPDs of P(I) and P(D) as well as the CPD of ( | , ) P F I D are given in Fig. 7. Fig. 5: Collider: G depends on D and I Fig. 5 and the chain rule provide the following two JPDs, respectively: ( , , ) ( ) ( ) ( | , ), ( , , ) ( ) ( | ) ( | , ) P d i g P d P i P g d i P d i g P d P i d P g d i = = (47) Comparing the two expressions, we find: ( | ) ( ) | ( ) or ( , ) ( ) ( ) P i d P i P D I P d i P d P i =  = ⊥ = (48) From Eq. (47), we can calculate miscellaneous intermediate JPD and MPD, like: ( , ) ( , , ) ( ) ( ) ( | , ) i i P d g P d i g P d P i P g d i = ="
+    },
+    {
+      "heading": "",
+      "text": ", ( ) ( , ) ( ) ( ) ( | , ) ( ) ( ) ( ) g i g i P d P d g P d P i P g d i P d P i P d = = = ="
+    },
+    {
+      "heading": "",
+      "text": "(49) , , ( ) ( , , ) ( | , ) ( ) ( ) i d i d P g P g i d P g i d P i P d = ="
+    },
+    {
+      "heading": "",
+      "text": "Here, we have used the CP normalization, as in Eq. (18). We can rederive P(d, g) in Eq. (49) using the P-identity II : ( , , ) ( , ) ( , | ) ( , | ) ( | ) ( ) ( , , ) ( ) i i i P d i g P d g P d g P d g i P i P i P d i g P i = = = ="
+    },
+    {
+      "heading": "",
+      "text": "(50) We can also derive P(i, g) by using the P-identity D I : X Y P(X) P(Y|X) Z P(Z|Y) D I P(D) P(I) G P(G|I, D) 2026-05-09 PBN & Static Bayesian Network Page 9 of 28 ( , ) ( , | ) ( , | | ) ( , | ) ( | ) ( , , ) D d d P i g P i g P i g I P i g d P d P d i g = = = ="
+    },
+    {
+      "heading": "",
+      "text": "(51) Similarly, the MPD of G can be obtained by inserting the P-identity ,I D I : , ( ) ( | | ) ( | , ) ( , | ) ( | , ) ( ) ( ) I D i i P g P g I P g i d P i d P g i d P i P d = = ="
+    },
+    {
+      "heading": "",
+      "text": "(52) Various CPDs can be derived from Eq. (47-53), such as: ( , ) 1 1 ( | ) ( , , ) ( | , ) ( ) ( ) ( ) ( ) ( ) d d P i g P i g P i d g P g i d P i P d P g p g p g = = ="
+    },
+    {
+      "heading": "",
+      "text": "Second Restriction on inserting P-identities: Node G is called a Collider in the network D→ G←I because D and I become dependent on G (i.e., G is activated, a case of explaining away): ' ( , , ) ( , , ) ( , ) ( | , ) ( | ) ( , ) ( ) ( ', ) i i P d i g P d i g P d g P d i g P d g P i g P g P i g =  ="
+    },
+    {
+      "heading": "",
+      "text": "(53) The conditional independence D⊥I|G does not hold, Eq.  (41) is not valid, therefore: ( | ) ( , | ) ( | , ) ( | ) ( | ) ( | ) g g g P i d P i g d P i g d P g d P i g P g d = = "
+    },
+    {
+      "heading": "",
+      "text": "(54) So far, we have seen the three important dependencies in 3-node networks: Common cause (Fig. 3), Causal chain (Fig. 4), and Collider (Fig. 5). We will revisit these dependencies in §3.4 when we present a general rule for inserting P-identities between nodes. Conditional expectations (CEs) are widely used in statistical analysis. Here is an example of dual-conditional expectations for the D→G←I subnet: [ | , ] ( | | , ) ( | | , ) ( | | ) ( | , ) ( | ) ( , , ) / ( , ) G g g g E G d i P G d i P GI d i P G g P g d i gP g d,i gP g d i P d i   =  =  = ="
+    },
+    {
+      "heading": "",
+      "text": "(55) 2.3   Definitions and Rules on Bayesian Networks (Informal) Here, we introduce some informal graphic definitions and rules for BN. Please refer to Refs. [3], [4], and [5] for more details. The following informal definitions and regulations are quoted from Lecture 2 of Ref. [5]. The Bayesian network (informal) ▪ A directed acyclic graph (DAG) G ▪ Nodes represent random variables ▪ Edges represent direct influences between random variables ▪ Local probability models (conditional parameterization) ▪ Conditional probability distributions (CPDs) The Bayesian network structure ▪ A directed acyclic graph (DAG) G 2026-05-09 PBN & Static Bayesian Network Page 10 of 28 ▪ Nodes 1, , n X X represent random variables ▪ G encodes the following set of independence assumptions (called local independencies) • i X is independent of its non-descendants, given its parents •  Formally: ( NonDesc( ) | ( )) i i a i X X P X ⊥ (56) • Denoted by ( ) LI G 3. The Student Bayesian Network and Reasoning Examples We are ready to examine the renowned Student Bayesian Network [3-5]. In §3.1, we will present the Probabilistic Graphic Model (PGM, [6]), local dependencies, the probability distribution (PD) for each node, and some reasoning results. Following that, in §3.2, we will complete our reasoning problems to derive these reasoning results. Then, in §3.3, we will discuss how to use PBN to unify and simplify calculations related to various probability distributions for predictive and reasoning tasks. 3.1.   Local Independences of Student BN and Some Reasoning Results The Student BN [3-5] has five random variables with their sample spaces, { , , , , } D I G S L     as shown in Fig. 6. Applying the rules in §2.3, specifically, Eq. (56), we obtain the following local independences [5] for Student BN as ( ) L student I G : ; ; | , , , | ; , , | D I D S G S D I L I D S G S D G L I ⊥ ⊥ ⊥ ⊥ ⊥ (57) To be consistent with Ref. [3], we list the outcomes and associated PD of the five nodes of the Student BN in Fig. 6 with numerical values2 as follows: 0 1 Intelligence:  Val( ) { , } {low,high} {0,1} I I i i = = = =  0 1 Difficulty:  Val( ) { , } {easy,hard} {0,1} D D d d = = = =  1 2 3 Grade:  Val( ) { , , } { , , } {4,3,2} G G g g g A B C = = = =  (58) 0 1 SAT:  Val( ) { , } {low,high} {0,1} S S s s = = = =  0 1 Letter:  Val( ) { , } {weak,strong} {0,1} L L l l = = = =  The PGM in Fig. 6 tells us about the PD associated with each node: { , , , , } { ( ), ( ), ( | , ), ( | ), ( | )} D I G S L P d P i P g d i P s i P l g  (59) It also tells us the expression of the full joint probability distribution: ( , , , , ) ( ) ( ) ( | , ) ( | ) ( | ) P d i g s l P d P i P g d i P s i P l g = (60) 2 Here, we set numerical values of the variables for calculating their expectation values in Section 3.4 2026-05-09 PBN & Static Bayesian Network Page 11 of 28 On the other hand, using the chain rule, we have ( , , , , ) ( ) ( | ) ( | , ) ( | , , ) ( | , , , ) P d i g s l P d P i d P g d i P s d i g P l d i g s = (61) Fig. 6: The Student Bayesian Network Example (see Ref [5]) We can use relations in Eq. (57) to derive Eq. (60) from Eq. (61), but as one can see, it is much easier to get Eq. (60) by using PGM for the BN. Fig. 7: The PD for the Student BN ([3], [4]) The numerical values of the PD tables for the five nodes in Eq. (60) are presented in Fig. 7 ([3], [4]). To simplify our statements, we assume that the student is named George and the 2026-05-09 PBN & Static Bayesian Network Page 12 of 28 course name is Econ101 ([3], Sec. 3.2). From the Student BN, we can then make direct predictions such as: 1. If George has a grade 1g A = , then the probability of him getting a strong letter from his professor is 1 1 ( | ) 0.9 P l g = , independent of the values of D, I, or S. 2. If George has high intelligence ( 1i ) and the course is hard ( 1 d ), then the probability of him getting a grade 1g A = is 1 1 1 ( | , ) 0.5 P g i d = , independent of S. 3. If George has low intelligence ( 0i ), then the probability of him getting a high SAT ( 1s ) is 1 0 ( | ) 0.05 P s i = , independent of D, G, or L. Another critical aspect of the BN is its reasoning capabilities (top-down or bottom-up reasoning, prediction, explanation, or inference [3]). Here are some reasoning problems (RPs) of the Student BN, many of which are provided in Ref. [3] without derivation. In the next section, we will solve them using the PD tables shown in Fig. 7. RP-1: Assuming we know nothing about Econ101 and George. Figure 3.1.2 shows that George has a 30% chance of being highly intelligent 1 ( ) 0.3 P i = . However, if we know his Econ 101 grade is g3 = C, his chance of being high-intelligence is reduced to 7.9% (as an example of inference in bottom-up reasoning). RP-2: Assuming we know nothing about Econ101 and George, he has a 36.2% chance of getting a grade A, i.e., 1 ( ) 0.362 P g = . But if we know that George has low intelligence, the probability that he will get a grade A is reduced to 20% (as in a top-down prediction). RP-3: Assuming we know nothing about Econ101 and George, he will have a 50.2% chance of getting a strong recommendation letter, i.e., 1 ( ) 0.502 P l = . But if George has low intelligence 0 ( ) i , his chance of getting a strong letter will be reduced to 38.9%, or 1 0 ( | ) 0.389 P l i = . Now, if we also know that the course is easy, his chance of getting a strong letter increases to 51.3% (0.513), as a case of explaining away in top-down reasoning. 3.2   Deriving the Reasoning Results for the Student BN To complete our reasoning, we must use various marginal and conditional PDs, defined in or derived from the tables in Fig. 7. 3.2.1: The Marginal PD of G (Grade) or ( ) ( | ) P g P g = : Because we know ( | , ) P g i d and ( , | ) ( , ) ( ) ( ) P i d P i d P i P d = = , it is natural to insert the identity operator ,I D I , as we did in Eq. (55): , , , ( ) ( | ) ( | | ) ( | , ) ( , ) ( | , ) ( ) ( ) I D i d i d P g P g P g I P g i d P i d P g i d P i P d = = = ="
+    },
+    {
+      "heading": "",
+      "text": "(62) The traditional way to derive Eq. (62) is from the joint PD and the chain rule: , , ( ) ( , , ) ( | , ) ( , ) i d i d P g P g i d P g i d P i d = ="
+    },
+    {
+      "heading": "",
+      "text": "2026-05-09 PBN & Static Bayesian Network Page 13 of 28 It is now straightforward to evaluate ( ) P g : , , ( ) ( , , ) ( | , ) ( ) ( ) P g P g i d P g i d P i P d            = ="
+    },
+    {
+      "heading": "",
+      "text": "(63) Using tables in Fig. 7 and Eq. (63), we have the following MPD with valid normalization. 1 ( ) 0.3620 P g = (As inRP-2), 2 3 ( ) 0.2884, ( ) 0.3496; ( ) 1 g P g P g P g = = ="
+    },
+    {
+      "heading": "",
+      "text": "3.2.2: The Marginal PD of L (Letter) or ( ) ( | ) P l P l = : Because we already know ( | ) P l g and ( | ) ( ) P g P g = , it is natural to insert the identity operator GI : ( ) ( | ) ( | | ) ( | ) ( | ) ( | ) ( ) G g g P l P l P l I P l g P g P l g P g = = = ="
+    },
+    {
+      "heading": "",
+      "text": "(64) Equivalently, it can be derived by using Bayes’ chain rule as: ( ) ( , ) ( | ) ( ) g g P l P l g P l g P g = ="
+    },
+    {
+      "heading": "",
+      "text": "(65) Using tables in Fig. 7 and Eq. (65), it is straightforward to find: P(l1) ≈ 0.502, as in RP-3. 3.2.3: The Conditional PD of I (Intelligence) given G or ( | ) P i g :  The expression has already been derived in Eq. (54): ( | ) ( , ) / ( ) ( | , ) ( ) ( ) / ( ) d P i g P i g P g P g i d P i P d P g ="
+    },
+    {
+      "heading": "= ",
+      "text": "Using tables in Fig. 7 and Eq. (52), it is easy to obtain: 1 3 ( | ) 0.079 P i g  (As in RP-1) 3.2.4: The Conditional PD of L (Letter) given I and D or ( | , ) P l i d : ( | , ) ( | | , ) ( | ) ( | , ) G g P l i d P l I i d P l g P g i d ="
+    },
+    {
+      "heading": "=",
+      "text": "(66) Using tables in Fig. 7, one gets: 1 0 0 ( | , ) 0.513 P l i d  (As in RP-3) 3.2.5: The Conditional PD of G (Grade) given I or ( | ) P g i : ( , , ) ( | , ) ( , ) ( , ) ( | ) ( | , ) ( ) ( ) ( ) ( ) d d d P g i d P g i d P i d P g i P g i P g i d P d P i P i P i = = = ="
+    },
+    {
+      "heading": "",
+      "text": "(67) Assuming that George has low intelligence and using the tables in Fig. 7, we have: 2026-05-09 PBN & Static Bayesian Network Page 14 of 28 1 0 ( | ) 0.20 P g i = (As inRP-2), 2 0 ( | ) 0.34 P g i = , 3 0 ( | ) 0.46 P g i = Again, the CP normalization is satisfied: 0 0 0 1 ( | ) ( | | ) ( | ) 1.00 G g P i P I i P g i =  =  = ="
+    },
+    {
+      "heading": "",
+      "text": "3.2.6: The Conditional PD of L (Letter) given I or ( | ) P l i : ( | ) ( | | ) ( | ) ( | ) G g P l i P l I i P l g P g i ="
+    },
+    {
+      "heading": "= ",
+      "text": "(68) Using the table ( | ) P l g in Fig. 7 and Eq. (68), we obtain: 1 0 1 0 ( | ) ( | ) ( | ) 0.389 g P l i P l g P g i = "
+    },
+    {
+      "heading": "",
+      "text": "(As in RP-3) So far, we have completed the reasoning exercises for Student BN, as outlined in §3.1. Our findings show that various probabilistic expressions can be derived by simply inserting the suitable P-identity operators. Various software packages exist for building and testing BNs [8]. To keep the scope of this article, we will not discuss or use them. 3.3.   Manipulating Probabilistic Expressions in Static BNs with PBN In the previous subsections, we introduced the Student BN and showed how the Probability Bracket Notation (PBN) framework can be used to solve inference problems in a structured way. While traditional Bayesian network toolboxes, like the Bayes Server [14], are designed to automate these calculations, PBN offers a more flexible operator-based language with a clear mechanism for simplifying the analytical calculations of prediction, reasoning, and expectation in multivariable systems. The main advantage of PBN is its use of operators (observables and P-identities) to compute such predictive quantities given the full joint probability distribution function (JPDF) decomposed by the directed acyclic graph (DAG), as Eq. (60) for the Student BN: ( , , , , ) ( ) ( ) ( | , ) ( | ) ( | ) P d i g s l P d P i P g d i P s i P l g = (69) Note that, from the DAG or the decomposition, nodes D and P are independent: ( , ) ( ) ( ) P d i P d P i = (70) 3.3.1. Predicted Marginal PDs of Variables and Their Expectation Values: From Eq. (69), the MPDs for D and I are primary. Their numerical values are given by Eq. (58), and their unconditional expectation values can be readily calculated. [ ] ( | | ) ( | | ) ( ) 0.4 D d E D D P D P D I d P d  =  =  = ="
+    },
+    {
+      "heading": "",
+      "text": "[ ] ( | | ) ( | | ) ( ) 0.3 I i E I I P I P I I i P i =  =  = ="
+    },
+    {
+      "heading": "",
+      "text": "2026-05-09 PBN & Static Bayesian Network Page 15 of 28 For G, we already calculated its MPD in Eq. (62) as follows: , , , ( ) ( | ) ( | | ) ( | , ) ( , ) ( | , ) ( ) ( ) I D i d i d P g P g P g I P g i d P i d P g i d P i P d = = = ="
+    },
+    {
+      "heading": "",
+      "text": "(71) This leads to the (unconditional) expectation value of Grade: , , ( | | ) ( | | ) ( | | ) ( | ) ( | ) ( ) ( | , ) ( ) ( ) G g g g g i d G P G P G I P G g P g gP g gP g gP g i d P i P d =  =  =  =  = ="
+    },
+    {
+      "heading": "",
+      "text": "(72) On the other hand, one can also calculate it by using the full joint PD in Eq. (69): , , , , , , , , , , (71) ( , , , , ) ( ) ( ) ( | , ) ( | ) ( | ) ( ) ( ) ( | , ) ( ) d i g s l d i g s l g d i g G gP d i g s l gP d P i P g d i P s i P l g gP d P i P g d i gP g = = = ="
+    },
+    {
+      "heading": "",
+      "text": "(73) Here, we have used the normalization condition of conditional probabilities: 1 ( | ) ( | | ) ( | ) ( | ) ( | ) 1 ( | ) ( | | ) ( | ) ( | ) ( | ) S s s L l l P i P I i P s P s i P s i P g P I g P l P l g P l g =  =  =  = =  =  =  ="
+    },
+    {
+      "heading": "",
+      "text": "(74) Similarly, we can calculate the marginal PDs and means of SAT and Letter as follows: . ( ) ( | | ) ( | ) ( ), ( | | ) ( | ) ( ) I i s i P s P s I P s i P i S P S sP s i P i = = =  ="
+    },
+    {
+      "heading": "",
+      "text": "(75) . ( ) ( | | ) ( | ) ( | ) ( | ) ( ), ( | ) ( ) G g g l g P l P l I P l g P g P l g P g L l P l g P g = = = ="
+    },
+    {
+      "heading": "",
+      "text": "(76) Here, we need to use G’s previously derived MPD in Eq. (71). Thus, the MPDs allow one to track how uncertainty propagates across the network and find expectations. 3.3.2. Predicted Conditional PDs, Inferences, and Conditional Expectations: PBN also provides a consistent framework to calculate conditional dependencies by splitting brackets and inserting appropriate P-identities. This operator-driven manipulation is particularly useful for inference problems, as it enables predicting conditional independence via intermediate nodes. All three reasoning problems are of this type. Here we redo them with PBN to demonstrate how to use definitions of PD and insert appropriate P-identities. Three new reasoning problems (RPs) have been added and analyzed. RP-1: Find 1 3 ( | ) P i g . It is a reverse inference (bottom-up). In addition to what is done in Eq. (54), it can also be derived using a P-identity: , , ' , ' ( | ) ( | | ) ( ) / ( ) ( | ', ) ( ', | ) ( ) / ( ) ( | ', ) ( ' ) / ( ) ( | , ) ( ) ( ) / ( ) I D d i d i d P i g P g I i P i p g P g i d P i d i P i P g P g i d P i d i P g P g i d P i P d P g = = =   ="
+    },
+    {
+      "heading": "",
+      "text": "(77) 2026-05-09 PBN & Static Bayesian Network Page 16 of 28 RP-2: It is a top-down reasoning. From the MPD of G, we know that 1 ( ) 0.3620 P g = . Now what is P(g1|i0)? It can be derived by inserting an identity operator and the definition of CPD, as well as the independence of I and D, in addition to Eq. (67): , ', ', ( | ) ( | | ) ( | ', ) ( ', | ) ( | ', ) ( ' ) / ( ) I D i d i d P g i P g I i P g i d P i d i P g i d P i d i P i = = =  "
+    },
+    {
+      "heading": "",
+      "text": ", ' ', ( | ', ) ( , ) / ( ) ( | , ) ( ) i i i d d P g i d P d i P i P g i d P d  = ="
+    },
+    {
+      "heading": "",
+      "text": "(78) RP-3: What is P(l|i)? It is a case of explaining away in top-down reasoning. From the MPD of L, we know 1 ( ) 0.502 P l  . But if we know George’s intelligence, then we need: (78) ( | ) ( | ) ( | ) ( | ) ( | , ) ( ) g g d P l i P l g P g i P l g P g i d P d = ="
+    },
+    {
+      "heading": "",
+      "text": "(79) Now, if we also know that the course is easy, his chance of getting a strong letter will increase according to: ( | , ) ( | | , ) ( | ) ( | , ) G g P l i d P l I i d P l g P g i d ="
+    },
+    {
+      "heading": "=",
+      "text": "(80) RP-4 (new): Another top-down inference. What is George’s probability of getting a grade B if the course difficulty is easy, i.e., P(g2|d1)? Similar to Eq. (78), we have: , ' , ' , ' , ' ( | ) ( | , ') ( , '| ) ( | , ') ( ') / ( ) ( | , ') ( , ) / ( ) ( | , ) ( ) i d i d d d i d i P g d P g i d P i d d P g i d P i d d P d P g i d P d i P d P g i d P i  = =   = ="
+    },
+    {
+      "heading": "",
+      "text": "(81) RP-5 (new): Another bottom-up inference. What is the probability of an easy course if we know George’s Letter is strong? We need the following CPD: ( ) ( ) ( ) ( | ) ( | ) ( | | ) ( | ) ( | ) ( ) ( ) ( ) G g P d P d P d P d l P l d P l I d P l g P g d P l P l P l = = ="
+    },
+    {
+      "heading": "",
+      "text": "(82) RP-6 (new): Conditional Expectations (CEs). One has already been done in Eq. (55): [ | , ] ( | | , ) ( | ) ( , , ) / ( , ) G g g E G d i P GI d i gP g d,i gP g d i P d i =  = ="
+    },
+    {
+      "heading": "",
+      "text": "We can easily obtain other CE expressions and their relations for the student SN: (81) , [ | ] ( | | ) ( | | ) ( | ) ( | , ) ( ) G g g i E G d P G d P GI d gP g d gP g i d P i   =  = ="
+    },
+    {
+      "heading": "",
+      "text": "(83) (78) , [ | ] ( | | ) ( | ) ( | , ) ( ) [ | , ] ( ) G g g d d E G i P GI i gP g i gP g i d P d E G i d P d =  = = ="
+    },
+    {
+      "heading": "",
+      "text": "(84) , , , (71) [ ] ( ) ( | , ) ( ) ( ) [ | , ] ( ) ( ) g g i d i d E G G gP g gP g i d P i P d E G i d P i P d = = ="
+    },
+    {
+      "heading": "",
+      "text": "(85) 2026-05-09 PBN & Static Bayesian Network Page 17 of 28 3.4. General P‑Identity Insertion Rule and Efficiency of Chain Inference We begin with the d-separation in probability modeling. Let X, Y, Z be three nodes in a BN, and Z is the intermediate node between X and Y. If the activated Z d-separates X from Y, then X⊥Y|Z, and we can insert the P-identity of Z into P(x|y): ( | ) ( | | ) ( | ) ( | ) z z P x y P x I y P x z P z y ="
+    },
+    {
+      "heading": "=",
+      "text": "(86) Note: if Z is a collider, X→Z←Y, then X⊥Y|Z does not hold if Z is activated, as explained in Eq. (54). Hence, collider Z does not d-separate X from Y when Z is activated. 3.4.1. General P‑Identity Insertion Rule and D-Separable Chains: If activated Z1 d- separates X from Z2, and activated Z2 d-separates Z1 from Y, then {Z1−Z2} d-separates X from Y. Recursively, we have: General Rule for Inserting P-Identities: Let nodes X and Y be two conditionally dependent nodes. If the sequence of intermediate nodes {Z1− Z2−… Zk} (activated, ordered along the edge-connected path from X to Y) d-separates X from Y in the Bayesian network, then: 1 2 ( | ) ( | ... | ) z z zk P x y P x I I I y = (87) Otherwise, inserting identities between nodes may not be valid. D-Separable Chains: We call such a sequence of nodes a d-separable chain. We can insert P- identities to calculate a CPT, e.g., P(a|b), for chain inference if the chain is a d-separable chain from A to B. The d-separability of a chain completely depends on the structure of the directed acyclic graph (DAG). Here are some examples related to the chain’s d-separability: E-1: In a 2-node network, node Y is not a d-separator of another node X: relation X⊥X|Y cannot be true, therefore, P(xi|xk) ≠ P(xi|Iy|xk), as shown in Eq. (31). E-2: V-structures (Colliders): In D→G←I subnet of the Student BN, collider G does not d- separate D from I when activated, inserting IG between P(D|I) is invalid, as shown in Eq. (54). Similarly, in a 5-node network, the chain A→D→G←I ←B is not d-separable. E-3: Lambda-structures (Common Cause): In G←I →S subnet of the Student BN, we can insert II into P(G|S), because G⊥S|I. Likewise, in a 5- node network, the chain A←G←I →S →B (or its reverse) is d-separable. E-4: Causal (Serial) chains: one-way d-separable chains like I→G→L in the Student BN or A→B→C→D →E (or its reverse) in a 5-node network. E-5: Loopy networks (e.g., a network is the 6 corners of a hexagon): there may not be a single d-separable chain because multiple active paths can connect two given nodes. E‑6: Pendant Subnets. A pendant subnet at node C is a set of nodes that has only one connection to the rest of the network via C. For a d‑separable chain like A→C→B, a pendant subnet at C does not affect the d‑separation: A ⊥ B | C. 3.4.2. Chain Inference and Efficiency: PBN can efficiently reduce the number of operations for d-separable chain inferences, compared to directly using the full joint distribution table 2026-05-09 PBN & Static Bayesian Network Page 18 of 28 (FJPT). In Appendix A, we show that, for a large-scale N-node binary polytree (a singly connected BN; see §2.2 in [3]), the number of operations for a d-separable chain with k intermediate nodes is about k·2k+2 after a one-time preparation. Comparing with the order of O(N·2N) using the FJDT (§A.2), the ratio is: (k/N)·(2k+2/2N ) ~ (k/N) 2k−N (88) Therefore, for d-separable chains, inferences can be efficiently computed with local operators, which, when combined with preprocessing (§A.1), significantly reduce the number of operations. The approach is particularly efficient for d-separable chains on a polytree or its extension, as defined below. Definition 3.4.1. An Extended Polytree is a Bayesian network whose global structure is a polytree, in which nodes may be attached to pendant blobs (multiply connected subnets connected to the polytree backbone via a single bridge node). Fig. 8:  An Extended Polytree with one pendant blob (a pendant loop): The 3 pendant subnets do not affect the 5-node d-separable chain from A to E. On extended polytrees, pendant subnets (including blobs) do not affect the d‑separable chains on the polytree backbone. For the 5-node d-separable chain in Fig. 8, we can readily write: , , ( | ) ( | | ) ( | ) ( | ) ( | ) ( | ) B C D b c d P a e P a I I I e P a b P b c P c d P d e ="
+    },
+    {
+      "heading": "= ",
+      "text": "Altogether, PBN serves as both a conceptual and a computational tool for d-separable chains in static Bayesian networks: it provides a structured algebraic framework for Bayesian inference using P-identities (details on the two-phase procedure are in Appendix A). 4. Static Bayesian Networks with Continuous and Discrete Random Variables So far, we have discussed only static BNs for discrete random variables. However, static Bayesian Network models with continuous or mixed random variables are used in many scenarios. Examples include predicting how temperature, humidity, and pressure influence the chances of rain; a medical diagnosis system where a patient’s blood pressure, heart rate, and temperature indicate the likelihood of a specific disease; and an engineering system analyzing sensor readings such as vibration levels and current to forecast possible equipment failure [9]. A E B C D X Y 2026-05-09 PBN & Static Bayesian Network Page 19 of 28 PBN can handle such problems easily because its probability expressions are basis-independent (either discrete or continuous) [1]. 4.1.  Continuous random variables The expressions in Section 2 can be easily extended to continuous random variables. For example, Eq. (38) becomes: , , ( , , | ', ', ') ( ') ( ') ( ') | , , ) ( , , | X Y Z P x y z x y z x x y y z z dxdydz x y z P x y z I     = − − − ="
+    },
+    {
+      "heading": "",
+      "text": "(89) The CP normalization, similar to Eq. (18), now reads: 1 ( | , ) ( | | , ) ( | ) ( | , ) ( | , ) Y P x z P I x z dy P y P y x z dy P y x z =  =  =  ="
+    },
+    {
+      "heading": "",
+      "text": "(90) Using PBN, we can readily derive many useful expectation formulas, like the biconditional expectation in Eq. (36), or the unconditional one ([2], p. 106): [ ] ( | | ) ( | | ) ( | ) ( | ) ( | | ) ( | ) ( ) ( | | ) ( ) [ | ] ( ) [ [ | ] X Y E X P X P XI dx xP x P x dx xP x I dy dxxP x y P y dy P X y P y dyE X y P y E E X Y   =  =  =  = =   "
+    },
+    {
+      "heading": "",
+      "text": "(91) The following conditional expectations will be used in the next subsection. [ | , ] ( | | , ) ( | | , ) ( | | ) ( | , ) ( | ) ( , , ) / ( , ) y y y Y y y y E Y x z P Y x z P Y I x z dyP Y y P y x z dyyP y x,z dyyP x y z P x z    =  =  =  = ="
+    },
+    {
+      "heading": "",
+      "text": "(92) ( | , ) ( | | , ) ( | ) ( | , ) ( , , ) / ( , ) Y Y Y Y Y y H P H x z P H I x z dyP H y P y x z dyP x y z P x z  = = ="
+    },
+    {
+      "heading": "",
+      "text": "(93) The d-separable chains and the general identity-inserting rule discussed in §3.4 can also be applied analytically to nodes of continuous random variables. One only needs to use the continuous representation of their identity operators in expressions like Eq. (87) and to replace summations with integrals in expressions like Eq. (86). 4.2. Linear Gaussian Networks and Discrete-Display Nodes In a Bayesian network, the continuous random variables are usually assumed to follow a Gaussian (normal) distribution (with their mean and variance estimated from the given dataset). 2 1/2 2 2 2 ( ) (2 ) exp{ ( ) / 2 } ( | , ) P x x N x     − = − −  (94) It is also Gaussian if a variable has multiple parents, each with a normal distribution. Assume X = {X1,.., Xk} are jointly Gaussian with the following distribution [10-12]: 2026-05-09 PBN & Static Bayesian Network Page 20 of 28 /2 1/2 1 , , 1 , ( ) ( | , ) (2 ) | | exp{ ( ) ( ) [( )( )] [ ] k k T i i i j j j i j i j i i j j i j i j P N x x E x x E x x       − − − = = =  − −  −   − − = +"
+    },
+    {
+      "heading": "",
+      "text": "x x  (95) If we set Xk = Y and X = {X1,.., Xk-1}, we obtain the conditional distribution of P(Y|X) by definition from the joint distribution and marginal distribution: 1 1 ( , ) ( | , , ) ( | ) , ( , ) ; ( ) X k Y P Y P y x x P Y P Y N P  −         = =             XX XY YX YY X X X X  (96) Explicitly, the conditional distribution can be expressed as [10-11]: | | ,0 , | 1 1 | | ( | ) ( ; ) ( ; ) ( ), Y Y Y Y Y Y Y Y YY X Y X YY Y Y P Y N N     − − =  = +  = +  −  =  −  X X X X X X X XX X X X   (97) 1 1 ,0 , , Y Y Y YY X Y Y YY   − − = −  =   X X X X   (98) Fig. 9 illustrates a three-generation linear Gaussian network, along with its means and variances [13]. The distribution for a continuous variable Y with a discrete parent Z and a continuous parent vector X is also a Gaussian distribution, conditional on parents’ values. Fig. 9. A Linear Gaussian Network [15] ( ) ( ) ( ) | | ( | ) ( ) / ( ) ( ) / ( ) ( ; ) i i i i i i i y y P y z P ,y,z P z P ,y P N  =  =  x x x, x x, x x (99) ( ) ( ) ( , ) ( | ) ( ) i i P y P y P =  x x x (100) Fig. 10: A Mixed Bayesian Network (Continuous blue; discrete: yellow; DD node: dashed) X1 X2 P(A) P(B) Y P(Y|X1,X2,Z) Z P(Z) D P(L|Y) 2026-05-09 PBN & Static Bayesian Network Page 21 of 28 This means that for each value zi of the discrete parent Z, there is a Gaussian distribution based on zi and its continuous parents. Fig. 10 shows such a network, where node Y has two continuous parents, X1 and X2, and one discrete parent, Z. Unlike discrete variables, for which software shows a list of possible states with their probabilities, as in Fig. 7, for a node with a continuous distribution, most software only shows the mean and the variance of the distribution. It passes only the mean value to its child (e.g., Fig. 3 in [14]). Discrete-Display (DD) Nodes: However, if the network is used, e.g., to diagnose a patient's potential risk level of some disease, we propose to add a child node using the continuous distribution to calculate the probability for each level, building a table just like that for a discrete variable in the Student BN. We refer to this node as the Discrete-Display (DD) node because it discretizes and displays the continuous distribution of its parent node. The DD node’s discrete probability table is derived solely from its parent’s continuous probability distribution. Hence, a DD node is not a real random variable but a proxy of its parent. We use dashed arrows and shapes to represent such nodes, like node D in Fig. 10, which don’t contribute to the full joint probability distributions of the network. The DD nodes may be considered another discretization method for displaying continuous distributions [15, Sec. 4]. Moreover, to display user-specific results, continuous parent nodes, such as X1 and X2 in Fig. 10, should not simply pass the mean value down to their children; they would be better off using user-specific input, which can be implemented easily with GUI tools such as text fields, sliders, or plus-minus buttons. Linear Gaussian regression is just one of many methods [16] for approximating random variables from collected data. The Gaussian distribution may not be a good choice if the data is highly asymmetric. We will not discuss the details. From now on, we assume we have already identified the required distribution functions (primary or conditional, discrete or continuous) for the Bayesian networks. They are at least integrable (either numerically or analytically). Eq. (99) provides the multi-conditional expectation value of Y given {x1, x2, zi} for a Gaussian distribution. For a general distribution, by using Eq. (92) and (99), it can be expressed as follows, similar but not equivalent to Eq. (7) of [17]: | , 1 2 1 2 1 2 ( ) ( ) 1 2 1 2 1 2 (99) (100) [ | , , ] ( | | , , ) ( | , , ) ( | , ) ( , , ,) / ( ) ( ) Y i i i i i i Y E Y x x z P Y x x z dy yP y x x z dy yP y x x dy y P x x y P x P x  =  = = ="
+    },
+    {
+      "heading": "",
+      "text": "X (101) In the last two steps, we have used Eqs. (99-100) and the fact that nodes (X1, X2) are mutually independent. Similarly, the conditional variance is given by: 2 ( ) 2 | , | , ( ) / ( ) i Y i Y i dy y P y P Y    = −  "
+    },
+    {
+      "heading": "",
+      "text": "X X x, x (102) Suppose our DD node needs to show the possibilities for high and low risk. Assume that the range for low risk is Y ∈ LY = [20, 100], high risk is HY = (100, 200], and 2026-05-09 PBN & Static Bayesian Network Page 22 of 28 4 ( 20) ( 200) 10 P y P y −  +  . Using Eq. (93) and (99), the discretized conditional possibilities are given by the following multi-conditional probability expressions: 100 100 ( ) ( ) 20 20 (low | , ) ( , , ) ( , ) / ( ) ( ) i i Y i Y y i P z P L z dyP y P dyP y =  = "
+    },
+    {
+      "heading": "",
+      "text": "x | x x x x, (102) 200 200 ( ) ( ) 100 100 (high | , ) ( , , ) ( , ) / ( ) ( ) i i Y i Y y i P z P H z dyP y P dyP y =  = "
+    },
+    {
+      "heading": "",
+      "text": "x | x x x x, (103) Hence, when we calculate the probability table of a DD node, it is more convenient to use its parent’s joint probability density, and we can ignore the parent distribution’s normalization coefficient by normalizing the DD results in the final stage: (low | , ) (low | , ) /[ (low | , ) (high | , )] Y i Y i Y i Y i P z P z P z P z → + x x x x (104) If necessary, one can also compute their multi-conditional expectations and variances: 2 2 | | , [ | | , ] ( | | , ) / ( | , ) [ | | , ] [ | | , ] Y Y i Y i Y i L Y i Y i Y i E L Y z P L Y z P L z E L Y z E L Y z   = − x x x x x x (105) 4.3. The Customized Healthcare BN with Mixed Random Variables Let us build a static Bayesian network to predict a patient’s blood sugar reading (S) in mg/dL, displaying the probabilities at its levels (L: low, normal, pre-diabetes, diabetes) and HDL cholesterol reading (H) in mg/dL, and displaying the probabilities at its levels (D: low, regular). We assume that blood sugar readings depend on daily hydrocarbon calories (C), average daily exercise time (E), and genetic inferences (G: no, weak, substantial). On the other hand, the HDL reading depends only on the amount of daily exercise (E). Altogether, we need five random variables (four continuous and one discrete) plus two DD nodes, as shown in Table 1 and Fig. 11. Symbol Name Type Parent(s) Unit/Levels C Calories Continuous No Calorie E Exercises Continuous No Minute G Genetics Discrete No {0,1,2} S Sugar reading Continuous C, E, G Mg/dL L Sugar level DD node S {0,1,2,3} H HDL reading Continuous E Mg/dL D HDL level DD node H {0,1} Table 1: The random variables in the Healthcare BN The Healthcare BN’s DAG is shown in Fig. 11 below, which leads to the full joint distribution (DD nodes must be excluded) as follows: ( , , , , ) ( | , , ) ( | ) ( ) ( ) ( ) P C G E S H P S C G E P H E P C P G P E = (106) 2026-05-09 PBN & Static Bayesian Network Page 23 of 28 Fig. 11: The Customized Healthcare BN (Continuous: blue; discrete: yellow; DD node: dashed In the previous section, we detailed how to calculate various quantities: Eq. (94-102) for nodes C, E, S, and H, and Eq. (102-104) for the DD nodes L and D. How should these be displayed while the Healthcare BN is operating? Table 2 shows possible displays for four sample nodes. C: Calories in Carbs (Continuous) Mean 1100 Variance 200.0 User’s 1300 G: Genetic Inference (Discrete) No 0.00 Weak 1.00 Substantial 0.00 S: Sugar Reading (Continuous) Mean 100 Variance 20.0 L: Sugar Level (Discrete-display) Low 0.04 Normal 0.10 Pre-Diab. 0.76 Diabetes 0.10 Table 2: The Displays of Nodes in the Healthcare BN The continuous parent nodes (C and E) require user input to ensure user-specific predictions are made. These inputs can be entered in a text field initialized with the mean value and adjusted using GUI tools. The user’s selection determines the discrete parent G, similar to the Student BN. The Sugar Level DD node L predicts the user’s probabilities at each level. Therefore, our customized Healthcare Bayesian Network (BN) uses user-specific data to generate tailored probability tables, similar to those produced by a BN with discrete variables. Such a customized BN, capable of handling continuous and mixed variables, can also be used in weather forecasting, predicting sensor equipment failure, healthcare, and other fields of interest. 5. Summary and Discussions In this work, we extend Probability Bracket Notation (PBN) from single-variable and independent multivariable systems [1] to multivariable systems with dependencies and static Bayesian networks. Joint, marginal, and conditional distributions, as well as conditional expectations, are represented within a unified PBN framework. We show that the conditional probabilities and expectations underlying static Bayesian networks can be expressed concisely in a basis-independent form and computed using an operator-driven approach. We formulate a general rule for inserting P-identities by introducing the concept of d-separable chains and demonstrate that, after a one-time preparation stage, the computational cost for a large N-node binary network can be reduced from O(N·2N) based on the full joint probability table to O(k·2k) for a d-separable inference chain with k intermediate nodes. PBN is C G P(C) P(G) S P(S|C,E,G) E P(E) L P(L|S) H D P(D|H) P(H|E) 2026-05-09 PBN & Static Bayesian Network Page 24 of 28 particularly effective for d-separable chains in extended polytrees with pendant subnets (including pendant blobs, see Fig. 8). We also analyzed linear Gaussian networks and introduced a customized Healthcare Bayesian Network (Fig. 11) that supports both continuous and discrete random variables, enabling user-specific data input and displaying tailored predictions via Discrete-Display (DD) nodes that serve as proxies for their continuous parent nodes. Because expressions in PBN can be basis-independent, d-separable chains for inference or expectation may also be analytically useful for continuous random variables. These results complement our earlier work on PBN in stochastic processes and path-integral formulations, as well as its applications to non-Hermitian Hamiltonians [1]. Together with our recent extension [7] to dynamic Bayesian networks [18], which can incorporate feedback mechanisms—a key limitation of static Bayesian networks [19], this work further establishes PBN as more than a notation: it is a structured computational framework with preprocessing and efficient inference phases. Beyond its pedagogical value in connecting Dirac-style notation with probability modeling, PBN provides a practical analytical tool for reasoning in complex probabilistic systems, with potential applications in Bayesian networks, machine learning (ML), and artificial intelligence (AI) [14,19,20]. Abbreviations: BN: Bayesian Network CE: Conditional Expectation CPD: Conditional Probability Distribution DAG: Directed Acyclic Graph DD node: Discrete-Display node FJPT: Full Joint Probability Table IPD: Intermediate Probability Distribution JPD: Joint Probability Distribution MPD: Marginal Probability Distribution P-basis: Probability-basis (P-bra, P-ket, P-bracket, P-identity) PBN: Probability Bracket Notation, PD: Probability Distribution, Probability Density PGM: Probabilistic Graphic Model References [1]. Wang X.M. and Scott T.C. (2024), Probability Bracket Notation for Probability Modeling. Axioms 2024, 13(8), 564. https://doi.org/10.3390/axioms13080564 [2]. Ross, S.M. (2007), Introduction to Probability Models, ISE, 9th ed., Academic Press Limited, San Diego, CA. Online [3]. Koller D. and Friedman N. (2009), Probabilistic Graphic Models: Principles and Techniques, MIT Press. Online [4]. Möbus C. (2014), Bayesian Network 'Student Model', LCS, Example 5 [5]. Lee S. (2011), Statistical Methods in Computer Science, Lectures 1-2, CSE 515. https://www.cs.washington.edu/education/courses/cse515/11sp/lectures.html [6]. Krause A, Probabilistic Graphic Models, Lectures of CS 155. http://courses.cms.caltech.edu/cs155/#notes. 2026-05-09 PBN & Static Bayesian Network Page 25 of 28 [7]. Wang X. M., (2025), Probability Bracket Notation: Hidden and Visible Markov Models in Dynamic Bayesian Networks, Preprint, arXiv:1212.3817 [cs.AI] [8].  Canonaco F., Gaudillo J., et al. (2025), A guide to Bayesian networks software for structure and parameter learning. https://doi.org/10.3389/fsysb.2025.1631901. See also: arXiv:2503.17025 [cs.AI] [9]. Ngartera L. Issaka M. A., and Nadarajah S (2024): Application of Bayesian Neural Networks in Healthcare: Three Case Studies, Mach. Learn. Knowl. Extr. 2024, 6(4), 2639-2658. https://doi.org/10.3390/make6040127. [10]. Srihari S. (2019), Sec. 7.2: Gaussian Bayesian Networks, Probabilistic Graphical Models Course, CSE674, https://cedar.buffalo.edu/~srihari/CSE674/index.html. [11]. Univ. Penn (2022), Machine Learning 2.2: The Gaussian Distribution, CIS 520. https://www.seas.upenn.edu/~cis520/papers/Bishop_2.3.pdf. [12]. Meyers B. (2018), Bennet's Research Notes: Derivation of conditional distribution for Jointly Gaussian random vectors, EE278 (2018). https://bmeyers.github.io/conditional_distribution_for_jointly_gaussian_random_vectors/ [13]. Ostwal P. (2020), Linear Gaussian Bayesian Networks -Representation, Learning and Inference: Sample_network.png, https://github.com/ostwalprasad/LGNpy [14]. Bayes Server (2025), Learning Center, Introduction. https://www.bayesserver.com/docs/introduction/bayesian-networks [15]. Vonk M. C, Brand S., Malekovic N., et al. (2023), Efficient inference in Bayesian networks with continuous variables, SSRN. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4620451 [16]. Morris J. S. (2015), Functional Regression, Ann. Rev. of Statistics and Its App., Vol. 2. https://doi.org/10.1146/annurev-statistics-010814-020413. See also: arXiv:1406.4068 [stat.ME] [17]. Salmeron A., Rumi R., Langseth H., et al. (2018), A Review of Inference Algorithms for Hybrid Bayesian Networks, J. of AI Research 62,799-828. https://doi.org/10.1613/jair.1.11228 [18]. James Hammond J. and Smith V. A. (2025), Bayesian networks for network inference in biology, J. of Roy. Soc. Interface 22 (226): 20240893. https://doi.org/10.1098/rsif.2024.0893 [19]. Hanea D., Hanea A., Ale, B., et al. (2012), Using Dynamic Bayesian Networks to Implement Feedback in a Management Risk Model for the Oil Industry, Conference: PSAM 11, Esrel 2012, Helsinki. IAPSAM & ESRA, pp. 691-700 https://eprints.hud.ac.uk/id/eprint/22485. Online. [20]. Kumar, S. (2023), An Overview of Bayesian Networks in AI. https://sourcebae.com/blog/an-overview-of-bayesian-networks-in-ai/. [21]. Korb, K. B., and Nicholson, A. E. (2004), Bayesian Artificial Intelligence. 2nd ed., Chapman & Hall/CRC Press. Online. Appendix A: The Two-Phase Chain Inference Process and Its Efficiency Here, in this appendix, we discuss the two-phase procedure for computing inference for d- separable chains in PBN and its efficiency. 2026-05-09 PBN & Static Bayesian Network Page 26 of 28 A.1: The Preprocess and the Computation of Chain Inference in PBN The primary advantage of PBN is its ability to efficiently handle d-separable inference chains in large-scale N-node extended polytrees (e.g., N~100). Instead of computing a complex conditional probability, e.g., P(A|F), directly from a full joint distribution table (FJPT), PBN allows for the strategic insertion of P-identities for intermediate nodes IC,  ID ..., effectively calculating P (A|IC ID... |F) for a d-separable chain on the backbone polytree. This breaks a large problem into a sequence of simpler, pre-computed operations. To leverage this for scalable inference, a practical implementation should first pre-calculate the following local tables for the network and store the local MPTs and CPTs: 1. Local parent-child JPTs: P (XC, XP), optional for storage. 2. Local marginal probability tables (MPTs) for each node: P(X). (A.1) 3. Local parent-child and child-parent CPT: P (XC| XP), and P(XP|XC). The tables can be derived using Bayes’ formula and the definition of an MPT starting from the root parents. For example, in the Student BN, the pre-calculation process can start at the first CPT in the right of Eq. (60) to produce and store the local probability MPT and CPT tables in the following order (there are two inference chains): P(d), P(i), P(g), P(g|d), P(d|g), P(g| i), P(i|g), P(l); P(s), P(s|i), P(i|s) (A.2) The total number of operations required to populate local tables depends on the structure of the BN. The operation count (#c) for a next-generation node depends on the number of its outcomes, the number of its parents, and the independence of its parents. In a large N-node binary network, it can be shown that, for a node with a single parent, e.g., P(c|a)3, #c ~ 8; for a node depending on 2 parents, e.g., P(c|x,y), #c ~ 52 if X and Y are independent4; otherwise, it is a pendant blob at C. One should start from the top parent in the blob to calculate the #c of the subnet, and each node adds #c ~ O(10). For example, if X and Y are directly linked, X→Y (as in Fig 8), #c ~ 8 for Y. Note that any inference chain that starts or ends in a pendant blob (except node C) may not be d-separable, and a pendant blob does not affect the d-separable chains passing through node C on the polytree backbone (see §3.4.1 and Fig. 8); we can ignore them if we are only interested in the d-separable chains on the backbone polytree. The analysis applies to nodes depending on more than 2 parents: if a node depends on M independent parents, #c ~ M ·2M+2, in general M ≪ N. Therefore, the upper limit of preprocess operations can be set to #c ~ N·2N for a network with a polytree backbone. Altogether, preparing all local tables for N nodes requires O(10·N) to O(N·2N) operations. For example, the preparation for the Student BN involves about 100 operations. After these tables are stored as data objects associated with the BN, an inference task reduces to identifying the d-separable sequence of intermediate nodes between two target nodes on the backbone polytree. Such an algorithm is straightforward to implement in languages such as Python or Java and is well-suited for AI-assisted symbolic reasoning. Once the d-separable chain between 3 The four 2-node joint, P(a,c) = P(c|a)P(a) → #c = 2^2 = 4; the two single-node marginal: P(c) → #c = 2·2 = 4. 4 The eight 3-node joint, P(a,b,c) = P(c|a,b)P(a)P(b) → #c = 2^3·2 = 16; the two 2-node marginal joints, P(a,c) and P(b,c) → #c = 2·2^2·2 =16; the two single-node marginal, P(c) → #c = 2·2 = 4; the four CPTs: P(a|c), P(c|a), P(b|c), P(c|b) → #c = 4·2^2=16. 2026-05-09 PBN & Static Bayesian Network Page 27 of 28 query nodes is determined (e.g., A→C←D→E), the unknown conditional probability P(A|E) is computed by sequential summation: 2 , ( | ) ( | | ) ( | ) ( , ) ( | ) # 4 2 4 4( 1) 2 2 k k C D c d P a e P a I I e P a c P c d P d e c k k + = = → =  = + "
+    },
+    {
+      "heading": "",
+      "text": "(A.3) Consider a BN with N binary nodes and an inference chain involving k intermediate nodes. The CP has 4 matrix elements; for each of the elements, the total number of summations is 2k, and there are k+1 multiplications, leading to approximately 4·(k+1)·2^k ~ k·2k+2 operations. Altogether, PBN needs O(10·N) to O(N·2N) operations to prepare, and O(k·2k) to calculate the CP for a given inference chain. A.2. The Comparison of Efficiency in Chain Inference In contrast, a brute-force approach based on the FJPT (which is a product of N given marginal or conditional distributions), although no need for preparation, would require N·2N−2 operations to find the CPT of the reasoning chain. # all but , ( , ) 1 ( | ) {FJPT( , , , ...)}, ( ) ( , ), ~ 2 ( ) ( ) N a a e P a e P a e a b c d P e P a e C N P e P e = = = "
+    },
+    {
+      "heading": "",
+      "text": "(A.4) Therefore, after preparation, it is the PBN’s O(k·2k) vs. FJPT’s O(N·2N). The ratio is: (k/N)·(2k/2N) ~ (k/N) 2k−N (A.5) For N ~ 100 and k ~ 10, the number of calculations is reduced by a factor of 290 ~ 1027, which is nearly exponential. This exponential gap highlights why PBN’s calculation, based on local d-separable reasoning chains, is vastly more efficient and scalable than using FJPT in large Bayesian networks. The computational advantage of PBN arises from a two-phase strategy: an initial preprocessing stage that constructs local probability tables, followed by efficient query evaluation using P-identities. Although the preprocessing cost may be comparable to a single brute-force inference computation, it is incurred only once, whereas subsequent inference queries are significantly accelerated. An Illustrative Example of Inference via P-Identities: Suppose the inference of interest is P(D∣L) in the Student BN, whose structure indicates that the influence of L on D propagates through G, which d-separates L from D: L→G→D. In PBN, one can insert the corresponding P-identity IG, make explicit the inference chain encoded in the BN, and avoid any reference to the full joint distribution (for the summation range, see Fig 7). PBN: 3 1 ( | ) ( | | ) ( | ) ( | ) # 4 3 10 G g P d l P d I l P d g P g l c = = = → = "
+    },
+    {
+      "heading": "",
+      "text": "(A.6) FJPT: , , ( ) ( ) ( | , ) ( | ) ( | ) ( , ) ( | ) # 4 12 4 50 ( ) ( , ) i g s d P i P d P g i d P g l P s i P d l P d l c P l P d l = = → =  + "
+    },
+    {
+      "heading": "",
+      "text": "(A.7) 2026-05-09 PBN & Static Bayesian Network Page 28 of 28 Therefore, even in this relatively small network, the PBN-based computation reduces the operation count by a factor of several times. This advantage becomes significantly more noticeable in large-scale networks, where the complexity of brute-force marginalization grows exponentially with the number of variables. Conditional Expectation via P-Identities: If the nodes have numerical outcomes, we can compute conditional expectations (e.g., predicted precipitation on specific days in a complex weather model). The same stratagem applies. For example, we have all numerical outcomes for the Student BN in Eq. (58) and want to compute the expectation of S given L. The inference chain is S←I →G →L, which is d-separable. Following Eq. (83-85), we have: , , [ | ] ( | | ) ( | | ) ( | ) ( | ) ( | ) S I G s i g E S l P S l P SI I I l sP s i P i g P g l   = "
+    },
+    {
+      "heading": "= ",
+      "text": "(A.8) The bridged expectations, analogous to Eq. (36), can be calculated in a similar way, e.g.: ( | ) ( | ) ( | | ) ( | | ) [ | | ] ( | ) ( | | ) ( | ) ( | ) g I G G g P i g gP g l P i I GI l P i G l E i G l P i l P i I l P i g P g l  ="
+    },
+    {
+      "heading": "",
+      "text": "(A.9) These cases show that PBN can greatly reduce the computation time while explicitly revealing the chain of inferences for conditional probabilities and expectations in Bayesian networks. Moreover, assume that the nodes in the Student BN are continuous random variables, then Eqs. (A.8-9) are still analytically valid if summations are replaced by integrals, and conditional probability tables are replaced by corresponding joint and marginal probability densities, as was done in Eqs. (92-93). Relation with Variable Elimination: It is worth noting that the PBN-based inference chain processing is related to the variable elimination method commonly used in Bayesian networks (Chap. 9, [3]). In both approaches, exact inference is achieved by selecting appropriate intermediate variables, thereby avoiding the need to use the full joint probability distribution. PBN is particularly effective for d-separable chains with pendant subnets on Extended Polytrees, as defined in §3.4.2 (an example is shown in Fig. 8). PBN provides a compact, operator-based process for computing chain inference or expectation, where inserting identities makes the sequence of selections explicit and algebraically transparent."
+    }
+  ]
+}

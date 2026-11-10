@@ -1,0 +1,476 @@
+{
+  "paper_id": "1502.05443",
+  "title": "Influence-Optimistic Local Values for Multiagent Planning --- Extended Version",
+  "abstract": "Recent years have seen the development of methods for multiagent planning under uncertainty that scale to tens or even hundreds of agents. However, most of these methods either make restrictive assumptions on the problem domain, or provide approximate solutions without any guarantees on quality. Methods in the former category typically build on heuristic search using upper bounds on the value function. Unfortunately, no techniques exist to compute such upper bounds for problems with non-factored value functions. To allow for meaningful benchmarking through measurable quality guarantees on a very general class of problems, this paper introduces a family of influence-optimistic upper bounds for factored decentralized partially observable Markov decision processes (Dec-POMDPs) that do not have factored value functions. Intuitively, we derive bounds on very large multiagent planning problems by subdividing them in sub-problems, and at each of these sub-problems making optimistic assumptions with respect to the influence that will be exerted by the rest of the system. We numerically compare the different upper bounds and demonstrate how we can achieve a non-trivial guarantee that a heuristic solution for problems with hundreds of agents is close to optimal. Furthermore, we provide evidence that the upper bounds may improve the effectiveness of heuristic influence search, and discuss further potential applications to multiagent planning.",
+  "categories": "cs.AI cs.SY eess.SY",
+  "sections": [
+    {
+      "heading": "ABSTRACT",
+      "text": "Recent years have seen the development of methods for mul- tiagent planning under uncertainty that scale to tens or even hundreds of agents. However, most of these methods either make restrictive assumptions on the problem domain, or pro- vide approximate solutions without any guarantees on qual- ity. Methods in the former category typically build on heuris- tic search using upper bounds on the value function. Unfor- tunately, no techniques exist to compute such upper bounds for problems with non-factored value functions. To allow for meaningful benchmarking through measurable quality guar- antees on a very general class of problems, this paper intro- duces a family of inﬂuence-optimistic upper bounds for fac- tored decentralized partially observable Markov decision pro- cesses (Dec-POMDPs) that do not have factored value func- tions. Intuitively, we derive bounds on very large multiagent planning problems by subdividing them in sub-problems, and at each of these sub-problems making optimistic assumptions with respect to the inﬂuence that will be exerted by the rest of the system. We numerically compare the diﬀerent upper bounds and demonstrate how we can achieve a non-trivial guarantee that a heuristic solution for problems with hun- dreds of agents is close to optimal. Furthermore, we provide evidence that the upper bounds may improve the eﬀective- ness of heuristic inﬂuence search, and discuss further poten- tial applications to multiagent planning. 1."
+    },
+    {
+      "heading": "INTRODUCTION",
+      "text": "Planning for multiagent systems (MASs) under un- certainty is an important research problem in artiﬁcial intelligence. The decentralized partially observable Mar- kov decision process (Dec-POMDP) is a general princi- pled framework for addressing such problems. Many re- cent approaches to solving Dec-POMDPs propose to ex- ploit locality of interaction [22] also referred to as value factorization [16]. However, without making very strong assumptions, such as transition and observation inde- pendence [3], there is no strict locality: in general the actions of any agent may aﬀect the rewards received in a diﬀerent part of the system, even if that agent and the origin of that reward are (spatially) far apart. For instance, in a traﬃc network the actions taken in one part of the network will eventually inﬂuence the rest of the network [26]. A number of approaches have been proposed to gen- erate solutions for large MASs [40, 48, 27, 47, 9, 36]. However, these heuristic methods come without guar- antees. In fact, since it has been shown that approxima- tion (given some ϵ, ﬁnding a solution with value within ϵ of optimal) of Dec-POMDPs is NEXP-complete [31], it is unrealistic to expect to ﬁnd general, scalable methods that have such guarantees. However, the lack of guar- antees also makes it diﬃcult to meaningfully interpret the results produced by heuristic methods. In this work, we mitigate this issue by proposing a novel set of tech- niques that can be used to provide upper bounds on the performance of large factored Dec-POMDPs. More generally, the ability to compute upper bounds is important for numerous reasons: 1) As stated above, they are crucial for a meaningful interpretation of the quality of heuristic methods. 2) Such knowledge of per- formance gaps is crucial for researchers to direct their focus to promising areas. 3) Such knowledge is also cru- cial for understanding which problems seem simpler to approximate than others, which in turn may lead to im- proved theoretical understanding of diﬀerent problems. 4) Knowledge about the performance gap of the leading heuristic methods can also accelerate their real-world deployment, e.g., when their performance gap is proven to be small over sampled domain instances, or when the selection of which heuristic method to deploy is facil- itated by clarifying the trade-oﬀof computation and closeness to optimality. 5) Upper bounds on achievable value without communication may guide decisions on investments in communication infrastructure. 6) Last, but not least, these upper bounds can directly be used in current and future heuristic search methods, as we will discuss in some more detail at the end of this paper. Computing upper bounds on the achievable value of a planning problem typically involves relaxing the original problem by making some optimistic assumptions. For instance, in the case of Dec-POMDPs typical assump- tions are that the agents can communicate or observe the true state of the system [11, 35, 32, 25]. By exploit- ing the fact that transition and observation dependence leads to a value function that is additively factored into a number of small components (we say that the value function is ‘factored’, or that the setting exhibits ‘value"
+    },
+    {
+      "heading": "arXiv:1502.05443v2  [cs.AI]  20 Jul 2015",
+      "text": "factorization’), such techniques have been extended to compute upper bounds for so-called network-distributed POMDPs (ND-POMDPs) with many agents. This has greatly increased the size of the problems that can be solved [38, 19, 9]. Unfortunately, assuming both tran- sition and observation independence (or, more gener- ally, value factorization) narrows down the applicability of the model, and no techniques for computing upper bounds for more general factored Dec-POMDPs with many agents are currently known. We address this problem by proposing a general tech- nique for computing what we call inﬂuence-optimistic upper bounds. These are upper bounds on the achiev- able value in large-scale MASs formed by computing lo- cal inﬂuence-optimistic upper bounds on the value of sub-problems that consist of small subsets of agents and state factors. The key idea is that if we make optimistic assumptions about how the rest of the system will inﬂu- ence a sub-problem, we can decouple it and eﬀectively compute a local upper bound on the achievable value. Finally, we show how these local bounds can be com- bined into a global upper bound. In this way, the major contribution of this paper is that it shows how we can compute factored upper bounds for models that do not admit factored value functions. We empirically evaluate the utility of inﬂuence-opti- mistic upper bounds by investigating the quality guar- antees they provide for heuristic methods, and by ex- amining their application in a heuristic search method. The results show that the proposed bounds are tight enough to give meaningful quality guarantees for the heuristic solutions for factored Dec-POMDPs with hun- dreds of agents.1 This is a major accomplishment since previous approaches that provide guarantees 1) have re- quired very particular structure such as transition and observation independence [3, 2, 38, 9] or ‘transition- decoupledness’ combined with very speciﬁc interaction structures (transitions of an agent can be aﬀected in a directed fashion and only by a small subset of other agents) [42], and 2) have not scaled beyond 50 agents. In contrast, this paper demonstrates quality bounds in set- tings of hundreds of agents that all inﬂuence each other via their actions. This paper is organized as follows. First, Section 2 de- scribes the required background by introducing the fac- tored Dec-POMDP model. Next, Section 3 describes the sub-problems that form the basis of our decomposition scheme. Section 4 proposes local inﬂuence-optimistic upper bounds for such sub-problems together with the techniques to compute them. Subsequently, Section 5 discusses how these local upper bounds can be combined into a global upper bound for large problems with many agents. Section 6 empirically investigates the merits of the proposed bounds. Section 7 places our work in the context of related work in more detail, and Section 8 concludes. 1In the paper, we use the word ‘tight’ for its (empirical) meaning of“close to optimal”, not for its (theoretical CS) meaning of “coinciding with the best possible bound”. Figure 1: The FireFightingGraph problem. 2."
+    },
+    {
+      "heading": "BACKGROUND",
+      "text": "In this paper we focus on factored Dec-POMDPs [26], which are Dec-POMDPs where the transition and obser- vation models can be represented compactly as a two- stage dynamic Bayesian network (2DBN) [4]: Deﬁnition 1. A factored Dec-POMDP is a tuple M = ⟨D,A,O,X,T,O,R,b0⟩, where: • D = {1, . . . ,|D|} is the set of agents. • A = N i∈D Ai is the set of joint actions a. • O = N i∈D Oi is the set of joint observations o. • X = \b X1, . . . ,Xm is a set of state variables, or factors, that take values Dom(Xk) and thus span the set of states S = N Xk∈X Dom(Xk). • T(s′|s,a) is the transition model which is speciﬁed by a set of conditional probability tables (CPTs), one for each factor. • O(o|a,s′) is the observation model, speciﬁed by a CPT per agent. • R = \b R1, . . . ,Rρ is a set of local reward functions. • b0 is the (factored) initial state distribution. Each local reward function Rl has a state factor scope X(l) ⊆X and agent scope D(l) ⊆D over which is it is deﬁned: Rl(xX(l),aD(l),x′ X(l)) ∈R. These local reward functions form the global immediate reward function via addition. We slightly abuse notation and overload l to denote both an index into the set of reward functions, as well as the corresponding scopes: R(s,a,s′) ≜ X l∈R Rl(xl,al,x′ l). Every Dec-POMDP can be converted to a factored Dec-POMDP, but the additional structure that a fac- tored model speciﬁes is most useful when the problem is weakly coupled, meaning that there is suﬃcient con- ditional independence in the 2DBN and that the scopes of the reward functions are small. For instance, Fig. 1 shows the FireFightingGraph (FFG) problem [27], which we adopt as a running ex- ample. This problem deﬁnes a set of |D| + 1 houses, each with a particular ‘ﬁre level’ indicating if the house is burning and with what intensity. Each agent can ﬁght ﬁre at the house to its left or right, making observations of ﬂames (or no ﬂames) at the visited house. Each house has a local reward function associated with it, which depends on the next-stage ﬁre-level,2 as illustrated in Fig. 2(left) which shows the 2DBN for a 4-agent instan- tiation of FFG. The ﬁgure shows that the connections 2FFG has rewards of form Rl(x′ l), but we support Rl(xl,al,x′ l) in general. t t + 1 Xi−1 Xi−1 ai−1 oi−1 Ri−1 Xi Xi ai oi Ri Xi+1 Xi+1 ai+1 oi+1 Ri+1 Xi+2 Xi+2 ai+2 oi+2 Ri+2 Xi+3 Xi+3 Ri+3 t t + 1 Dt+1 c Dt+2 c Xi Xi ai Ri Xi+1 Xi+1 ai+1 Ri+1 Xi+2 Xi+2 Ri+2 Figure 2: Left: A 2-agent sub-problem within 4-agent FFG. Right: the corresponding IASP. are local but there is no transition independence [3] or value factorization [16, 42]: all houses and agents are connected such that, over time, actions of each agent can inﬂuence the entire system. While FFG is a stylized example, such locally-connected systems can be found in applications as traﬃc control [47] or communication networks [29, 12, 18]. This paper focuses on problems with a ﬁnite horizon h such that t = 0, . . . ,h −1. A policy πi for an agent i speciﬁes an action for each observation history⃗o t i = (o1 i , . . . ,ot i). The task of planning for a factored Dec- POMDP entails ﬁnding a joint policy π = ⟨π1, . . . ,π|D|⟩ with maximum value, i.e., expected sum of rewards: V (π) ≜E \u0014 h−1 X t=0 R(s,a,s′) | b0,π \u0015 . Such an optimal joint policy is denoted π∗.3 In recent years, a number of methods have been pro- posed to ﬁnd approximate solutions for factored Dec- POMDPs with many agents [30, 16, 40, 27, 47] but none of these methods are able to give guarantees with respect to the solution quality (i.e., they are heuristic methods), leaving the user unable to conﬁdently gauge how well these methods perform on their problems. This is a principled problem; even ﬁnding an ϵ-approximate solution is NEXP-complete [31], which implies that gen- eral and eﬃcient approximation schemes are unlikely to be found. In this paper, we propose a way forward by trying to ﬁnd instance-speciﬁc upper bounds in order to provide information about the solution quality oﬀered by heuristic methods. 3."
+    },
+    {
+      "heading": "SUB-PROBLEMS AND INFLUENCES",
+      "text": "The overall approach that we take is to divide the problem into sub-problems (deﬁned here), compute over- 3We omit the ‘*’ on values; all values are assumed to be optimal with respect to their given arguments. estimations of the achievable value for each of these sub- problems (discussed in Section 4) and combine those into a global upper bound (Section 5)."
+    },
+    {
+      "heading": "Sub-Problems (SPs)",
+      "text": "The notion of a sub-problem generalizes the concept of a local-form model (LFM) [28] to multiple agents and reward components. We give a relatively concise de- scription of this formalization, for more details, please see [28]. Deﬁnition 2. A sub-problem (SP) Mc of a factored Dec-POMDP M is a tuple Mc = ⟨M,D′,X ′,R′⟩, where D′ ⊂D,X ′ ⊂X,R′ ⊂R denote subsets of agents, state factors and local reward functions. An SP inherits many features from M: we can de- ﬁne local states xc ∈N X∈X ′ and the subsets D′,X ′,R′ induce local joint actions Ac = N i∈D′ Ai, observations Oc = N i∈D′ Oi, and rewards Rc(xc,ac,x′ c) ≜ X l∈R′ Rl(xl,al,x′ l). (1) However, this is generally not enough to end up with a fully speciﬁed, but smaller, factored Dec-POMDP. This is illustrated in Fig. 2(left), which shows the 2DBN for a sub-problem of FFG involving two agents and three houses (dependence of observations oi on actions ai is not displayed). The ﬁgure shows that state factors X ∈ X ′ (in this case Xi and Xi+2) can be the target of arrows pointing into the sub-problem from the non-modeled (dashed) part. We refer to such state factors as non- locally aﬀected factors (NLAFs) and denote them xnk c, where c indexes the SP and k indexes the factor. The other state factors in X ′ are referred to as only-locally aﬀected factors (OLAFs) xlk c. The ﬁgure clearly shows that the transition probabilities are not well-deﬁned since the NLAFs depend on the sources of the highlighted inﬂuence links. We refer to these sources as inﬂuence sources ut+1 c = yt u,at u (in this case yt u = Xi−1,Xi+3 and at u = at i−1,at i+2 ). This means that an SP c has an underspeciﬁed transition model: Tc(xt+1 c |xt c,at c,ut+1 c )."
+    },
+    {
+      "heading": "Structural Assumptions",
+      "text": "In the most general form, the observation and reward model could also be underspeciﬁed. In order to simplify the exposition, we make two assumptions on the struc- ture of an SP: 1. For all included agents i ∈D′, the state factors that can inﬂuence its observations (i.e., ancestors of oi in the 2DBN) are included in Mc. 2. For all included reward components Rl ∈R′, the state factors and actions that inﬂuence Rl are in- cluded in Mc. That is, we assume that SPs exhibit generalized forms of observation independence, Oc(oc|ac,x′ c) ≜Pr(oc|ac,x′ c) = Pr(oc|a,s′), and reward independence (cf. (1)). These are more gen- eral notions of observation and reward independence than used in previous work on TOI-Dec-MDPs [3] and ND-POMDPs [22], since we allow overlap on state fac- tors that can be inﬂuenced by the agents themselves.4 Crucially, however, we do not assume any form of transition independence (for instance, the sets X ′ of SPs can overlap), nor do we assume any of the transition- decoupling (i.e., TD-POMDP [43]) restrictions. That is, we neither restrict which node types can aﬀect ‘pri- vate’ nodes; nor do we disallow concurrent interaction eﬀects on ‘mutually modeled’ nodes. This means that assumptions 1 and 2 (above) that we do make are without loss of generality: it is possi- ble to make any Dec-POMDP problem satisfy them by introducing additional (dummy) state factors.5"
+    },
+    {
+      "heading": "Inﬂuence-Augmented SPs",
+      "text": "An LFM can be transformed into a so-called inﬂuence- augmented local model, which captures the inﬂuence of the policies and parts of the environment that are not modeled in the local model [28]. Here we extend this approach to SPs, thus leading to inﬂuence-augmented sub-problems (IASPs). Intuitively, the construction of an IASP consists of two steps: 1) capturing the inﬂuence of the non-modeled parts of the problem (given π̸=c the policies of non- modeled agents) in an incoming inﬂuence point I→c(π−c), and 2) using this I→c to create a model with a trans- formed transition model TI→c and no further depen- dence on the external problem. Step (1) can be done as follows: an incoming inﬂuence point can be speciﬁed as an incoming inﬂuence It →c for each stage: I→c = \u0000 I1 →c, . . . ,Ih →c \u0001 . Each such It+1 →c corre- sponds to the inﬂuence that the SP experiences at stage t+1, and thus speciﬁes the conditional probability distri- bution of the inﬂuence sources ut+1 c = yt u,at u . That is, assuming that the inﬂuencing agents use deterministic policies πu = ⟨πi⟩i∈u that map observation histories to actions, It+1 →c is the conditional probability distribution given by I(ut+1 c | Dt+1 c ) = X o t u 1{atu=πu(⃗o t u )} Pr(yt u,⃗o t u|Dt+1 c ,b0,π̸=c), where 1{·} is the Kronecker Delta function, and Dt+1 c the d-separating set for It+1 →c : the history of a subset of all the modeled variables that d-separates the modeled variables from the non-modeled ones.6 4Previous work only allowed ‘external’ or ‘unaﬀectable’ state factors to aﬀect the observations or rewards of mul- tiple components. 5In contrast, TOI-Dec-MDPs and ND-POMDPs impose both transition and observation independence, thereby restricting consideration to a proper subclass of those considered here. 6Dt+1 c is deﬁned such that Pr(yt u,⃗o t u|Dt+1 c ,b0,π̸=c,⃗θ t c ) =Pr(yt u,⃗o t u|Dt+1 c ,b0,π̸=c), see [28] for details. Step (2) involves replacing the CPTs for all the NLAFs by the CPTs induced by I→c. Deﬁnition 3. Let xnk,t+1 c be an NLAF (with index k), and ut+1 c (the instantiation of) the corresponding in- ﬂuence sources. Given the inﬂuence It+1 →c (π̸=c), and its d-separating set Dt+1 i , we deﬁne the induced CPT for xnk,t+1 c as the CPT that speciﬁes probabilities: pIt+1 →c (xnk,t+1 c |xt c,Dt+1 c ,at c) = X ut+1 c =⟨ytu,atu⟩ Pr(xnk,t+1 c |xt c,at c,ut+1 c )I(ut+1 c |Dt+1 c ). (2) Finally, we can deﬁne the IASP. Deﬁnition 4. An inﬂuence-augmented SP (IASP) MIA c = ⟨Mc,I→c⟩for an SP Mc = ⟨M,D′,X ′,R′⟩is a fac- tored Dec-POMDP with the following components: • The agents (implying the actions and observations) from the respective subproblem participate: ¯D = D′. • The set of state factors is ¯ X = X ′ ∪{Dc} such that states ¯xt c = ⟨xt c,Dt+1 c ⟩specify a local state of the SP, as well as the d-separating set Dt+1 i for the next- stage inﬂuences. • Transitions are speciﬁed as follows: For all OLAFs xk c we take the CPTs from the factored Dec-POMDP M, but for all NLAFs we take the induced CPTs, leading to an inﬂuence-augmented transition model which is the product of CPTs of OLAFs and NLAFS: ¯TI→c(xt+1 c |⟨xt c,Dt+1 c ⟩,at c) = Pr(xlt+1 c |xt c,at c) X ut+1 c =⟨ytu,atu⟩ Pr(xnt+1 c |xt c,at c,ut+1 c )I(ut+1 c |Dt+1 c ). (3) (Note that xt c,at c,xt+1 c and Dt+1 c together uniquely specify Dt+2 c ). • The observation model ¯O follows directly from O (from M). • The reward is identical to that of the SP: ¯R = R′. Fig. 2(right) illustrates the IASP for FFG. It shows how the d-separating set acts as a parent for all NLAFs, thus replacing the dependence on the external part of the problem. We write Vc(π) for the value that would be realized for the reward components modeled in sub-problem c, under a given joint policy π: Vc(π) ≜E \"h−1 X t=0 Rt c(s,a,s′) | b0,π # . As one can derive, given the policies of other agents π̸=c, Vc(I→c(π̸=c)), the value of the optimal solution of an IASP constructed for the inﬂuence corresponding to π̸=c, is equal to the best-response value: V BR c (π̸=c) ≜max πc Vc(πc,π̸=c) = Vc(I→c(π̸=c)). (4) This extends the result in [28] to multiagent SPs. 4."
+    },
+    {
+      "heading": "LOCAL UPPER BOUNDS",
+      "text": "In this section we present our main technical contri- bution: the machinery to compute inﬂuence-optimistic upper bounds (IO-UBs) for the value of sub-problems. In order to properly deﬁne this class of upper bound, we ﬁrst deﬁne the locally-optimal value: Deﬁnition 5. The locally-optimal value for an SP c, V LO c ≜max π̸=c V BR c (π̸=c) = max π̸=c Vc(I→c(π̸=c)), (5) is the local value (considering only the rewards Rc) that can be achieved when all agents use a policy selected to optimize this local value. We will denote the maximizing argument by πLO =c . Note that V LO c ≥Vc(π∗)—the value for the rewards Rc under the optimal joint policy π∗—since π∗optimizes the sum of all local reward functions: it might be op- timal to sacriﬁce some reward Rc if it is made up by higher rewards outside of the sub-problem. V LO c expresses the maximal value achievable under a feasible incoming inﬂuence point; i.e., it is optimistic about the inﬂuence, but maintains that the inﬂuence is feasible. Computing this value can be diﬃcult, since computing inﬂuences and subsequently constructing and optimally solving an IASP can be very expensive in gen- eral. However, it turns out computing upper bounds to V LO c can be done more eﬃciently, as discussed in Sec- tion 4.4. The IO-UBs that we propose in the remainder of this section upper-bound V LO c by relaxing the requirement of the incoming inﬂuence being feasible, thus allowing for more eﬃcient computation. We present three ap- proaches that each overestimate the value by being op- timistic with respect to the assumed inﬂuence, but that diﬀer in the additional assumptions that they make."
+    },
+    {
+      "heading": "A Q-MMDP Approach",
+      "text": "The ﬁrst approach we consider is called inﬂuence- optimistic Q-MMDP (IO-Q-MMDP). Like all the heuris- tics we introduce, it assumes that the considered SP will receive the most optimistic (possibly infeasible) inﬂu- ence. In addition, it assumes that the SP is fully ob- servable such that it reduces to a local multiagent MDP (MMDP) [5]. In other words, this approach resembles Q- MMDP [35, 25], but is applied to an SP, and performs an inﬂuence-optimistic estimation of value.7 IO-Q-MMDP makes, in addition to inﬂuence optimism, another over- estimation due to its assumption of full observability. While this negatively aﬀects the tightness of the upper bound, it has as the advantage that its computational complexity is relatively low. Formally, we can describe IO-Q-MMDP as follows. In the ﬁrst phase, we apply dynamic programming to 7What we have termed “Q-MMDP” has been referred to in past work as“Q-MDP”; we add the extra M emphasize the presence of multiple agents. compute the action-values for all local states: Q(xt c,at c) = max ut+1 c X xt+1 c Pr(xlt+1 c |xt c,at c) Pr(xnt+1 c |xt c,at c,ut+1 c ) h Rc(xt c,at c,xt+1 c ) + max at+1 c Q(xt+1 c ,at+1 c ) i . (6) Comparing this equation to (3), it is clear that this equa- tion is optimistic with respect to the inﬂuence: it selects the sources ut+1 c in order to select the most beneﬁcial transition probabilities. In the second phase, we use these values to compute an upper bound: ˆV M c ≜max ac X xc b0(xc)Q(xc,ac). This procedure is guaranteed to yield an upper bound to the locally-optimal value for the SP. Theorem 1. IO-Q-MMDP yields an upper bound to the locally-optimal value: V LO c ≤ˆV M c . Proof. An inductive argument easily establishes that, due to the maximization it performs, (6) is at least as great as the Q-MMDP value (for all Dt+1 c ) of any feasi- ble inﬂuence, given by: QMMDP c (⟨xt c,Dt+1 c ⟩,at c) = X xt+1 c ¯TI→c(xt+1 c |⟨xt c,Dt+1 c ⟩,at c) h Rc(xt c,at c,xt+1 c ) + max at+1 c Q(⟨xt+1 c ,Dt+2 c ⟩,at+1 c ) i . (7) Therefore the value computed in (6) is at least as great as the Q-MMDP value (7) induced by πLO =c (the max- imizing argument of (5)), for all xt c,Dt+1 c ,at c. This di- rectly implies ˆV M c ≥V MMDP c (I→c(πLO =c )), Moreover, it is well known that, for any Dec-POMDP, the Q-MMDP value is an upper bound to its value [35], such that V MMDP c (I→c(πLO =c )) ≥Vc(I→c(πLO =c )). We can conclude that ˆV M c is an upper bound to the Dec-POMDP value of the IASP induced by πLO =c : ˆV M c ≥Vc(I→c(πLO =c )) = max π̸=c Vc(I→c(π̸=c)) = V LO c , with the identities given by (5), thus proving the theo- rem. The upshot of (6) is that there are no dependencies on d-separating sets and incoming inﬂuences anymore: the IO assumption eﬀectively eliminates these dependencies. As a result, there is no need to actually construct the IASPs (that potentially have a very large-state-space) if all we are interested in is an upper bound."
+    },
+    {
+      "heading": "A Q-MPOMDP Approach",
+      "text": "The IO-Q-MMDP approach of the previous section introduces overestimations through inﬂuence-optimism as well as by assuming full observability. Here we tighten the upper bound by weakening the second assumption. In particular, we propose an upper bound based on the underlying multiagent POMDP (MPOMDP). An MPOMDP [21, 1] is partially observable, but as- sumes that the agents can freely communicate their ob- servations, such that the problem reduces to a special type of centralized model in which the decision maker (representing the entire team of agents) takes joint ac- tions, and receives joint observations. As a result, the optimal value for an MPOMDP is analogous to that of a POMDP: Q(bt,at) = R(bt,at) + X ot+1 Pr(ot+1|bt,at)V (bt+1), (8) where bt+1 is the joint belief resulting from performing Bayesian updating of bt given at and ot+1. Using the value function of the MPOMDP solution as a heuristic (i.e., an upper bound) for the value func- tion of a Dec-POMDP is a technique referred to as Q- MPOMDP [32, 25]. Here we combine this approach with optimistic assumptions on the inﬂuences, leading to inﬂuence-optimistic Q-MPOMDP (IO-Q-MPOMDP). In case that the inﬂuence on an SP is fully speciﬁed, (8) can be readily applied to the IASP. However, we want to deal with the case where this inﬂuence is not speciﬁed. The basic, conceptually simple, idea is to move from the inﬂuence-optimistic MMDP-based upper bounding scheme from in Section 4.1 to one based on MPOMDPs. However, it presents a technical diﬃculty, since it is not directly obvious how to extend (6) to deal with partial observability. In particular, in the MPOMDP case as given by (8), the state xt c is replaced by a belief over such local states and the inﬂuence sources ut+1 c aﬀect the value by both manipulating the transition and ob- servation probabilities, as well as the resulting beliefs. To overcome these diﬃculties, we propose a formula- tion that is not directly based on (8), but that too makes use of ‘back-projected value vectors’. That is, it is pos- sible to rewrite the optimal MPOMDP value function as:8 Q(bt,at) = bt · ra + γ X ot+1 max νao∈Vao bt · νao, (9) where · denotes inner product and where νao ∈Vao are the back-projections of value vectors ν ∈Vt+1: νao(st) ≜ X st+1 O(ot+1|at,st+1)T(st+1|stat)ν(st+1). (10) (Please see, e.g., [34, 33] for more details.) The key insight that enables carrying inﬂuence-opti- mism to the MPOMDP case is that this back-projected 8In this section and the next, we will restrict ourselves to rewards of the form R(s,a) to reduce the notational bur- den, but the presented formulas can be extended to deal with R(s,a,s′) formulations in a straightforward way. form (10) does allow us to take the maximum with re- spect to unspeciﬁed inﬂuences. That is, we deﬁne the inﬂuence-optimistic back-projection as: νao IO(xt c) ≜max ut+1 c X xt+1 c O(ot+1 c |ac,xt+1 c ) Pr(xnt+1 c |xt c,ac,ut+1 c ) Pr(xlt+1 c |xt c,ac)νIO(xt+1 c ). (11) Since this equation does not depend in any way on the d-separating sets and inﬂuence, we can completely avoid generating large IASPs. As for implementation, many POMDP solution methods [6, 13] are based on such back-projections and therefore can be easily modi- ﬁed; all that is required is to substitute these the back- projections by their modiﬁed form (11). When combined with an exact POMDP solver, such inﬂuence-optimistic back-ups will lead to an upper bound ˆV P c , to which we refer as IO-Q-MPOMDP, on the locally-optimal value. To formally prove this claim, we will need to discrim- inate a few diﬀerent types of value, and associated con- structs. Let us deﬁne: • ¯bt I→c(⟨xt c,Dt+1 c ⟩), an MPOMDP belief for the IASP induced by an arbitrary inﬂuence I→c, • V P I→c, the optimal value function when the IASP is solved as an MPOMDP, such that V P I→c(¯bt I→c) is the value of ¯bt I→c and V MP OMDP c (I→c) ≜V P I→c(¯b0 I→c). V P I→c is represented using vectors ν ∈V. • ¯bt IO(xt c), an arbitrary distribution over xt c that can be thought of as the MPOMDP belief for the ‘inﬂuence optimistic SP’.9 • V P IO,c, the value function computed by an (exact) inﬂuence-optimistic MPOMDP method, that assigns a value V P IO,c(¯bt IO) to any ¯bt IO. V P IO,c is represented using vectors νIO ∈VIO. The IO-Q-MPOMDP up- per bound is deﬁned by plugging in the true ini- tial state distribution b0, restricted to factors in c: ˆV P c ≜V P c (¯b0 IO). First we establish a relation between the diﬀerent vectors representing V P I→c and V P IO,c. Lemma 1. Let πt:h−1 c be a (h−t)-steps-to-go policy. Let ν ∈V and νIO ∈VIO be the vectors induced by πt:h−1 c under regular MPOMDP back-projections (for some I→c), and under IO back-projections respectively. Then ∀xtc max Dt+1 c ν(⟨xt c,Dt+1 c ⟩) ≤νIO(xt c). Proof. The proof is listed in Appendix A. 9For instance, in the case of FFG from Fig. 2, we can imagine an SP that encodes optimistic assumptions by assuming that the neighboring agents always will ﬁght ﬁre at houses i and i + 2. Even though it may not be possible to deﬁne such a model for all problems—the optimistic inﬂuence could depend on the local (belief) state in intricate ways—this gives some interpretation to ¯bt IO(xt c). Additionally, we exploit the fact that con- struction of an optimistic SP model is possible for the considered domains in Section 6. This lemma provides a strong result on the relation of values computed under regular MPOMDP backups versus inﬂuence-optimistic ones. It allows us to establish the following theorem: Theorem 2. For an SP c, for all I→c, ∀¯bt I→c V P I→c(¯bt I→c) ≤V P IO,c(¯bt IO), provided that ¯bt IO concides with the marginals of ¯bt I→c: (A1) ∀xtc X Dt+1 c ¯bt I→c(⟨xt c,Dt+1 c ⟩) = ¯bt IO(xt c). Proof. We start with the left hand side: V P I→c(¯bt c) = max ν∈V ¯bt I→c · ν = max ν∈V X ⟨xtc,Dt+1 c ⟩ ¯bt I→c(⟨xt c,Dt+1 c ⟩)ν(⟨xt c,Dt+1 c ⟩) ≤max ν∈V X xtc X Dt+1 c ¯bt I→c(⟨xt c,Dt+1 c ⟩) max Dt+1 c ν(⟨xt c,Dt+1 c ⟩) {A1} = max ν∈V X xtc ¯bt IO(xt c) max Dt+1 c ν(⟨xt c,Dt+1 c ⟩) {Lemma 1} ≤ max νIO∈VIO X xtc ¯bt IO(xt c)νIO(xt c) = max νIO∈VIO ¯bt IO · νIO = V P IO,c(¯bt IO), thus proving the theorem. Corollary 1. IO-Q-MPOMDP yields an upper bound to the locally-optimal value: V LO c ≤ˆV P c . Proof. The initial beliefs are deﬁned such that the above condition (A1) holds. That is: X Dt+1 c ¯b0 I→c(⟨x0 c,D1 c = ∅⟩) = ¯b0 IO(xt c) = b0(xt c). Therefore, application of Theorem 2 to the initial belief yields: ∀I→c ˆV P c ≜V P IO,c(¯b0 IO) ≥V P I→c(¯b0 I→c) ≜V MPOMDP c (I→c) It is well-known that the MPOMDP value is an upper bound to the Dec-POMDP value [25], such that V MPOMDP c (I→c(πLO =c )) ≥Vc(I→c(πLO =c )), and we can immediately conclude that ˆV P c ≥Vc(I→c(πLO =c )) = max π̸=c Vc(I→c(π̸=c)) = V LO c , with the identities given by (5), proving the result."
+    },
+    {
+      "heading": "A Dec-POMDP Approach",
+      "text": "The previous approaches compute upper bounds by, apart from the IO assumption, additionally making op- timistic assumptions on observability or communication capabilities. Here we present a general method for com- puting Dec-POMDP-based upper bounds that, other than the optimistic assumptions about neighboring SPs, make no additional assumptions and thus provide the tight- est bounds out of the three that we propose. This ap- proach builds on the recent insight [17, 8, 24] that a Dec- POMDP can be converted to a special case of POMDP (for an overview of this reduction, see [23]); we can thereby leverage the inﬂuence-optimistic back-projection (11) to compute an IO-UB that we refer to as IO-Q-Dec- POMDP. As in the previous two sub-sections, we will leverage optimism with respect to an inﬂuence-augmented model that we will never need to construct. In particular, as explained in Section 3 we can convert an SP Mc to an IASP MIA c given an inﬂuence I→c. Since such an IASP is a Dec-POMDP, we can convert it to a special case of a POMDP: Deﬁnition 6. A plan-time inﬂuence-augmented sub- problem, MPT-IA c , is a tuple MPT-IA c (Mc,I→c) = ˇS, ˇA, ˇTI→c, ˇR, ˇO, ˇO,ˇh, ˇb0 , where: • ˇS is the set of states ˇst = ¯xt c,⃗o t c = xt c,Dt+1 c ,⃗o t c . • ˇA is the set of actions, each ˇat corresponds to a local joint decision rule δt c in the SP. • ˇTI→c(ˇst+1|ˇst,ˇat) is the transition function deﬁned below. • ˇR(ˇst,ˇat) = Rc(xt c,δt c(⃗o t c )). • ˇO = {NULL}. • ˇO speciﬁes that observation NULL is received with probability 1 (irrespective of the state and action). • The horizon is not modiﬁed: ˇh = h. • ˇb0 is the initial state distribution. Since there is only one⃗o 0 (i.e., the empty joint observation history). The transition function speciﬁes: ˇTI→c( xt+1 c ,Dt+2 c ,⃗o t+1 c | xt c,Dt+1 c ,⃗o t c ,δt c) ≜¯TI→c(xt+1 c |⟨xt c,Dt+1 c ⟩,δt c(⃗o t c )) ¯O(ot+1 c |δt c(⃗o t c ),xt+1 c ) if⃗o t+1 c = \u0000 o t c ,ot+1 c \u0001 and 0 otherwise. In this equation ¯TI→c, ¯O are given by the IASP (cf. Section 3).10 This reduction shows that it is possible to compute V ∗ c (I→c(π̸=c)), the optimal value for an SP given an in- ﬂuence point I→c, but the formulation is subject to the same computational burden as solving a regular IASP: constructing it is complex due to the inference that needs to be performed to compute I→c, and subsequently solv- ing the IASP is complex due to the large number of augmented states ˇst = xt c,Dt+1 c ,⃗o t c . 10Remember that Dt+2 c is a function of the speciﬁed quantities: Dt+2 c = d(xt c,Dt+1 c ,δt c(⃗o t c ),xt+1 c ). Fortunately, here too we can compute an upper bound to any feasible incoming inﬂuence, and thus to V LO c , by using optimistic backup operations with respect to an underspeciﬁed model, to which we refer as simply plan- time SP: Deﬁnition 7. We deﬁne the plan-time sub-problem MPT c as an under-speciﬁed POMDP MPT c (Mc,·) = ˇS, ˇA, ˇT(·), ˇR, ˇO, ˇO,ˇh, ˇb0 with • states of the form ˇst = xt c,⃗o t c , • an underspeciﬁed transition model ˇ T(·)(ˇst+1|ˇst,ˇat) ≜ Tc(xt+1 c |xt c,δt c(⃗o t c ),ut+1 c )Oc(ot+1 c |δt c(⃗o t c ),xt+1 c ), • and ˇA, ˇR, ˇO, ˇO,ˇh, ˇb0 as above. Since this model is a special case of a POMDP, the theory developed in Section 4.2 applies: we can maintain a plan-time suﬃcient statistic σc,t (essentially the ‘be- lief’ ˇb over augmented states ˇst = xt c,⃗o t c ) and we can write down the value function using (9). Most impor- tantly, the IO back-projection (11) also applies, which means that (similar to the MPOMDP case) we can avoid ever constructing the full PT-IASP. The IO back-projec- tion in this case translates to: ν δt c IO(xt c,⃗o t c ) ≜max ut+1 c X xt+1 c Pr(ot+1 c |δt c(⃗o t c ),xt+1 c ) Pr(xnt+1 c |xt c,δt c(⃗o t c ),ut+1 c ) Pr(xlt+1 c |xt c,δt c(⃗o t c )) νIO(xt+1 c ,⃗o t+1 c ). (12) Here, we omitted the superscript for the NULL obser- vation. Also, note that O(ot+1 i |at i,xt+1 i ) in (11) cor- responds to the NULL observation in the PT model, but since the observation histories are in the states, Pr(ot+1 c |δt c(⃗o t c ),xt+1 c ) comes out of the transition model. Again, given this modiﬁed back-projection, the IO-Q- Dec-POMDP value ˆV D c can be computed using any exact POMDP solution method that makes use of vector back- projections; all that is required is to substitute these the back projections by their modiﬁed form (12). Corollary 2. IO-Q-Dec-POMDP yields an upper bound to the locally-optimal value: V LO c ≤ˆV D c . Proof. Directly by applying Corollary 1 to MPT c ."
+    },
+    {
+      "heading": "Computational Complexity",
+      "text": "Due to the maximization in (6), (11) and (12), IO back-projections are more costly than regular (non-IO) back-projections. Here we analyze the computational complexity of the proposed algorithms relative to the regular, non-IO, backups. We start by comparing IQ-Q-MMDP backup opera- tion (6) to the regular MMDP backup for an SP that does not have incoming inﬂuences. For such an SP, the MMDP backup is given by Q(xt c,at c) = X xt+1 c Pr(xt+1 c |xt c,at c) h Rc(xt c,at c,xt+1 c ) + max at+1 c Q(xt+1 c ,at+1 c ) i . (13) Comparing (6) and (13), we see two diﬀerences: 1) the transition probabilities can be written in one term since we do not need to discriminate NLAFs from OLAFs, and 2) there is no maximization over inﬂuence sources ut+1 c . The ﬁrst diﬀerence does not induce a change in compu- tational cost, only in notation: in both cases the entire transition probability is given as the product of next- stage CPTs. The second diﬀerence does induce a change in computational cost: in (6), in order to select the max- imum, the inner part of the right-hand side needs to be evaluated for each instantiation of the inﬂuence sources ut+1 c . That is, the computational complexity of a Q- MMDP backup (for a particular (xt c,at c)-pair) is O(|Xc| × |ac|), whereas the total computational cost of the IO-Q-MMDP backup is: O( ut+1 c × |Xc| × |ac|). As such, the complexity of each backup is multiplied by the number of inﬂuence source instantiations ut+1 c . This means that the overhead of IO-Q-MMDP relative to Q-MMDP is O( ut+1 c ). A similar comparison of the overhead of the IO-Q- MPOMDP back projection (11) with respect to the reg- ular Q-MPOMDP back projection (10) leads to exactly the same relative overhead of O( ut+1 c ). Since IO-Q- Dec-POMDP makes use of this last result, also in this case the relative overhead is O( ut+1 c ). Concluding, the computational complexity of the meth- ods we proposed to compute IO-UBs is given by mul- tiplying the computational complexity of the ‘underly- ing’ MMDP, MPOMDP or Dec-POMDP method with ut+1 c . This means that the relative overhead, is equal for all methods. Since the amount of overhead is a lin- ear function of ut+1 c , it is problem dependent: more densely coupled problems will lead to a higher overhead, while very loosely coupled problems have a low overhead. 5."
+    },
+    {
+      "heading": "GLOBAL UPPER BOUNDS",
+      "text": "We next discuss how the methods to compute local upper bounds can be employed in order to compute a global upper bound for factored Dec-POMDPs. The basic idea is to apply a non-overlapping decom- position C (i.e., a partitioning) of the reward functions \b Rl of the original factored Dec-POMDP into SPs c ∈ C, and to compute an IO upper bound ˆV IO c for each (which can be any of the three IO-UBs proposed in Sec- tion 4). Our global inﬂuence-optimistic upper bound is then given by: ˆV IO ≜ X c∈C ˆV IO c . (14) Figure 3: Illustration of construction of a global upper bound for 6-agent FFG using inﬂuence- optimistic upper bounds for sub-problems. Fig. 3 illustrates the construction of a global upper bound ˆV for the 6-agent FFG, showing the original problem (top row) and two possible decompositions in SPs. The second row speciﬁes a decomposition into two SPs, while the third row uses three SPs. The illustra- tion clearly shows how (in this problem) a decomposition eliminates certain agents completely and replaces them with optimistic assumptions: E.g., in the second row, during the computation of ˆV IO c for both SPs (c = 1,2) the assumption is made that agent 3 will always ﬁght ﬁre in the SP under concern. Eﬀectively we assume that agent 3 ﬁghts ﬁre at both house 3 and house 4 simulta- neously (and hence is represented by a superhero ﬁgure). Fig. 3 also illustrates that, due to the line structure of FFG, there are two types of SPs: ‘internal’ SPs which make optimistic assumptions on two sides, and ‘edge’ SPs that are optimistic at just one side. Finally, we formally prove the correctness of our pro- posed upper bounding scheme. Theorem 3. Let C be a partitioning of the reward func- tion set R into sub-problems such that every Rl is rep- resented in one SP c, then the global IO-UB is in fact an upper bound to the optimal value ˆV IO ≥V (π∗). Proof. Starting from the deﬁnition (14), we have ˆV IO ≜ X c∈C ˆV IO c {Section 4} ≥ X c∈C V LO c ≜ X c∈C max π̸=c V BR c (π̸=c) ≜ X c∈C max π̸=c max πc Vc(πc,π̸=c) ≥ max π X c∈C Vc(πc,π̸=c) {Cis a partition} = V (π∗) thus proving the result. 6."
+    },
+    {
+      "heading": "EMPIRICAL EVALUATION",
+      "text": "In order to test the potential impact of the proposed inﬂuence-optimistic upper bounds, we present numerical results in the context of a number of benchmark prob- lems. In this evaluation, we focus on the (relative) val- ues found by these heuristics, as we hope that these will spark a number of interesting ideas for further research (such as the notion of ‘inﬂuence strength’, its relation to approximability of factored Dec-POMDPs, and the key idea that reasonable bounds for very large problems may be possible). We do not thoroughly investigate timing results as the analysis of Section 4.4 indicates that relative timing results follow those of regular (non- IO) MMDP, MPOMDP and Dec-POMDP methods; see, e.g., [25] for a comparison of such timing results. How- ever, in order to provide a overall idea of the run times, we do provide some indicative running times.11"
+    },
+    {
+      "heading": "Comparison of Different Bounds",
+      "text": "The bounds that we propose are ordered in tight- ness, ˆV D c ≤ˆV P c ≤ˆV M c , similar to how regular (non- IO) Dec-POMDP, Q-MPOMDP, and Q-MMDP values relate [25]. To get an understanding of how these dif- ferences turn out in practice, Fig. 4(left) compares the diﬀerent upper bounds introduced. Although the approach described in the paper is gen- eral, in the numerical evaluation here we exploit the property that the optimistic inﬂuences are easily iden- tiﬁed oﬀ-line, which allows for the construction of small ‘optimistic Dec-POMDPs’ (respectively MPOMDPs or MMDPs) without sacriﬁcing in bound quality. E.g., in order to compute the local IQ-Q-Dec-POMDP upper bound for a 3-house FFG ‘edge’ SP, we deﬁne a regular 3-house Dec-POMDP where the transitions probabili- ties for the ﬁrst house (say Xi in Fig. 2) are modiﬁed to account for the optimistic assumption that another (su- perhero) agent ﬁghts ﬁre there and that its neighbor is not burning (i.e., ai−1 = right and Xi−1 = not burning in Fig. 2). The values ˆV D c (resp. ˆV P c , ˆV M c ) are computed by running a state-of-the-art Dec-POMDP solver [24] (resp. incremental pruning [6], plain dynamic program- ming) on such optimistically deﬁned problems. Fig. 4(left) shows the values for such ‘edge’ problems. Missing bars indicate time-outs (>4h). As an indica- tion of run time, the |D′| = 3,h = 5 problem took 2.21s for IO-Q-MMDP, and 995.28s for IO-Q-Dec-POMDP. The shown values indicate that ˆV D c , ˆV P c can be tighter than ˆV M c in practice. In most cases, the diﬀerence be- tween IO-Q-MPOMDP and IO-Q-Dec-POMDP is small, but these could become larger for longer horizons [25]. We performed the same analysis for the Aloha bench- mark [27], and found very similar results. We also compare the bounds found on the diﬀerent types of SPs (internal and edge-cases, see Fig. 3) en- countered in FFG (h = 4). In addition, Fig. 4(middle) also includes—if computable within the allowed time— values of SPs that are ‘full’ problems (i.e., the regular optimal Dec-POMDP value for the full FFG instance with the indicated number of agents.) This makes clear that the optimistic assumption has quite some eﬀect: being optimistic at one edge more than halves the opti- mal cost, and the IO assumption at both edges of the SP leads to another signiﬁcant reduction of that cost. This 11All experiments are run on a Intel Xeon E5-2650L, 32GB system making use of one core only. value IO-Q-Dec-POMDP IO-Q-MPOMDP IO-Q-MMDP -1 -2 -3 -4 -5 -6 3, 3 3, 4 3, 5 4, 3 4, 4 4, 5 5, 3 0 |D′|, h value full edge internal 2 3 4 5 -2 -4 -6 -8 0 |D′| full/optimistic value extinguish probability 2 agents 3 agents 4 agents 0.5 0.6 0.7 0.8 0.9 1 2 3 4 5 6 Figure 4: Left: Diﬀerent IO-UBs on ‘edge’ FFG problems. Middle: IO-Q-Dec-POMDP upper bound on diﬀerent types (internal, edge, full) of SPs. Right: The impact the ‘inﬂuence strength’. is to be expected: the optimistic problems assume that there always will be another agent ﬁghting ﬁre at the house at an optimistic edge, while the full problem never has another agent at that same house. When also tak- ing into account the transition probabilities—two agents at a house will completely extinguish a ﬁre—it is clear that the IO assumption should have a high impact on the local value."
+    },
+    {
+      "heading": "The Effect of Inﬂuence Strength",
+      "text": "Fig. 4(middle) makes clear that the IO assumption in FFG is quite strong and leads to a signiﬁcant over- estimation of the local value compared to the ‘full’ prob- lem. We say that FFG has a high inﬂuence strength. In fact, this hints at a new dimension of the qualiﬁcation of weak coupling [44] that takes into account the variance in NLAF probabilities (as a function of the change of value of the inﬂuence source) and their impact on the local value. As a preliminary investigation of this concept, we de- vise a modiﬁcation of FFG where the inﬂuence strength can be controlled. In particular, we parameterize the probability that a ﬁre is extinguished completely when 2 agents visit the same house, which is set to 1 in the original problem deﬁnition. Lower values of this proba- bility mean that optimistically assuming there is another agent at a house will lead to less advantage, and thus lower inﬂuence strength. Fig. 4(right) shows the results of this experiment. It shows that there is a clear relation between the ﬁre- extinguish probability when two agents ﬁght ﬁre at a house, and the ratio between the ‘regular’ (Dec-POMDP) value and optimistic value. It also shows that SPs with more agents are less aﬀected: this makes sense since op- timistic assumptions account for a smaller fraction of the achievable value. In other words, larger sub-problems give a tighter approximation."
+    },
+    {
+      "heading": "Bounding Heuristic Methods",
+      "text": "Here we investigate the ability to provide informative global upper bounds. While the previous analysis shows that the overestimation is quite signiﬁcant at the true edges of the problem (where no agents exist), this is not necessarily informative of the overestimation at internal edges in decompositions of larger problems (where other agents do exist, even if not superheros). As such, besides investigating the upper bounding capability, the analy- sis here also provides a better understanding of such value approximation factor Tightest UB (value) TP (value) Random actions (value) Approximation factor -200 -400 -600 -800 -1000 -1200 -1400 100 200 300 400 500 600 700 1.7 1.65 1.6 1.55 1.5 0 |D| Figure 5: The global IO-Q-Dec-POMDP upper bound on large FFG instances. internal overestimations. We use the tightest upper bound we could ﬁnd by considering diﬀerent SP partitions, with sizes ranging from |D| = 2–5, and investigate the guarantees that it can provide for transfer planning (TP) [27], which is one of the methods capable of providing solutions for large factored Dec-POMDPs. Since the method is a heuris- tic method that does not provide the exact value of the reported joint policy, the value of TP, V TP, is deter- mined using 10.000 simulations of the found joint policy leading to accurate estimates.12 To put the results into context, we also show the value of a random policy. Fi- nally, we show (second y-axis in Fig. 5) what we call the empirical approximation factor (EAF): EAF = max{ ˆV IO V TP ,V TP ˆV IO }. This is a number comparable to the approximation fac- tors of approximation algorithms [39].13 We computed upper bounds for large, horizon h = 4, FFG instances. The computation of the local upper bounds for the largest SPs used (i.e., |D′| = 5) took 3.31 secs for IO-Q-MMDP and 2696.23s for IO-Q-Dec- POMDP. Fig. 5 shows the results that indicate that the upper bound is relatively tight: the solutions found by TP are not too far from the upper bound. In partic- ular, the EAF lies typically between 1.4 and 1.7, thus 12Note that there is no method for Dec-POMDP policy evaluation that runs in polynomial time. In fact, exis- tence of such a method would reduce the complexity of solving a Dec-POMDP to NP, an impossibility since the time hierarchy theorem implies that NP̸= NEXP. 13‘Empirical’ emphasizes the lack of a priori guarantees. |D| 50 75 100 250 V T P −71.99 −111.07 −148.70 −382.47 ˆV IO −72.00 −107.06 −144.00 −360.00 EAF 1.00 1.04 1.03 1.06 Table 1: Empirical approximation factors for Aloha (h = 3) with varying number of agents. providing ﬁrm guarantees for solutions of factored Dec- POMDPs with up to 700 agents. Moreover, we see that the EAF stays roughly constant for the larger prob- lem instances indicating that relative guarantees do not degrade as the number of agents increase. Of course, the question of whether the optimal value lies closer to the blue (UB) or orange (TP) line remains open; only further research on improved (heuristic) solution meth- ods and tighter upper bounds can answer that question. However, we have gone from a situation where the only upper bound we had was ‘predict Rmax for every stage’ (which corresponds to the value 0 and EAF=∞) to a sit- uation where we have a much more informative bound. Results obtained for a similar approach for Aloha us- ing SPs containing up to |D′| = 6 agents are shown in Table 1. The numbers clearly illustrate that it is possi- ble to provide very strong guarantees for problems up to |D| = 250 agents (beyond which memory forms the bot- tleneck for TP); the solution for the |D| = 50 instance is essentially optimal, indicating also a very tight bound for this problem."
+    },
+    {
+      "heading": "Improved Heuristic Inﬂuence Search",
+      "text": "Aside from analyzing the solution quality of approx- imate methods, our bounds can also be used in opti- mal methods. In particular, A*-OIS [41] solves TD- POMDPs (a sub-class of factored Dec-POMDPs) by de- composing them into 1-agent SPs, searching through the space of inﬂuences, and pruning using optimistic heuristics. However, existing A*-OIS heuristics treat the unspeciﬁed-inﬂuence stages of the SPs as fully-observable. In contrast, IO-Q-MPOMDP models the partial observ- ability of the SPs. We now present results that suggest an added compu- tational beneﬁt to treating partial observability in the A*-OIS heuristics. Table 2 illustrates the diﬀerences in pruning aﬀorded by four diﬀerent A*-OIS heuristics: M is the baseline MDP-based heuristic from [41], P is shorthand for IO-Q-MPOMDP, and M’ and P’ are variations that improve tightness with locally-derived probability bounds on the optimistic inﬂuences. We re- port node counts and runtime across several problem instances from the HouseSearch domain [41]. As shown, the POMDP-based heuristics tends to al- low for more pruning (fewer expanded nodes) and thereby reduced computation in comparison to their MDP-based counterparts. Contrasting this reduction across two vari- ants of Diamond HouseSearch suggests that the IO-Q- MPOMDP heuristics gain more advantage when observ- ability is more restricted. However, this advantage is h=2 h=3 h=4 h=5 HouseSearch : Diamond : P r(correct obs.) = 0.75 # s # s # s # s M 55 2.36 245 33.86 2072 1179 P 55 2.42 241 34.21 1744 1010 M’ 45 2.00 91 9.00 183 64.32 97 991.2 P’ 45 2.02 91 10.05 119 39.84 66 607.9 HouseSearch : Diamond : P r(correct obs.) = 0.5 # s # s # s # s M 47 3.35 225 51.80 1434 1935 P 47 3.32 223 52.75 1416 1905 M’ 23 1.96 24 4.69 41 38.42 148 1882 P’ 11 0.89 15 3.90 19 25.32 23 256.8 HouseSearch : Squares : P r(correct obs.) = 0.75 # s # s # s M 25 2.41 311 120.5 1323 5846 P 25 2.56 311 121.3 1032 7184 M’ 25 2.61 277 109.6 816 3924 P’ 25 2.53 240 95.28 752 6760 Table 2: Node count and run time for A*-OIS. sometimes outweighed by the increased computational overhead of a more complex heuristic calculation (such as in Squares HouseSearch h = 4). The question of pre- dicting in advance when this will be the case is interest- ing, but diﬃcult (and orthogonal to our contribution). 7."
+    },
+    {
+      "heading": "RELATED WORK",
+      "text": "Here we provide an overview of related approaches. Scalable Heuristic Methods. In recent years, many scalable approaches without guarantees have been developed for Dec-POMDPs and related models [14, 46, 48, 16, 40, 37, 27, 47, 36]. The upper bounding mechanism that we propose could be useful for benchmarking many of these methods. Sub-Problems vs. Source Problems. The use of sub-problems (SPs) is conceptually simi- lar to the use of source problems in transfer planning (TP) [27]. Diﬀerences are that, in our partitioning- based upper bounding scheme, SPs are selected such that they do not contain overlapping rewards, while TP allows for overlapping source problems. Moreover TP does not consider optimistic inﬂuences but implicitly assumes arbitrary inﬂuences. Finally, TP is used as a way to compute a heuristic for the original problem; our approach here simply returns a scalar value (although extensions to use IO heuristics for heuristic search for factored Dec-POMDPs are an interesting direction for future research). Optimism with Respect to Inﬂuences. Being optimistic with respect to external inﬂuences has been considered before. For instance, Kumar & Zilberstein [14] make optimistic assumptions on tran- sitions in an ND-POMDP to derive an MMDP-based policy which is used to sample belief points for memory- bounded dynamic programming. The approach does not use these assumptions to upper bound the global value and the formulation is speciﬁc to ND-POMDPs. As described in the experiments, Witwicki, Oliehoek & Kaelbling [41] use a local upper bound in order to per- form heuristic inﬂuence search for TD-POMDPs. IO-Q- MMDP can be seen as a generalization of that heuris- tic to both factored Dec-POMDPs and multiagent sub- problems, while our other heuristics additionally deal with partial observability. Quality Guarantees for Large Dec-POMDPs. As mentioned in the introduction, a few approaches to computing upper bound for large-scale MASs and em- ploying them in heuristic search methods have been pro- posed. In particular, there are some scalable approaches with guarantees for the case of transition and observa- tion independence as encountered in TOI-MDPs and ND-POMDPs [3, 2, 38, 19, 10, 9]. The approach by Witwicki for TD-POMDPs [42, Sect. 6.6] is a bit more general in that it allows some forms of transition depen- dence, as long as the interactions are directed (one agent can aﬀect another) and no two agents can aﬀect the same factor in the same stage. In addition, scalability relies on each agent having only a handful of ‘interaction an- cestors’. However, these previous approaches rely on the true value function being factored as the sum of a set E of local value components: V (π) = X e∈E Ve(πe), where πe is the local joint policy of the agents that par- ticipate in component e. (This is also referred to as the ‘value factorization’ framework [16]). For this setting, an upper bound is easily constructed as the sum of local upper bounds: ˆV (π) = X e∈E ˆVe(πe). While this resembles our IO upper bound (14), the cru- cial distinction is that for value factorized settings com- puting ˆVe does not require any inﬂuence-optimism: the reason that value-factorization holds is precisely because there are no inﬂuence sources for the components. As such, our inﬂuence-optimistic upper bounds can be seen as a strict generalization of the upper bounds that have been employed for settings with factored value functions. Investigating if such methods, such as the method by Dibangoye et al. [9] can be modiﬁed to use our IO-UBs is an interesting direction of future work. Finally, the event-detecting multiagent MDP [15] pro- vides quality guarantees for a speciﬁc class of sensor net- work problems by using the theory of submodular func- tion maximization. It is the only previous method with quality guarantees that delivers scalability with respect to the number of agents without assuming that the value function of the problem is additively factored into small components. 8."
+    },
+    {
+      "heading": "CONCLUSIONS",
+      "text": "We presented a family of inﬂuence-optimistic upper bounds for the value of sub-problems of factored Dec- POMDPs, together with a partition-based decomposi- tion approach that enables the computation of global upper bounds for very large problems. The approach builds upon the framework of inﬂuence-based abstrac- tion [28], but—in contrast to that work—makes opti- mistic assumptions on the incoming ‘inﬂuences’, which makes the sub-problems easier to solve. An empirical evaluation compares the proposed upper bounds and demonstrates that it is possible to achieve guarantees for problems with hundreds of agents, showing that found heuristic solution are in fact close to optimal (empirical approximation factors of < 1.7 in all cases and some- times substantially better). This is a signiﬁcant contri- bution, given the complexity of computing ϵ-approximate solutions and the fact that tight global upper bounds are of crucial importance to interpret the quality of heuristic solutions. Intuitively, the proposed approach is expected to work well in settings where the Dec-POMDP is ‘weakly’ cou- pled. The work by Witwicki & Durfee [44] identiﬁes three dimensions that can be used to quantify the no- tion of weak coupling. Our experiments suggest the ex- istence of a new dimension that can be thought of as inﬂuence strength. This dimension captures the impact of non-local behavior on local values and thus directly relates to how well a problem can be approximated using localized components. In this paper we focused on the ﬁnite-horizon case, but the principle of inﬂuence optimism underlying the upper-bounding approach can also be applied in inﬁnite- horizon settings. Furthermore, the approach can be modiﬁed to compute ‘pessimistic’ inﬂuence (i.e., lower) bounds, which could be useful in competitive settings, or for risk-sensitive planning [20]. It is also immedi- ately applicable to problems involving ‘unpredictable’ dynamics [45, 7]. Finally, our upper-bounding method contributes a useful precursor for techniques that auto- matically search the space of possible upper bounds de- compositions, eﬃcient optimal inﬂuence-space heuristic search methods (for which we provided preliminary ev- idence in this paper), and A* methods for a large class of factored Dec-POMDPs. In particular, a promising idea is to employ our factored upper bounds in combi- nation with the heuristic search methods by Dibangoye et al. [9]. While it is not possible to directly use that method since it additionally requires a factored lower bound function, pessimistic-inﬂuence bounds could pro- vide those. A limitation of the current approach is that sub-prob- lems still need to be relatively small, since we rely on optimal optimistic solution of the sub-problems. Devel- oping more scalable ‘optimistic solution methods’ thus is an important direction of future work. Experiments with inﬂuence search indicate that using probabilistic bounds on the positive inﬂuences has a major impact [41]. As such, another important direction of future work is investigating if it is possible to develop tighter up- per bounds by making more realistic optimistic assump- tions. Acknowledgments. F.O. is supported by NWO Innovational Research In- centives Scheme Veni #639.021.336. 9."
+    },
+    {
+      "heading": "REFERENCES",
+      "text": "[1] C. Amato and F. A. Oliehoek. Bayesian reinforcement learning for multiagent systems with state uncertainty. In AAMAS Workshop on Multi-Agent Sequential Decision Making in Uncertain Domains (MSDM), pages 76–83, 2013. [2] R. Becker, S. Zilberstein, and V. Lesser. Decentralized Markov decision processes with event-driven interactions. In Proc. of the International Conference on Autonomous Agents and Multiagent Systems, pages 302–309, 2004. [3] R. Becker, S. Zilberstein, V. Lesser, and C. V. Goldman. Transition-independent decentralized Markov decision processes. In Proc. of the International Conference on Autonomous Agents and Multiagent Systems, pages 41–48, 2003. [4] C. Boutilier, T. Dean, and S. Hanks. Decision-theoretic planning: Structural assumptions and computational leverage. Journal of Artiﬁcial Intelligence Research, 11:1–94, 1999. [5] C. Boutilier and D. Poole. Computing optimal policies for partially observable decision processes using compact representations. In Proc. of the National Conference on Artiﬁcial Intelligence, pages 1168–1175, 1996. [6] A. Cassandra, M. L. Littman, and N. L. Zhang. Incremental pruning: A simple, fast, exact method for partially observable Markov decision processes. In Proc. of Uncertainty in Artiﬁcial Intelligence, pages 54–61, 1997. [7] K. V. Delgado, S. Sanner, and L. N. De Barros. Eﬃcient solutions to factored MDPs with imprecise transition probabilities. Artiﬁcial Intelligence, 175(9):1498–1527, 2011. [8] J. S. Dibangoye, C. Amato, O. Buﬀet, and F. Charpillet. Optimally solving Dec-POMDPs as continuous-state MDPs. In Proc. of the International Joint Conference on Artiﬁcial Intelligence, 2013. [9] J. S. Dibangoye, C. Amato, O. Buﬀet, and F. Charpillet. Exploiting separability in multiagent planning with continuous-state MDPs. In Proc. of the International Conference on Autonomous Agents and Multiagent Systems, pages 1281–1288, 2014. [10] J. S. Dibangoye, C. Amato, A. Doniec, and F. Charpillet. Producing eﬃcient error-bounded solutions for transition independent decentralized MDPs. In Proc. of the International Conference on Autonomous Agents and Multiagent Systems, pages 539–546, 2013. [11] R. Emery-Montemerlo, G. Gordon, J. Schneider, and S. Thrun. Approximate solutions for partially observable stochastic games with common payoﬀs. In Proc. of the International Conference on Autonomous Agents and Multiagent Systems, pages 136–143, 2004. [12] E. A. Hansen, D. S. Bernstein, and S. Zilberstein. Dynamic programming for partially observable stochastic games. In Proc. of the National Conference on Artiﬁcial Intelligence, pages 709–715, 2004. [13] L. P. Kaelbling, M. L. Littman, and A. R. Cassandra. Planning and acting in partially observable stochastic domains. Artiﬁcial Intelligence, 101(1-2):99–134, 1998. [14] A. Kumar and S. Zilberstein. Constraint-based dynamic programming for decentralized POMDPs with structured interactions. In Proc. of the International Conference on Autonomous Agents and Multiagent Systems, pages 561–568, 2009. [15] A. Kumar and S. Zilberstein. Event-detecting multi-agent MDPs: Complexity and constant-factor approximations. In Proc. of the International Joint Conference on Artiﬁcial Intelligence, pages 201–207, 2009. [16] A. Kumar, S. Zilberstein, and M. Toussaint. Scalable multiagent planning using probabilistic inference. In Proc. of the International Joint Conference on Artiﬁcial Intelligence, pages 2140–2146, 2011. [17] L. C. MacDermed and C. Isbell. Point based value iteration with optimal belief compression for Dec-POMDPs. In Advances in Neural Information Processing Systems 26, pages 100–108. 2013. [18] A. Mahajan and M. Mannan. Decentralized stochastic control. Annals of Operations Research, 2014. [19] J. Marecki, T. Gupta, P. Varakantham, M. Tambe, and M. Yokoo. Not all agents are equal: scaling up distributed POMDPs for agent networks. In Proc. of the International Conference on Autonomous Agents and Multiagent Systems, pages 485–492, 2008. [20] J. Marecki and P. Varakantham. Risk-sensitive planning in partially observable environments. In Proc. of the International Conference on Autonomous Agents and Multiagent Systems, pages 1357–1368, 2010. [21] J. V. Messias, M. T. J. Spaan, and P. U. Lima. Eﬃcient oﬄine communication policies for factored multiagent POMDPs. In NIPS 24, pages 1917–1925. 2011. [22] R. Nair, P. Varakantham, M. Tambe, and M. Yokoo. Networked distributed POMDPs: A synthesis of distributed constraint optimization and POMDPs. In Proc. of the National Conference on Artiﬁcial Intelligence, pages 133–139, 2005. [23] F. A. Oliehoek and C. Amato. Dec-POMDPs as non-observable MDPs. Technical report, University of Amsterdam, 2014. [24] F. A. Oliehoek, M. T. J. Spaan, C. Amato, and S. Whiteson. Incremental clustering and expansion for faster optimal planning in decentralized POMDPs. Journal of AI Research, 46:449–509, 2013. [25] F. A. Oliehoek, M. T. J. Spaan, and N. Vlassis. Optimal and approximate Q-value functions for decentralized POMDPs. Journal of AI Research, 32:289–353, 2008. [26] F. A. Oliehoek, M. T. J. Spaan, S. Whiteson, and N. Vlassis. Exploiting locality of interaction in factored Dec-POMDPs. In Proc. of the International Conference on Autonomous Agents and Multiagent Systems, pages 517–524, 2008. [27] F. A. Oliehoek, S. Whiteson, and M. T. J. Spaan. Approximate solutions for factored Dec-POMDPs with many agents. In Proc. of the International Conference on Autonomous Agents and Multiagent Systems, pages 563–570, 2013. [28] F. A. Oliehoek, S. Witwicki, and L. P. Kaelbling. Inﬂuence-based abstraction for multiagent systems. In Proc. of the AAAI Conference on Artiﬁcial Intelligence, pages 1422–1428, 2012. [29] J. M. Ooi and G. W. Wornell. Decentralized control of a multiple access broadcast channel: Performance bounds. In Proc. of the 35th Conference on Decision and Control, pages 293–298, 1996. [30] J. Pajarinen and J. Peltonen. Eﬃcient planning for factored inﬁnite-horizon DEC-POMDPs. In Proc. of the International Joint Conference on Artiﬁcial Intelligence, pages 325–331, 2011. [31] Z. Rabinovich, C. V. Goldman, and J. S. Rosenschein. The complexity of multiagent systems: the price of silence. In Proc. of the International Conference on Autonomous Agents and Multiagent Systems, pages 1102–1103, 2003. [32] M. Roth, R. Simmons, and M. Veloso. Reasoning about joint beliefs for execution-time communication decisions. In Proc. of the International Conference on Autonomous Agents and Multiagent Systems, pages 786–793, 2005. [33] G. Shani, J. Pineau, and R. Kaplow. A survey of point-based POMDP solvers. Autonomous Agents and Multi-Agent Systems, 27(1):1–51, 2013. [34] M. T. J. Spaan. Partially observable Markov decision processes. In Reinforcement Learning: State of the Art, pages 387–414. Springer Verlag, 2012. [35] D. Szer, F. Charpillet, and S. Zilberstein. MAA*: A heuristic search algorithm for solving decentralized POMDPs. In Proc. of Uncertainty in Artiﬁcial Intelligence, pages 576–583, 2005. [36] P. Varakantham, Y. Adulyasak, and P. Jaillet. Decentralized stochastic planning with anonymity in interactions. In Proc. of the AAAI Conference on Artiﬁcial Intelligence, pages 2505–2512, 2014. [37] P. Varakantham, S. Cheng, G. J. Gordon, and A. Ahmed. Decision support for agent populations in uncertain and congested environments. In Proc. of the AAAI Conference on Artiﬁcial Intelligence, 2012. [38] P. Varakantham, J. Marecki, Y. Yabu, M. Tambe, and M. Yokoo. Letting loose a SPIDER on a network of POMDPs: Generating quality guaranteed policies. In Proc. of the International Conference on Autonomous Agents and Multiagent Systems, 2007. [39] V. V. Vazirani. Approximation Algorithms. Springer-Verlag, 2001. [40] P. Velagapudi, P. Varakantham, P. Scerri, and K. Sycara. Distributed model shaping for scaling to decentralized POMDPs with hundreds of agents. In Proc. of the International Conference on Autonomous Agents and Multiagent Systems, 2011. [41] S. Witwicki, F. A. Oliehoek, and L. P. Kaelbling. Heuristic search of multiagent inﬂuence space. In Proc. of the International Conference on Autonomous Agents and Multiagent Systems, pages 973–981, 2012. [42] S. J. Witwicki. Abstracting Inﬂuences for Eﬃcient Multiagent Coordination Under Uncertainty. PhD thesis, University of Michigan, 2011. [43] S. J. Witwicki and E. H. Durfee. Inﬂuence-based policy abstraction for weakly-coupled Dec-POMDPs. In Proc. of the International Conference on Automated Planning and Scheduling, pages 185–192, 2010. [44] S. J. Witwicki and E. H. Durfee. Towards a unifying characterization for quantifying weak coupling in Dec-POMDPs. In Proc. of the International Conference on Autonomous Agents and Multiagent Systems, pages 29–36, 2011. [45] S. J. Witwicki, F. S. Melo, J. C. Fern´andez, and M. T. J. Spaan. A ﬂexible approach to modeling unpredictable events in MDPs. In Proc. of the International Conference on Automated Planning and Scheduling, pages 260–268, 2013. [46] F. Wu, S. Zilberstein, and X. Chen. Trial-based dynamic programming for multi-agent planning. In Proc. of the AAAI Conference on Artiﬁcial Intelligence, pages 908–914, 2010. [47] F. Wu, S. Zilberstein, and N. R. Jennings. Monte-Carlo expectation maximization for decentralized POMDPs. In Proc. of the International Joint Conference on Artiﬁcial Intelligence, pages 397–403, 2013. [48] Z. Yin and M. Tambe. Continuous time planning for multiagent teams with temporal constraints. In Proc. of the International Joint Conference on Artiﬁcial Intelligence, 2011."
+    },
+    {
+      "heading": "APPENDIX",
+      "text": "A."
+    },
+    {
+      "heading": "PROOFS",
+      "text": "Lemma 1. Let πt:h−1 c be a (h −t)-steps-to-go policy. Let ν ∈V and νIO ∈VIO be the vectors induced by πt:h−1 c under regular MPOMDP back-projections (for some I→c), and under IO back-projections. Then ∀xtc max Dt+1 c ν(⟨xt c,Dt+1 c ⟩) ≤νIO(xt c). Proof. The proof is via induction. The base case is for the last stage t = h −1, in which case the vectors only consist of the immediate reward: max Dt+1 c ν(⟨xt c,Dt+1 c ⟩) = max Dt+1 c Rat(xt c) = Rat(xt c) = νIO(xt c), where at is the joint action speciﬁed by πh−1:h−1 c , thus proving the base case. The induction step follows. Induction Hypothesis: Suppose that, given that ν ∈V and νIO ∈VIO are vectors for the same policy πt+1:h−1 c , for all xt+1 c max Dt+2 c ν(⟨xt+1 c ,Dt+2 c ⟩) ≤νIO(xt+1 c ) (15) holds. To prove: Given that ν ∈V and νIO ∈VIO are vectors for the same policy πt:h−1 c , for all xt c max Dt+1 c ν(⟨xt c,Dt+1 c ⟩) ≤νIO(xt c). (16) Proof: We ﬁrst deﬁne the vectors from the l.h.s. Let at denote the ﬁrst joint action speciﬁed by πt:h−1 c . Then we can write ν(⟨xt c,Dt+1 c ⟩) = ra(xt c) + γ X ot+1 νπ|ao(⟨xt c,Dt+1 c ⟩) (17) where νπ|ao is the back-projection of the vector Γ(πt:h−1 c ,at c,ot+1 c ) that corresponds to πt+1:h−1 c = πt:h−1 c ⇓a,o (the sub-tree of πt:h−1 c given at c,ot+1 c ). That is, by ﬁlling out the deﬁnition of back-projection, we get ν(⟨xt c,Dt+1 c ⟩) = ra(xt c) + γ X ot+1  X xt+1 c ¯O(ot+1|at,xt+1 c ) ¯TI→c(xt+1 c |⟨xt c,Dt+1 c ⟩,at c)[Γ(πt:h−1 c ,at c,ot+1 c )](⟨xt+1 c ,Dt+2 c ⟩)  , where Dt+2 c is speciﬁed as a function of xt c,Dt+1 c ,at,xt+1 c . Clearly, introducing a maximization can not decrease the value, so ν(⟨xt c,Dt+1 c ⟩) ≤ ra(xt c) + γ X ot+1 X xt+1 c ¯O(ot+1|at,xt+1 c ) ¯TI→c(xt+1 c |⟨xt c,Dt+1 c ⟩,at c) max Dt+2 c [Γ(πt:h−1 c ,at c,ot+1 c )](⟨xt+1 c ,Dt+2 c ⟩) {I.H.} ≤ ra(xt c) + γ X ot+1 X xt+1 c ¯O(ot+1|at,xt+1 c ) ¯TI→c(xt+1 c |⟨xt c,Dt+1 c ⟩,at c)[ΓIO(πt:h−1 c ,at c,ot+1 c )](xt+1 c ) (18) where ΓIO(πt:h−1 c ,at c,ot+1 c ) is the IO vector that corresponds to πt+1:h−1 c = πt:h−1 c ⇓a,o . Now we deﬁne the r.h.s. vector: νIO(xt c) = ra(xt c) + γ X ot+1 νIO π|ao(xt c) = ra(xt c) + γ X ot+1  max ut+1 c X xt+1 c O(ot+1 c |ac,xt+1 c ) Pr(xnt+1 c |xt c,ac,ut+1 c ) Pr(xlt+1 c |xt c,ac)[ΓIO(πt:h−1 c ,at c,ot+1 c )](xt+1 c )   (19) We need to show that max Dt+1 c  ra(xt c) + γ X ot+1 X xt+1 c ¯O(ot+1|at,xt+1 c ) ¯TI→c(xt+1 c |⟨xt c,Dt+1 c ⟩,at c)[ΓIO(πt:h−1 c ,at c,ot+1 c )](xt+1 c )   ≤ra(xt c) + γ X ot+1 max ut+1 c X xt+1 c O(ot+1 c |ac,xt+1 c ) Pr(xnt+1 c |xt c,ac,ut+1 c ) Pr(xlt+1 c |xt c,ac)[ΓIO(πt:h−1 c ,at c,ot+1 c )](xt+1 c )"
+    },
+    {
+      "heading": "max",
+      "text": "Dt+1 c"
+    },
+    {
+      "heading": "X",
+      "text": "ot+1"
+    },
+    {
+      "heading": "X",
+      "text": "xt+1 c"
+    },
+    {
+      "heading": "¯O(ot+1|at,xt+1",
+      "text": "c"
+    },
+    {
+      "heading": ") ¯TI→c(xt+1",
+      "text": "c"
+    },
+    {
+      "heading": "c,Dt+1",
+      "text": "c"
+    },
+    {
+      "heading": "c)[ΓIO(πt:h−1",
+      "text": "c"
+    },
+    {
+      "heading": "c,ot+1",
+      "text": "c"
+    },
+    {
+      "heading": ")](xt+1",
+      "text": "c"
+    },
+    {
+      "heading": "X",
+      "text": "ot+1"
+    },
+    {
+      "heading": "max",
+      "text": "ut+1 c"
+    },
+    {
+      "heading": "X",
+      "text": "xt+1 c"
+    },
+    {
+      "heading": "O(ot+1",
+      "text": "c"
+    },
+    {
+      "heading": "|ac,xt+1",
+      "text": "c"
+    },
+    {
+      "heading": ") Pr(xnt+1",
+      "text": "c"
+    },
+    {
+      "heading": "c,ac,ut+1",
+      "text": "c"
+    },
+    {
+      "heading": ") Pr(xlt+1",
+      "text": "c"
+    },
+    {
+      "heading": "c,ac)[ΓIO(πt:h−1",
+      "text": "c"
+    },
+    {
+      "heading": "c,ot+1",
+      "text": "c"
+    },
+    {
+      "heading": ")](xt+1",
+      "text": "c )."
+    },
+    {
+      "heading": "(20)",
+      "text": "To show this is the case, we start with the l.h.s.:"
+    },
+    {
+      "heading": "max",
+      "text": "Dt+1 c"
+    },
+    {
+      "heading": "X",
+      "text": "ot+1"
+    },
+    {
+      "heading": "X",
+      "text": "xt+1 c"
+    },
+    {
+      "heading": "¯O(ot+1|at,xt+1",
+      "text": "c"
+    },
+    {
+      "heading": ") ¯TI→c(xt+1",
+      "text": "c"
+    },
+    {
+      "heading": "c,Dt+1",
+      "text": "c"
+    },
+    {
+      "heading": "c)[ΓIO(πt:h−1",
+      "text": "c"
+    },
+    {
+      "heading": "c,ot+1",
+      "text": "c"
+    },
+    {
+      "heading": ")](xt+1",
+      "text": "c"
+    },
+    {
+      "heading": "= max",
+      "text": "Dt+1 c"
+    },
+    {
+      "heading": "X",
+      "text": "ot+1"
+    },
+    {
+      "heading": "X",
+      "text": "xt+1 c"
+    },
+    {
+      "heading": "¯O(ot+1|at,xt+1",
+      "text": "c"
+    },
+    {
+      "heading": "X",
+      "text": "ut+1 c"
+    },
+    {
+      "heading": "Pr(xnt+1",
+      "text": "i"
+    },
+    {
+      "heading": "c,ut+1",
+      "text": "c"
+    },
+    {
+      "heading": ")I(ut+1",
+      "text": "c"
+    },
+    {
+      "heading": "|Dt+1",
+      "text": "c"
+    },
+    {
+      "heading": "Pr(xlt+1",
+      "text": "c"
+    },
+    {
+      "heading": "c)[ΓIO(πt:h−1",
+      "text": "c"
+    },
+    {
+      "heading": "c,ot+1",
+      "text": "c"
+    },
+    {
+      "heading": ")](xt+1",
+      "text": "c"
+    },
+    {
+      "heading": "= max",
+      "text": "Dt+1 c"
+    },
+    {
+      "heading": "X",
+      "text": "ot+1"
+    },
+    {
+      "heading": "X",
+      "text": "ut+1 c"
+    },
+    {
+      "heading": "I(ut+1",
+      "text": "c"
+    },
+    {
+      "heading": "|Dt+1",
+      "text": "c"
+    },
+    {
+      "heading": "X",
+      "text": "xt+1 c"
+    },
+    {
+      "heading": "¯O(ot+1|at,xt+1",
+      "text": "c"
+    },
+    {
+      "heading": ") Pr(xnt+1",
+      "text": "i"
+    },
+    {
+      "heading": "c,ut+1",
+      "text": "c"
+    },
+    {
+      "heading": ") Pr(xlt+1",
+      "text": "c"
+    },
+    {
+      "heading": "c)[ΓIO(πt:h−1",
+      "text": "c"
+    },
+    {
+      "heading": "c,ot+1",
+      "text": "c"
+    },
+    {
+      "heading": ")](xt+1",
+      "text": "c"
+    },
+    {
+      "heading": "= max",
+      "text": "Dt+1 c"
+    },
+    {
+      "heading": "X",
+      "text": "ot+1"
+    },
+    {
+      "heading": "X",
+      "text": "ut+1 c"
+    },
+    {
+      "heading": "I(ut+1",
+      "text": "c"
+    },
+    {
+      "heading": "|Dt+1",
+      "text": "c"
+    },
+    {
+      "heading": "X",
+      "text": "xt+1 c"
+    },
+    {
+      "heading": "¯O(ot+1|at,xt+1",
+      "text": "c"
+    },
+    {
+      "heading": ") Pr(xnt+1",
+      "text": "i"
+    },
+    {
+      "heading": "c,ut+1",
+      "text": "c"
+    },
+    {
+      "heading": ") Pr(xlt+1",
+      "text": "c"
+    },
+    {
+      "heading": "c)[ΓIO(πt:h−1",
+      "text": "c"
+    },
+    {
+      "heading": "c,ot+1",
+      "text": "c"
+    },
+    {
+      "heading": ")](xt+1",
+      "text": "c"
+    },
+    {
+      "heading": "",
+      "text": "≤{max. of a function is greater than its expectation:}"
+    },
+    {
+      "heading": "max",
+      "text": "Dt+1 c"
+    },
+    {
+      "heading": "X",
+      "text": "ot+1"
+    },
+    {
+      "heading": "max",
+      "text": "ut+1 c"
+    },
+    {
+      "heading": "X",
+      "text": "xt+1 c"
+    },
+    {
+      "heading": "¯O(ot+1|at,xt+1",
+      "text": "c"
+    },
+    {
+      "heading": ") Pr(xnt+1",
+      "text": "i"
+    },
+    {
+      "heading": "c,ut+1",
+      "text": "c"
+    },
+    {
+      "heading": ") Pr(xlt+1",
+      "text": "c"
+    },
+    {
+      "heading": "c)[ΓIO(πt:h−1",
+      "text": "c"
+    },
+    {
+      "heading": "c,ot+1",
+      "text": "c"
+    },
+    {
+      "heading": ")](xt+1",
+      "text": "c"
+    },
+    {
+      "heading": "={no dependence on Dt+1",
+      "text": "c"
+    },
+    {
+      "heading": "X",
+      "text": "ot+1"
+    },
+    {
+      "heading": "max",
+      "text": "ut+1 c"
+    },
+    {
+      "heading": "X",
+      "text": "xt+1 c"
+    },
+    {
+      "heading": "¯O(ot+1|at,xt+1",
+      "text": "c"
+    },
+    {
+      "heading": ") Pr(xnt+1",
+      "text": "i"
+    },
+    {
+      "heading": "c,ut+1",
+      "text": "c"
+    },
+    {
+      "heading": ") Pr(xlt+1",
+      "text": "c"
+    },
+    {
+      "heading": "c)[ΓIO(πt:h−1",
+      "text": "c"
+    },
+    {
+      "heading": "c,ot+1",
+      "text": "c"
+    },
+    {
+      "heading": ")](xt+1",
+      "text": "c"
+    },
+    {
+      "heading": ")",
+      "text": "which is the r.h.s. of (20), the inequality the we needed to demonstrate, thereby ﬁnishing the proof."
+    }
+  ]
+}

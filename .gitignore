@@ -1,0 +1,21 @@
+# secrets (never upload)
+.env
+*.env
+
+# virtual environment and caches
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# large generated data (rebuilt by the scripts)
+data/raw/
+data/index/
+data/chunks/
+results/cache/
+
+# editor and OS files
+.vscode/
+.DS_Store
+Thumbs.db

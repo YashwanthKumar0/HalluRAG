@@ -1,0 +1,216 @@
+{
+  "paper_id": "1304.2367",
+  "title": "Utility-Based Control for Computer Vision",
+  "abstract": "Several key issues arise in implementing computer vision recognition of world objects in terms of Bayesian networks.  Computational efficiency is a driving force.  Perceptual networks are very deep, typically fifteen levels of structure.  Images are wide, e.g., an unspecified-number of edges may appear anywhere in an image 512 x 512 pixels or larger.  For efficiency, we dynamically instantiate hypotheses of observed objects.  The network is not fixed, but is created incrementally at runtime.  Generation of hypotheses of world objects and indexing of models for recognition are important, but they are not considered here [4,11].  This work is aimed at near-term implementation with parallel computation in a radar surveillance system, ADRIES [5, 15], and a system for industrial part recognition, SUCCESSOR [2].  For many applications, vision must be faster to be practical and so efficiently controlling the machine vision process is critical.  Perceptual operators may scan megapixels and may require minutes of computation time.  It is necessary to avoid unnecessary sensor actions and computation.  Parallel computation is available at several levels of processor capability.  The potential for parallel, distributed computation for high-level vision means distributing non-homogeneous computations. This paper addresses the problem of task control in machine vision systems based on Bayesian probability models.  We separate control and inference to extend the previous work [3] to maximize utility instead of probability.  Maximizing utility allows adopting perceptual strategies for efficient information gathering with sensors and analysis of sensor data.  Results of controlling machine vision via utility to recognize military situations are presented in this paper.  Future work extends this to industrial part recognition for SUCCESSOR.",
+  "categories": "cs.CV cs.AI cs.SY eess.SY",
+  "sections": [
+    {
+      "heading": "Utility-Based Control for Computer Vision",
+      "text": "Tod S. Levitt*, Thomas 0. Binford**, Gil J. Ettinger*, and Patrice Gelband* *Advanced Decision Systems, Mountain View, California **Stanford University, Stanford, California 1. INTRODUCTION Several key issues arise in implementing recognition in terms of Bayesian networks. Com- . putational effiCiency is a driving force. Perceptual networks are very deep, typically fifteen levels of structure. Images are very wide, e.g. an unspecified number of edges may appear anywhere in an image 512 x 512 or larger. For efficiency, we dynamically instantiate hypotheses of observed objects. The network is not fixed, it is only partially instantiated. Hypothesis generation and indexing are important, but they are not considered here [Nevatia 73}, [Ettinger 88}. This work is aimed at near-term implementation with parallel computation in a radar surveillance system, ADRIES [Levitt 88], (Franklin 88] and a system for industrial part recognition, SUCCESSOR [Bin­ ford 88]. For many applications, VlBion must be !aster to be practical and so efficiently controlling the machine vision process is critical. Perceptual operators may scan megapixels and may require minutes of computation time. It is necessary to avoid unnecessary sensor actions and computa­ tion. Parallel computation is available at several levels of processor capability. The potential for parallel, distributed computation for high-level vision means distributing non-homogeneous compu­ tations. This paper addresses the problem of control in machine vision systems based on Bayesian probability models. We separate control and inference to extend the previous work [Binford 87] to maximize utility instead of probability. Maximizing utility allows adopting perceptual strategies for efficient information gathering with sensors and analysis of sensor data. Results of controlling machine vision via utility to recognize military situations are presented in this paper. Future work extends this to industrial part recognition for SUCCESSOR. 2. BAYESIAN NETWORK FOR EVIDENTIAL ACCRUAL The relationship between models, hypotheses, and decisions is pictured in Figute 2-1. Models represent physical objects in the world, . suÞh as military units, formations, industrial parts, Figure 2-1: Model-Hypothesis-Decision Relationships"
+    },
+    {
+      "heading": "245",
+      "text": "components of parts, and attributes such as color, reflectivity, etc. As such, we view our models as causal; i.e., a physical object is viewed as \"causing\" its component sub-parts. Object models are physical models; their geometry is represented··.by part/whole graphs and by interlocking taxonomic graphs. Figure 2-2 shows two part-of slices of the (taxonomic) is-a hierarchy for a model of a military brigade of the evil empire of Mordor. The part-of hierarchy corresponds to (physical) military sub-units. The is-a hierarchy is obtained by taking the common set of unit type and formation constraints for military units that can be confused based on uncer­ tain observations. For example, if we are too far away to distinguish steam engines from cata­ pults, we might still recognize them as vehicles, and be uncertain as to whether we are observing a Catapult Battalion or a Steam Engine Team. For military units, the models of military organiza­ tion predict the existence and location of other sub-units, given the observation of another. In optical part recognition for manufacturing, we represent objects as part-of hierarchies based on generalized cylinder volume primitives. Object models are recursively broken up into joints composed of parts; those parts may in turn be broken into sub-joints and sub-parts, or they may be primitive. Joints are relationships between parts, incorporating observable effects of join­ ing parts. Such a hierarchy forms a directed acyclic graph (DAG), where nodes are parts or rela­ tions and arcs indicate part-of relationships. Generalized cylinders (GCs) are defined by a cross sec­ tion swept along a space curve, the axis, under a sweeping transformation [Ponce 88]. Compound object models are DAGS of primitives represented in a simple modelling language. Models also include material modeling of optical properties, i.e., refl.ectives, specularities, and color [Healey 87, 88]. Figure 2-3a shows an elbow without threads. Figure 2-3b shows the line drawing of the elbow without hidden line suppression to show its subparts. Figure 2-2: Brigade Model Figure 2-3: a. Elbow without Threads b. Line Drawing of Elbow without Threads"
+    },
+    {
+      "heading": "I",
+      "text": "J."
+    },
+    {
+      "heading": "I",
+      "text": "At each node of the Bayes net, there is a probability distribution over the set of mutually exclusive and exhaustive possible interpretations of the visual evidence accrued to that level in the hierarchy. A node is a set of hypotheses, e.g., catapult-battalion vs. task-force vs. non-military­ unit, or t-joint versus elbow-joint versus non-joint. Although they do not have to be simuitane­ ously instantiated, the possible links between nodes are hard-wired, a priori, by the models of objects and relationships, and the criteria for node instantiation that determine which pieces of evi­ dence can generate conflicting hypotheses. Each alternative hypothesis at a node contributes some probability to the truth of an alternative hypothesis at a parent node (e.g., the part supports the existence of the whole) and also contributes to the truth of supporting children. When new evi­ dence appears at a node, it is assimilated and appropriate versions of that evidence are propagated along all other links entering or exiting the node. We use the propagation algorithms of Pearl [Pearl 86], [Binford 87]. · As we dynamically create the Baye-s net at runtime, node instantiation is guided by the a priori models of objects, the evidence of their components, and their relationships. System control alternates between examination of the instantiated Bayes nodes, comparing against the models, and choosing what actions to take to grow the net, which is equivalent to seeing more structure in the world. Thus, inference proceeds by choosing· actions from the model space that create new nodes and arcs in the Bayes net. All possible chains of inference that the system can perform are specified a priori in the model-base. This feature clearly distinguishes inference from control. Con­ trol chooses actions and allocates them over available processors, and returns results to the infer­ ence. Inference uses the existing Bayes net, the current results of actions (i.e., the collected evi­ dence) generates Bayes nodes and arcs, propagates probabilities over the net, and accumulates the selectable actions for examination by control. In this approach, it is impossible for the system to reason circularly, as all instantiated chains of inference must be supported by evidence in a manner consistent with the model-base. The prioritization and selection of actions _can be viewed as a decision-making procedure. By representing the selection of actions at a single Bayes-node as a single decision, we create an influence diagram [Shachter 86] with the property that severing any decision node from the diagram leaves the Bayes-net intact. Figure 2-4 illustrates this design. This allows us to construct control algorithms over the influence diagram where evidence accrual in the Bayes-net, and deci­ sions of actions to execute, appear as modular operations. 3. UTILITY FOR EVIDENCE-GATHERING ACTIONS Our approach to selecting actions by utility theory is to compute the estimated value and cost of each action, then maximize value constrained by a bound on the total cost. We define cost o£ an action as the average processing time for the action. If the action is an algorithm that can be performed on different processors with radically di.ff'erent computation times, we can model this as two different actions. OICISIONS PROCESSING 4CT70N$ BAYES N£1' Figure 2-4: Separable Influence Diagram 247 The computation of value is performed hierarchically over the Bayes net, where hierarchy is the hierarchy inherent in the model space. That is, we view computing the value of an action, A , at the child-hypothesis, H\", as the increment in evidential value achieved at the parånt hypothesis, P. We define the value, V, as V (Child, Action)= V (H,,A) = I; I p(Parent IHbA)- p(Parent IH,) I· V(Parent) Parents Thus, we can begin at the top level of the model hierarchy and assign values to recognizing, for example, the various military units or industrial parts. We then, recursively compute ·the value at each child, or sub-part, down the model hierarchy. In the instantiated Bayes-net, this computation is proportional to the number of instantiated levels in the hierarchy. For example, in trying to confirm or deny the presence of a task force, we can assign a value of .8 to H1 = task force, .1 to H2 = catapult battalion and .1 ·to H3 = other. These are the objects in the goal Bayes node. The actions include \"search for sister sub-unit\", \"get closer observation of vehicle types\", and \"adjust match of formation based on adaptation to underlying terrain\". If we have a set of child hypotheses, H\", at Bayes-node N, then the value of taking action A at node N is defined as V (N,A) =I; V (H,,A) \" If action A has cost tA, we maximize expected value I; X..t V(N,A) (N,A) subject to the constraint that total cost is bounded by T: where"
+    },
+    {
+      "heading": "{ 1 if we perform A",
+      "text": "X..t = 0 if we do not perform A and T is the maximum allowable processing time. For any fixed T, we produce an equivalence class of plans of actions to be performed, and the results of executing these plans are recognized objects with probabilities. We vary T . to obtain the desired level of performance, i.e., we generate sets of plans for each value ofT. We typically choose the minimum T for a desired probability of recognition. There is an implicit assumption in this approach that all executable actions are represented in the model space a priori, and that values are calculated to account for continuous ranges of values for individual pieces of evidence. For example, executing a procedure to infer the curvature of a part may depend upon hypothesizing and testing against possible curvatures. We use the expected value of a quasi-invariant measure given its observation as in [Binford 87]. We then use an integer optimization procedure to select over the possible sets of actions exe­ cutaole in the allowed time. The required algorithm for maximizing utility must solve the classic \"knapsack\" problem. The knapsack problem is to maximize E V; Z; j subject to the constraints 6z; t; ::; T and z; = 0 or 1. • The Z; are evidence gathering actions, V; is the value of a given action, and t; is the time to per­ form the action. So the problem is to maximize value by choosing which actions to perform (corresponding to z; = 1) and which not to perform (corresponding to z; = 0) while staying within the time limit. 248"
+    },
+    {
+      "heading": "I",
+      "text": "I."
+    },
+    {
+      "heading": "I",
+      "text": "The knapsack problem is an NP hard problem (Garey 79]. Because we expect to be dealing with on the order of 100 actions, it is infeasible to solve the problem exactly. Therefore, we use an algorithm that finds an approximate solution. Specify the desired accuracy E, and it finds a solu- tion satisfying (P' p5 P). < E, where P' is the total value of the optimal solution. The algorithm has time complexity 0 {NlnN) + 0 [ [ ! ]2•N ] and space complexity O(N) + 0 [ [ ! ]3] where N is the number of actions. We now return to computing p (Parent !Child, Action). In general, the increase in belief in the parent depends on the results of computations performed in the action, which can, in turn, depend on many other results of processing at other nodes corresponding to sub- and super-hypotheses. We apply Bayes rule."
+    },
+    {
+      "heading": "(P",
+      "text": "'child A t . )"
+    },
+    {
+      "heading": "_ p (Child, Action !Parent) p (Parent)",
+      "text": "p arent , c 1on - (Ch'ld A . ) p 1 , ctlon and note that p (Parent) is known at runtime. When a Bayes node is already instantiated, and the p (Child, Action) can be interpreted as the accuracy with which the results of the action can be measured, given the state of the child. For example, if the child is a boundary of a generalized cylinder of the parent and the action is a curvature measurement, then the joint probability can determine how accurately the curvature can be measured, given the pixels observed on the boun­ dary. Finally, the term p{Child, Action !Parent) is defined as"
+    },
+    {
+      "heading": "J",
+      "text": "p(Child, Outcome !Parent) OUt.cOmH of KtiOII. where p (Child, Outcome !Parent) is computed and stored a priori. For example, if the child is a pair of generalized cylinders, the action is an angular measurement between them, and the parent is a joint with known angular measure; then the above formula specifies the probability we would observe a given outcome (angle) given the true (model) angle. See (Binford 87] for an example of such a computation. Now if a higher level Bayes node, e.g., a. generalized cylinder, is not yet instantiated, but we wish to compute the value of actions at an instantiated lower level node, e.g., an observed edge of a generalized cylinder, then the probability, p (generalized cylinder), must be estimated a priori for the recursive computation of value at the observed· edge node. We take these priors to be the t_ask­ based likelihood that given objects are present in a scenario. For example, in an assembly line application, based on the current manufacturing task, we have an a priori notion of what parts to expect on the line. Control in the influence diagram is effected by the top-level loop of: execute actions, accrue probabilities, compute values, maximize utility, and select actions. A version of this algorithm in terms of the Bayes-net is given in Figure 3-1. Execution of actions can occur on multiple machines in a distributed environment. Results are summarized and returned asynchronously to the Bayes net. We have structured the model space, and therefore the Bayes net, such that the assumptions of Pearl's algorithm (Pearl 86] are fulfilled. This allows asynchronous updating and propagation of probabilities, throughout the net. Because no decision nodes are between Bayes nodes, Pearl's algorithm applies over the subsets of the influence diagram that are connected Bayes-nets. Note that this structuring of the influence diagram, see Figure 2-4, was necessary to permit a control structure in which probability accrual, and decision making are separable operations."
+    },
+    {
+      "heading": "249",
+      "text": ". ;1. Until ((time exceeded or (termination condition achieved)) For each instantiated Bayes node Get list of possible actions from node Evaluate value of each action End for Until (all processors allocated or all actions selected) Maximize expected valqe constrajJ:led by total processing timä Allocate selected actions over available processors End Until Until ((a node's probability ratio exceed's threshold) or (all k actions return values)) propagate evidential returns over Bayes net update values at node End Until End Until Figure 3-1: Control Algorithm 4.EXAMPLE The following example presents the use of utility-based control to drive the recognition of military units from aerial imagery. The aerial imagery used is assumed to be relatively low resolu­ tion so that individual vehicles are difficult to identify due to their small size and a high false alarm rate. As a result additional contexual forms of evidence are used to recognize the military forces. The acquired evidence is matched against known military force models in order to deter­ . mine its support. The force models resident in the system are shown in Figure 2-2. The recogni­ tion system normally commences processing by generating hypotheses for the coarse models and proceeds by refining them and using them to generate higher-level hypotheses. The Bayes net is then used to group conflicting hypothesis configurations and to propagate beliefs throughout the hypothesis space. · In this example we are attempting to confirm the presence of a Brigade in the boxed region in the upper portion of the map shown in Figure 4-1a. The system is initialized by locating possi­ ble vehicle detections in the available imagery. These detections are then clustered into Company­ size Unit hypotheses based on coarse parameters in the model database such as inter-vehicle dis­ tance, number of vehicles in a unit, and maximum extent of a unit. By initializing the Bayes net with Company-size Units and not individual vehicles we achieve a large reduction in b • I •i\\• óv· ,., I ,_, ' 1·ô- / , __ , GrtMC.. (I G) .... ..... 1:1 0 Figure 4-1: a. Area of Interest b. Initial Hypotheses (Solid Lines) a.nd Actual Ground Truth (Dashed Lines) 250"
+    },
+    {
+      "heading": "I",
+      "text": "a."
+    },
+    {
+      "heading": "I",
+      "text": "combinatorics. The initial cluster units are shown in Figure 4-1b. After initialization the sysùem progresses by performing any of the following actions on the"
+    },
+    {
+      "heading": "appropriate Bayes nodes:",
+      "text": "• Refine a Bayes net hierarchy by using the more detailed force type model description (Refine-type). • Refine a Bayes net hierarchy by using a more detailed formation description (Refine­ formation). • Search for matches among lower-level force hypotheses in order to generate higher-level force hypotheses (Search). • Attach terrain evidence to a Bayes node by examining the support the underlying ·terrain provides for the given force (Terrain-support). • Attach classification evidence to a Bayes leaf node indicating the support . for the given force type obtained from high resolution sensors--an accurate process that is normally expensive to perform (Classification). At each step, the system generates the available actions and computes their utility based on value and cost models . derived from previous system performance."
+    },
+    {
+      "heading": "Optimal actions are then",
+      "text": "selected by maximizing the expected value of the actions that can be executed in a given time step using the knapsack approximation algorithm. Table 4-1 lists the actions selected by the system at each step. The initial Bayes net after generation of Company-size Unit hypotheses is shown in Figure 4-2a. The attached probabilities are the ones obtained from the detection likelihoods and cluster­ ing matches. . After the actions in step 1 were performed, the Bayes net contained refined hypotheses for Team, Task Force Headquarters, and Catapault Battery. These refined hypotheses are shown in Figure 4-2b. The next iteration executed actions supplying terrain and classification support for the four Bayes nodes. The resultant probabilities are shown in Figure 4-3a."
+    },
+    {
+      "heading": "The",
+      "text": "hypotheses with high belief are depicted graphically in Figure 4-3b."
+    },
+    {
+      "heading": "The third iteration step",
+      "text": "searched for matches among the likely hypotheses and generated Task Force and Catapault Bat­ talion hypotheses. These are shown in Figures 4-4a and 4-4b. The fourth step directed the system to match the Task Force and Catapault Battalion hypotheses into Brigade hypotheses. The resul­ tant Bayes net is shown in Figure 4-5 and the locations of the two resultant hypotheses are shown H;\"Jiotheses: Co.pany· sue Unit ... 82226"
+    },
+    {
+      "heading": "KYP•TZ142-Coapany-uze Unit:",
+      "text": "o. 82"
+    },
+    {
+      "heading": ";==>=@:=B=:: g::a i::",
+      "text": "CO 31 IZit l.hit-82220 Hypotheses: Coapeny­ tize"
+    },
+    {
+      "heading": "Unit-",
+      "text": "82220 HYP·T2126-Coapany-sue Unit: 0. SO KYP-T2094-Coapany·t1&e Unit: 0. n"
+    },
+    {
+      "heading": "tize 4it b-!c",
+      "text": "Hypotheses:"
+    },
+    {
+      "heading": "Unit-",
+      "text": "82223"
+    },
+    {
+      "heading": "HYP-TZ116-Coaaanv-Uu Unit:",
+      "text": "0. 5! Hypotheses: Coapany­ •tz•"
+    },
+    {
+      "heading": "Unit-",
+      "text": "82229 Krf}T219S•Coapany-•in Unit: 0. 74"
+    },
+    {
+      "heading": "HTP•TZ210·Coapany·U&e Unit:",
+      "text": "0.55"
+    },
+    {
+      "heading": ",:::;!::f:::!:d'e !!'it: d-:",
+      "text": "b. re HQIC tea -Bl3<M ==-11:1/21 1 ......... .,. II\"•TZ34l·T••= 0.31 lm'•T234Z•TI' ftQ: 0. J1 KYP•T2343•CaUp11Ult llatt.rf 0 l1 111P·f2335-'re•: o 30 lllt•TZ33f•tr KQ: O.JO 11Tr•T23:J1-Catllpwlt tat.tnf· o 3 KTP-TZ33Z•'tl•: 0.30 m-nJJl·TP aq, o JO H'I'P-TêJ:M·C•tapault. !latt.ery KlP•T233li·T••= 0 2t KYP•TZJn •TI' 110. 0 2t reMVTF HOle tBa BZJ•"
+    },
+    {
+      "heading": "EFntnl·-b:tnl",
+      "text": "ltJ'potblan· IIYP·T2313·T••: 0.30 II!P•T%374-Tf !IQ: o. 30 lft'l'•ftUS·C•t..f-lt lat.U!tf· IIYP-T2lt1•T••· 0. 24 IITP·T23M•1! IIQ: 0. 24 HYP·TU5f•C.Upau1t 8Utlry 0 2:4 lllP-T2370-t••: 0 Z1 \"\"·T231t·Tf 110 0 21 M'I'P•TZ372-Catep11Ult httuy 0 21 IIYP•TUTS·T••= 0 11 \"\"•TZ311•tr 110: 0. U Figure 4-2: a. root nodes of the initialized Bayes net TnrNTF HQIC tBa ·BUll Te•l'l? 1t0/Catap.ult !lat.tery-!12321 rtypothnet· HTP-TZll!·T••= 0 21"
+    },
+    {
+      "heading": "tm-T2=7:::t!l:ttD-: 0 27",
+      "text": "Tllm'lf \\Ba BrR"
+    },
+    {
+      "heading": "2",
+      "text": "• \"\" o\":mtap.W.t Jatury-UU! !llP•TZ29G·T••: 0. ll lr!P•1'2291•'ll' IIQ: 0. 31 lft'I'-Ttnt•Cae..p\"\"1t lanny· RYP·T229l·T••: 0 28 HYP-T2294·T!' KQc o. za H'fii•TZZ\"• Cat.,au.lt httl ry IIYP•T2295·T••· 0 21 3:Tt29T·!_t. IIQ 0 27 b. root nodes of the Bayes net after the first step"
+    },
+    {
+      "heading": "251",
+      "text": "a. a."
+    },
+    {
+      "heading": "li·;:u-:::•õ:•p•",
+      "text": ".. é .. ë;, .. ,.,. III'P•'ftUl•Catllp•lt. lat.tary 0 \"Mtl llrJ•ftMO.CaU,•Lt latUry- Q_ 9tt41"
+    },
+    {
+      "heading": "llrl'·'n334•Cau,eu.lt htt.ry o J9tl'f%",
+      "text": "Jl!t•'ft343•C.U,au1t latt.ry 0 Zl II!P•ft341·-r.-- Tl:n·Ol Jni'•1'U41•tt IIU: l. 261·03 m-nnt-THa: z. •-os m-nns-Taaa 1. 111·05 IIW·'n331-'feu· I 111-N IYP•TZ333·Tt 110 Z. 541·06 .,.'ft3Jf•Tr IIQ 1. ZA•M"
+    },
+    {
+      "heading": "ï",
+      "text": "\"'u \"\"\"'mpw« mm .,. ll'f'llotbetln: lBa ·8231:1"
+    },
+    {
+      "heading": "",
+      "text": "Ta•ltr ISO/CatApwlt lattny·IU2l ftypot21••••·"
+    },
+    {
+      "heading": "\"\"-nne-Tau: s ooe-oz",
+      "text": "IIYP•T23lt·'I'P IIJ: S. OOI·OZ Hff·T2320·Ca auLt BattĠġ,;;: 3.131!·0 T...w'W tS.."
+    },
+    {
+      "heading": "",
+      "text": "n•l\"lT KQ caeapeult eatucy-IUZ9 lf9'pottw•••' b."
+    },
+    {
+      "heading": "lottnt",
+      "text": "10 o)j"
+    },
+    {
+      "heading": "l•·T%376",
+      "text": "ln'P-1'2313-Tau 0 t90Ul IID•'ftlA•U' 110: 0 M llP•T!llO·Te•- 0. Q ll'fi'•TUl'f!li·'fe•· 0.34 Dr•TZ,.T•'hu: S. 131•03 lni'•TZ314•'ti'JII: t..lReOl llP•TZlfl•Tr Ill: 3. 4··04 R!P·1'Zl1t•tr Ill 1.121·04"
+    },
+    {
+      "heading": "KII'·TUU ·T",
+      "text": ".. a: 0 9931173 m-T2ZIIl·t••: o u rni'•TZZ90•'fe• 0 t1 \"'·T22t1·TI' BO: 2 97!·02 ll'fi'•T2ZH•Tf !10: S 731•03 11n.nzt1'.-TP IIQ, J_lOI-04 ln'•THtZ-Catllpaalt tattery J_ Otl-0 Ģ::::_us:cac.,aalģ =tury-"
+    },
+    {
+      "heading": "?t-T23J7",
+      "text": "lfP•ftllt-CaUpaalt latUry · I 151·05 I!ITI-nns-cau,.au Jau.ry s ,..._, 11Yf·m1Z-catĤpalt httery- z 1•-o .:::£S-T2334 Figure 4-3: a. root nodes of the_ Bayes net after the second step · b. locations of likely hypotheses after the second step lortsat; co o)l"
+    },
+    {
+      "heading": "Task Fon:eiCatapau! t Badallon-BZ739",
+      "text": "Task Force/Catapault Battalion-B2739 Hypotheses: HYP-T2718-Task Porce: 0.91 HYP-T2722-Catapault Battalion: 0. 47 HYP-T2716-Task rorce: 0.36"
+    },
+    {
+      "heading": "HYP-T2708-Task rorce:",
+      "text": "0.36 HYP-T2724-Catanault Battalion: 0.13 b."
+    },
+    {
+      "heading": "\u0002 ·",
+      "text": "Figure 4-4: a. root node of the Bayes net after the third step b. locations of likely hypotheses after the third step"
+    },
+    {
+      "heading": "252",
+      "text": ".,.. '111l"
+    },
+    {
+      "heading": "I",
+      "text": "a."
+    },
+    {
+      "heading": "I",
+      "text": "Biigad8-83Z30 Br 1qade·B323 0 Kypothean: HYP-T3209-Br1gade: o. 34 HYP-T32ll·Briqade: 0. 34 T<ul<. Force/Catapaul.t Batt,.l.ion-82739 Hypotheses: HYP-*718-Task Foree: 0. 93 !1YP-T2722-Catapault Battalion: 0. SS HYP-T2716·Task Force: 0.42 HYP-T2708-Task rorco:. o. 33 !IYP-T2724-Cataoault Battalion: 0. ll"
+    },
+    {
+      "heading": "Figure 4-5:",
+      "text": "Bayes net after the fourth step in Figures 4-6a and 4-6b. The fifth step attached terrain support to the Brigade hypotheses, a pro­ cess that resulted in the Brigade hypotheses receiving high support (Figure 4-7). As a result the system reported that a Brigade most likely exists in the area (since the two hypotheses conflict, the belief that a Brigade is present is .99) and its exact location is given by the likelier hypothesis."
+    },
+    {
+      "heading": "I occset: {0 o>\\",
+      "text": "b. Bri-'1'3211 Figure 4-6: a. location of first Brigade hypothesis b. location of second Brigade hypothesis"
+    },
+    {
+      "heading": "253",
+      "text": "Step 1 2 3 4 5 Bnqade-832311 Briqade-B3230 Hypotheses' HYP-T321l-Briqade, 0. 57 HYP-T3209-Briaado, o. 42 Task l'orce/Catapault Battalion-82739 11Briqade-TI!RRAIN-l!vidence-B32951 Hypotheses: Hypothesis Support : HYP-T2718-Task rorce: 0. 992639 HTP-T3209-Briaade: 0. 85 HYP-T2722-Catapault Battalion: 0. 95 HYP-T2708-Task Force: 0. 64 HYP-T2716-Task rorce: 0. 28 HYP-T2724-Catanault Battalion: 4 .161!-02"
+    },
+    {
+      "heading": "1Br1qade-TI!RRAIN-I!v1dence-B3Zll11",
+      "text": "Hypothesis Support: HYP-T3211-Br1gade: o. sa Figure 4-7: Bayes net after 'he fifth step Table 4-1: Actions Selected by the System at Each Step Selected Actions (REFINE-TYPE of( <B2226> <B2223> <B2220> <B2229> )) (SEARCH for matches of hypotheses in ( <B2226> <B2223> <B2220> <B2229> )) (TERRAIN-SUPPORT for <B2220>) (TERRAIN-SUPPORT for <B2226>) (TERRAIN-SUPPORT for <B2229>) (TERRAIN-SUPPORT for <B2223>) (CLASSIFICATION-SUPPORT for <B2344>) (TERRAIN-SUPPORT for <B2344>)"
+    },
+    {
+      "heading": "¬CLASSIFICATION-SUPPORT for <B2299>)",
+      "text": "CLASSIFICATION-SUPPORT for <B2380>) (TERRAIN-SUPPORT for <B2299>) (TERRAIN-SUPPORT for <B2380>) (CLASSIFICATION-SUPPORT for <B2321>) (TERRAIN-SUPPORT for <B2321 >) (SEARCH for matches of hypotheses in ( <B2344> <B2321> <B2380> <B2299> )) (SEARCH for matches of hypotheses in ( <B2739> )) (REFINE-FORMATION of <B2739>) (SEARCH for matches of hypotheses in ( <B2321 >)) (TERRAIN-SUPPORT for <B2739>) (TERRAIN-SUPPORT for <B3230>) 254 Value 11522 5761 1125 769 769 217 619 326 445 441 234 232 139 73 2359 1672 1060 20 281 252 Cost 1600 842 820 820 820 820 1320 820 1320 1320 820 820 1320 820 841 832 8100 801 2300 2300"
+    },
+    {
+      "heading": "I",
+      "text": "6. CONCLUSIONS We have developed .a methodology for vision system control based on utility theory applied to model-based Bayesian inference. We have implemented this methodology in ADRIES, a radar surveillance system and are implementing it in SUCCESSOR, a system for computer vision of industrial parts in optical imagery. Many technical innovations were developed including: • Representation of control and inference in a cognitively tractable model promoting clean and efficient system designs. • Separatio.n of decision making from evidence accrual. • Dynamic instantiation of Bayes nets and influence diagrams. • Hierarchical value com.putation achieved by assigning values only at the top model-level. • Handling real world problems. 8. ACKNOWLEDGEMENTS This work was supported by the Advanced Digital Radar Imagery Exploitation Systems (ADRIES) project sponsored by the Defense Advanced Research Projects Agency (DARPA) and the U.S. A.xmy Engineer Topographic Laboratories (USAETL) under U.S. Government Contract No. DACA76-86-C-0010, and by the Knowledge-Based VIsion Techniques (KBV) project sponsored by USAETL and DARPA under U.S. Government Contract No. DACA76-85-C-0005. Thanks are due to Carol Etheridge for document support. 1. REFERENCES (Binford 87] - Binford, T.O., \"Generic Surface Interpretation: Observability Model\", Proceedings of the International Symposium of Robotics Research, 1987. (Binford 88] - BinfordĜ T.O., \"Image Understanding: Intelligent Systems\", Proceedings of the DARPA Image Understanding Workshop, 1988. (Binford 87] - Binford, T.O., Levitt, T.S., and Mann, W .B., \"Bayesian Inference in Model-Based Machine VISion\", Proceedings of the AAAI Uncertainty in Artifidal Intelligence Workshop, Seattle, Washington, July 1987. · [Ettinger 88] - Ettinger, G.J., \"Large Hierarchical Object Recognition Using Libraries of Parameterized Model Sub-parts\", Proeeedings of the Computer Vision and Pattern Recognition Conference, Ann Arbor, Michigan, June 1988. [Franklin 88] - Franklin, J.E., Carmody, C.L., Keller, K., Levitt, T.S., Buteau, B.L., \"Expert Sys­ tem Technology for the Military\", Proceedings of the IEEE, to appear 1988. [Garey 79] - Garey, M.R., and Johnson, D.S., Computers and Intractability: A Guide to the Theory of NP-Oompleteness, W.H. Freeman and Company, San Francisco, California, 1979. [Healey 87] - Healey, G., and Binford, T.O., \"The Role and Use of Color in a General Vision Sys­ tem\", Proceedings of the International Oonferenee on Artificial Intelligence, August 1987. [Healey 88] - Healey, G., and Binford, T.O., \"A Color Metric for Computer Vision\", Proceedings of the DARPA Image Understanding Workshop, 1988. 255 [Levitt 88] - Levitt, T .S., \"Bayesian Inference for Radar Imagery Based Surveillance\", Uncertainty in Artificial Intelligence 2, North-Holland, 1988. [Nevatia 73] - Nevatia, R.K., and Binford, T.O., \"Structured Descriptions of Complex Objects\", Third International Conference on Artificial Intelligence, Stanford, California, 1973. [Pearl 86] - Pearl, J., \"Fusion, Propagation, and Structuring in Bayesian Networks\", Artificial Intelligence, 1986. [Ponce 88] - Ponce, J., and Healey, G., \"Using Generic Geometric and Physical Models for Representing Solids\", Proceedings of the DARPA Image Understanding Workshop, 1988. [Shachter 86] - Shachter, R.D., \"Evaluating Influence Diagrams\", Operations Research, Vol. 34, No. 6, Nov-Dec 1986, pp. 871-882. 256"
+    }
+  ]
+}

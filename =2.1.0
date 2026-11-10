@@ -1,0 +1,11 @@
+Collecting arxiv
+  Downloading arxiv-4.0.2-py3-none-any.whl.metadata (5.9 kB)
+Requirement already satisfied: lxml<7.0,>=6.1.0 in c:\users\yashwanth\appdata\local\programs\python\python313\lib\site-packages (from arxiv) (6.1.2)
+Requirement already satisfied: requests<2.35,>=2.32 in c:\users\yashwanth\appdata\local\programs\python\python313\lib\site-packages (from arxiv) (2.32.5)
+Requirement already satisfied: charset_normalizer<4,>=2 in c:\users\yashwanth\appdata\local\programs\python\python313\lib\site-packages (from requests<2.35,>=2.32->arxiv) (3.4.3)
+Requirement already satisfied: idna<4,>=2.5 in c:\users\yashwanth\appdata\local\programs\python\python313\lib\site-packages (from requests<2.35,>=2.32->arxiv) (3.20)
+Requirement already satisfied: urllib3<3,>=1.21.1 in c:\users\yashwanth\appdata\local\programs\python\python313\lib\site-packages (from requests<2.35,>=2.32->arxiv) (2.5.0)
+Requirement already satisfied: certifi>=2017.4.17 in c:\users\yashwanth\appdata\local\programs\python\python313\lib\site-packages (from requests<2.35,>=2.32->arxiv) (2025.8.3)
+Downloading arxiv-4.0.2-py3-none-any.whl (13 kB)
+Installing collected packages: arxiv
+Successfully installed arxiv-4.0.2

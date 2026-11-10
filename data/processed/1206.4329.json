@@ -1,0 +1,228 @@
+{
+  "paper_id": "1206.4329",
+  "title": "An Improved Gauss-Newtons Method based Back-propagation Algorithm for Fast Convergence",
+  "abstract": "The present work deals with an improved back-propagation algorithm based on Gauss-Newton numerical optimization method for fast convergence. The steepest descent method is used for the back-propagation. The algorithm is tested using various datasets and compared with the steepest descent back-propagation algorithm. In the system, optimization is carried out using multilayer neural network. The efficacy of the proposed method is observed during the training period as it converges quickly for the dataset used in test. The requirement of memory for computing the steps of algorithm is also analyzed.",
+  "categories": "cs.AI cs.NA math.NA",
+  "sections": [
+    {
+      "heading": "ABSTRACT",
+      "text": "The present work deals with an improved back-propagation algorithm based on Gauss-Newton numerical optimization method for fast convergence. The steepest descent method is used for the back-propagation. The algorithm is tested using various datasets and compared with the steepest descent back- propagation algorithm. In the system, optimization is carried out using multilayer neural network. The efficacy of the proposed method is observed during the training period as it converges quickly for the dataset used in test. The requirement of memory for computing the steps of algorithm is also analyzed."
+    },
+    {
+      "heading": "Keywords",
+      "text": "Back-propagation, Neural Network, Numerical optimization, Fast convergence algorithm."
+    },
+    {
+      "heading": "1. INTRODUCTION",
+      "text": "In neural network, training the learning algorithms plays quite important role in the process. Throughout the process, the learning algorithm is used to adjust the weight, bias and other input parameters in such a manner that the model is able to count its best fit with the environment in a minimum amount of time. Back-propagation in multilayer neural network is one of the supervised training procedure and variety of approaches are developed over the last decade for its applicability to a numerous number of application[12][13]. The steepest descent back-propagation (SDBP) is used in several applications despite its asymptotic slow convergence rate [1][3]. The algorithm is also known as a gradient method. The slow convergence rate of steepest descent algorithm encourages many ides to be developed for faster convergence rate in training a multilayer neural network. The methods that are developed may be divided into two categories. In first category of work the parameters are updated heuristically[2][4][5][6]. The momentum based back- propagation is one of the methods under this category where the momentum factor is fixed, being it always less than one. Another type of back-propagation under this category is variable learning back-propagation where the momentum and learning rates are adjusted in every iteration. In this category the parameters are updated in an ad-hoc manner. In some cases the heuristically modification  to the parameters is required to converge the back-propagation algorithm quickly, but the algorithms under this category  update several parameters, while only learning rate is related to the steepest descent back-propagation.  Another problem of this type of approach is that the values of those parameters are problem oriented. Numerical procedures are used in another categories to optimize the steepest descent back-propagation. The method uses various optimization techniques among which Levenberg-Marquardt back-propagation algorithm and conjugate back-propagation algorithm are used in various applications. The approach to  second category is quite popular and widely applied in various applications[7]. The conjugate back-propagation method is also known as quasi- newton method. Besides  efficiency of quasi-newton methods, the algorithm suffers from storage and computational requirements, increasing more with complexity of neural network design. The other most popular numerical optimization method is Levenberg-Marquardt algorithm [8][9][10][11][15]. The algorithms for least square estimation of non-linear parameters work on the basis of two approaches. First approach is Taylor series approach where modification to all parameters are performed on each iteration. Second approach is a gradient method or steepest descent method. The Levenberg-Marquardt algorithm provides an interpolation between the two approaches, and the algorithm  depends on the initial non-linear input parameters. This technique is used to calculate the damping factor, and the whole algorithm basically depends on the value of initial damping , damping increment, damping decrement  and minimum damping. The initial values of those factors are responsible to converge the algorithm more quickly or slowly. The stability and rate of convergence of this algorithm is affected by the damping parameters. This algorithmic process is a problem for a system where the behavior of the environment changes dynamically. The algorithm is also not a memory efficient in case of training a large multilayer neural network. The algorithms for least square estimation of non-linear parameters usually update the parameters in sequential and batch mode. In case of sequential parameters, updation of weight , bias and other parameters is modified on each representation of  input/output pair. In batch mode operation, input parameters are updated on each operation. The proposed algorithm is a developed method based on the Gauss-Newton numerical optimization technique. It  resulting a quick convergence with stability in case of multilayer neural network learning. The proposed algorithm is also analyzed for its memory requirement during the time of training on datasets. Convergence criteria is  another important issue for neural network training algorithm. Convergence criteria used not only terminate the algorithm but also help to compare with other algorithm. The proposed method converges according to the following criteria: 1. MSE (Mean Square Error): The algorithm stops when it reaches the pre-specified threshold value. International Journal of Computer Applications (0975 – 8887) Volume 39– No.8, February 2012 2 2. Correct Classification: The main idea behind the convergence criteria is that if any neural network training algorithm correctly classifies some input, then it is possible to calculate the percentage of correctly classified input, and the same is increased or decreased according to the ability of training algorithm. The proposed algorithm is designed with one pre-defined correct classification threshold value."
+    },
+    {
+      "heading": "2. PROPOSED METHOD",
+      "text": "The algorithm to train a feed forward network with back- propagation method is required to discuss  the proposed method . The discussion and analysis on normal back- propagation method and proposed method are studied with the 3-3-1 designed feed-forward neural network(Fig. 1.). Fig.1. 3-3-1 design of feed-forward Neural network. In case of multilayer networks as depicted in the Fig.1 the net input of an unit u of layer n+1 is"
+    },
+    {
+      "heading": "",
+      "text": ""
+    },
+    {
+      "heading": "",
+      "text": ""
+    },
+    {
+      "heading": "N",
+      "text": "1 + n n n j= + n + n"
+    },
+    {
+      "heading": "",
+      "text": "1 1 1 .........(1) where  j = 1, 2,3,......., m N= net input W = Input weight B= bias of a neuron a = output from a neuron So the final output form the layer is calculated as: "
+    },
+    {
+      "heading": "",
+      "text": "  "
+    },
+    {
+      "heading": "2",
+      "text": "...... 1 1"
+    },
+    {
+      "heading": "a",
+      "text": "+ n 1 + n + n The transfer function is denoted as f(n). Now the algorithm is started with previously specified pattern considered as: {(p1,t1),(p2,t2),(p3,t3)............(pn, tn)} 'p' being the  input pattern and 't' the target associated with each pattern. The performance index considered here is the mean of squared error or M(x). So the performance index is calculated using following formula:"
+    },
+    {
+      "heading": "",
+      "text": "  "
+    },
+    {
+      "heading": "3",
+      "text": "1 j j m j= T j j"
+    },
+    {
+      "heading": "",
+      "text": "where 'x' is represented as a vector of network weight and bias. Now if it is considered that q(x) = (tj - aj ) then Equ.(3) can be written as:"
+    },
+    {
+      "heading": "",
+      "text": "  "
+    },
+    {
+      "heading": "4",
+      "text": ". 1"
+    },
+    {
+      "heading": "M",
+      "text": "T m"
+    },
+    {
+      "heading": "j=",
+      "text": "So, the weight and bias are calculated as follows          "
+    },
+    {
+      "heading": "ˆ",
+      "text": ". 1 n j u, n j u, + n j u,"
+    },
+    {
+      "heading": "",
+      "text": "and          "
+    },
+    {
+      "heading": "ˆ",
+      "text": ". 1 n j u, n j u, + n j u,"
+    },
+    {
+      "heading": "",
+      "text": "Now, if             n j u, n j n = j n j u, n j u,"
+    },
+    {
+      "heading": "N",
+      "text": "1 1 1 .  "
+    },
+    {
+      "heading": "",
+      "text": "then      "
+    },
+    {
+      "heading": "dN",
+      "text": "n j u, n u 1 n n j u, n u  If it is considered that  n n u"
+    },
+    {
+      "heading": "d ˆ",
+      "text": "then Equ.(5) and (6) can be written as:        "
+    },
+    {
+      "heading": "7",
+      "text": ". 1 1 T n n n j u, + n j u,"
+    },
+    {
+      "heading": "W",
+      "text": ""
+    },
+    {
+      "heading": "",
+      "text": "and      "
+    },
+    {
+      "heading": "8",
+      "text": ". 1 n n j u, + n j u,"
+    },
+    {
+      "heading": "",
+      "text": "Here α is a stable learning rate. Sn is the sensitivity at layer 'n' calculated from sensitivity at the layer (n+1). The sensitivity of the layer is calculated in backward i.e. the calculation of sensitivity is started from the last layer and ends at first layer of network. The sensitivity of the network is calculated as follows :"
+    },
+    {
+      "heading": "",
+      "text": " "
+    },
+    {
+      "heading": "",
+      "text": " "
+    },
+    {
+      "heading": "9",
+      "text": ". . 1 1 + n T + n n n n"
+    },
+    {
+      "heading": "S",
+      "text": "International Journal of Computer Applications (0975 – 8887) Volume 39– No.8, February 2012 3 The sensitivity of the starting layer is calculated as"
+    },
+    {
+      "heading": "",
+      "text": "10 . 2. j j n n n a t N f = S   where,                        n k n n n n n n n N f N f N f = N f 0 0 .. .......... 0 0 0 0 2 1 and  "
+    },
+    {
+      "heading": "",
+      "text": "dN N f d = N f n n The gradient is the first-order derivative of the mean of square error. The gradient is calculated as follows                dx x M d , dx x M d , dx x M d = x M 2 1 .. from Equ.(4) the gradient is calculated as         11 . 2J . 2 1 x q x = x M dx x dq x q = x M T j m = j j  "
+    },
+    {
+      "heading": "",
+      "text": "where J(x) is the Jacobian matrix and it is written as                                               n k 2 k 1 k n 2 2 2 1 2 n 1 2 1 1 1 dx x dq dx x dq , dx x dq , , , dx x dq dx x dq , dx x dq dx x dq dx x dq , dx x dq = x J ......... . ......... . . . ......... . . . ......... . . ......... ......... On each representation of input parameters the network generates the SM number of error. So,"
+    },
+    {
+      "heading": "",
+      "text": "L n L 2 L L S , , S , s = S .... 1 One error in SL matrix is used to creates one row in the Jacobian matrix. So, two element in row of Jacobian matrix is created for one representation of input parameters to the network. The Hessian matrix is the double derivative of the performance index. It is calculated as follows                                                         n 1 n 2 2 2 1 n 1 2 1 dx x M d , , dx dx x M d , , , , dx x M d , dx dx x M d dx dx x M d , , dx x M d = x M 2 2 2 2 2 2 2 .... .......... ... .......... . . ... .......... . . ... .......... . . ... .......... .... .......... The elements of Hessian matrix r, l are calculated as            12 2v . 2J . . 2 2 2 1 2 x + x J x = x M dx dx x q d x q + dx x dq dx x dq = x M T l r j j m j= l j r j  "
+    },
+    {
+      "heading": "",
+      "text": "if v(x) is too small then   13 2J 2 x J x = x M T  Now according to the Newtons formula  14 . 1 k G H = Δx   where H is the Hessian matrix and Gk is the gradient. So if Equ.(13) and (11) substitute into newtons formula  (Equ. (14)) then the formula is "
+    },
+    {
+      "heading": "",
+      "text": ""
+    },
+    {
+      "heading": "",
+      "text": ""
+    },
+    {
+      "heading": "",
+      "text": " 15 . . . 2J . 2J 1 1 x q x J x J x J = ΔX x q x x J x = ΔX T T T T     The Equ.(15) is the Gauss-Newton method for optimization of performance index. The proposed algorithm includes one adjustment to the weight and bias after every iteration. The adjustment is  computed for each weight and bias of each layer. The adjustment parameter is defined as: International Journal of Computer Applications (0975 – 8887) Volume 39– No.8, February 2012 4"
+    },
+    {
+      "heading": "1",
+      "text": ". The following is the formula to adjust weight and bias      "
+    },
+    {
+      "heading": "1",
+      "text": "1"
+    },
+    {
+      "heading": "W",
+      "text": "n j u, + n j u,"
+    },
+    {
+      "heading": "",
+      "text": "and      "
+    },
+    {
+      "heading": "1",
+      "text": "1"
+    },
+    {
+      "heading": "B",
+      "text": "n j u, + n j u,"
+    },
+    {
+      "heading": "",
+      "text": "The proposed algorithm for fast convergence of back- propagation algorithm thus goes as follows: Begin: [1] Calculate M(x) after all inputs are represented to the neural network using Equ.(3). [2] Calculate the Jacobian matrix J(x) and gradient Gk. [3] Now calculate the ΔX using Equ.(15) and adjust the weight and bias using Equ.(16) and (17). [4] Recompute the performance index and  compare with the performance index calculated in step 1. If the newly calculated performance index is less than the step 1, then check the convergence criteria, and if the convergence is less then the pre-defined threshold value, then stop the algorithm, otherwise goto step 1. The proposed algorithm introduces a new step where the weight is adjusted before each iteration. In some cases it is observed that the proposed algorithm results fast convergence. The requirement of the memory for the whole process of optimization is also minimum. The algorithm is found to behave like normal optimization, if weight adjustment is not performed. It is possible to convert the same algorithm into Levenberg-Marquardt algorithm, if one damping factor is introduced in the calculation of ΔX, and is adjusted according to the requirement of algorithmic optimization criteria."
+    },
+    {
+      "heading": "3. EVALUATION",
+      "text": "The performance of proposed algorithm is evaluated in terms of  percentage of correct classification, mean of square error and the number of iteration required to converge. The algorithm is also analyzed for its memory requirement and  it is compared with the back-propagation algorithm based on steepest descent method."
+    },
+    {
+      "heading": "3.1 Experimental set-up",
+      "text": "In order to test the algorithm, a system is designed and coded in the python programming language.  The experiment is performed on a Pentium-IV core 2 Duo 1.66 GHz. processor based machine  configured with the 512 MB of RAM space. The data set are classified with its own classifier built inside of the main program. The dataset used to test the proposed method are 1. Iris data Set 2. Wine Data Set. The iris data set [16]  consists of 150 number of instances, and each instance consists of 4 numbers of attribute. Attributes are mainly the features of the iris flower and the data set consists of following features of the iris flower a. Sepal length b. Sepal width c. Petal length d. Petal width. On the basis of those features the data set  consists of three classes and they are 1. Iris Setosa 2. Iris Versicolour 3. Iris virginica. Those are the various types of iris flower. The data in the Iris data set are non-linear. The Wine data set [17] consists of 178 instances of data and each data instance consists of 13 number of attributes. Those attributes are the different chemical compound of three types of wine. The chemical composition of the wine is the feature of the wine. The system control flow is depicted in Fig.2. The non-linear input parameters are processed through the classifier and data processing unit is required to finalize the data before training and testing. The data processing unit  prepared the various parameter  is needed to train the neural network, and is connected to the 'anncfg.conf' file. The unit is responsible to design the network according to the setting defined in the file. The type of algorithm is used for analysis  defined in the file. The next part is the “ANN BOX” which is the main unit of the system. The proposed method is implemented in this unit. Fig. 2. The system control-flow diagram. The system stops when any of the previously defined convergence criteria crosses the threshold limit. International Journal of Computer Applications (0975 – 8887) Volume 39– No.8, February 2012 5"
+    },
+    {
+      "heading": "3.2 Experimental result",
+      "text": "The experiment with the new proposed method is performed on the basis of mean square error, percentage of correct classification, memory requirement and number of iterations required to stabilize the calculation. The summary of all observed data and graphs found at the time of experiment is depicted here. Fig. 3. Iris data set training using Steepest Descent back- propagation. Fig. 4. Iris data set training using proposed method. Table 1. Observed convergence parameter for Iris data set training. Sl. No Convergence parameters Steepest Descent Back- propagation (SDBP) Improved Gauss- Newton Method based algorithm 1 Mean of Squared Error (MSE) 2.47E-005 2.47E-005 2 Correct Classification(%) 97.78% 97.78% 3 Memory required(MiB) 25 25.5 4 No. iteration required to stable at high Classification 5 2 The experimental result reflects the fast convergence nature of the Gauss-Newton based proposed method. The requirement of the memory is also low in comparison with the proposed method if the convergence criteria is based on the correct percentage of classification or MSE rate. The steepest descent method  requires five iterations to stabilize the calculation and the required memory at that iteration is 23 to 23.5 MiB. The proposed method is stable on its second iteration and hence the required memory is 19.9 to 20.5 MiB. Fig. 5. Wine data set training based on Steepest Descent back-propagation method. International Journal of Computer Applications (0975 – 8887) Volume 39– No.8, February 2012 6 Fig. 6. Wine data set training with on improved Gauss- Newton based method. Table 2. Observed convergence parameter for Wine data set training. Sl. No Convergence parameters Steepest Descent Back- propagation (SDBP) Improved Gauss- Newton Method based algorithm 1 Mean of Squared Error (MSE) 1.824E-005 1.824E-005 2 Correct Classification(%) 88.54% 98.089% 3 Memory required(MiB) 24.9 25 4 No. iteration required to stable at high Classification 100 2 This experiment shows that the wine data set is much more correctly classified with the proposed method. The proposed algorithm converges and became stable after second iteration, whereas the steepest descent method may take long time. The memory required for steepest descent is 24.9MiB but the proposed method requires only 18 to 19.9MiB of memory if its convergence is strictly based on correct classification or mean of squared error (MSE)."
+    },
+    {
+      "heading": "4. CONCLUSION",
+      "text": "An improved method based on the Gauss-Newton numerical optimization technique is described and the experimental study with two no-liner data set are presented. The experimental result discussed in the above section based on the proposed method and one conventional method, it may be conclude that the  proposed technique is superior in terms of time taken to converge and the memory space, both being reduced to a great extent. Thus the benefit of the present method is established."
+    },
+    {
+      "heading": "5. REFERENCES",
+      "text": "[1] D.E. Rumelhart, G.E. Hinton and R.J. Williams, (1986) “Learning Representation by Back-propagation Errors”, Nature, vol. 323, PP. 533 – 536. [2] R.A. Jacobs, 1988, “Increased rate of convergence Through Learning Rate Application” , Neural Networks, vol. 1, no. 4, pp. 295-308. [3] Bello, M.G. , 1994, “Enhanced training algorithms, and integrated training/architecture selection for multilayer perceptron networks”,IEEE Trans. Neural Netw.,  vol.5., no.6, pp. 989-993. [4] Samad, T., 1990, “Back-propagation improvements based on heuristic arguments”, Proceedings of International Joint Conference on Neural  Networks, Washington, 1, pp. 565-568. [5] Sperduti, A. & Starita, A. , 1993, “Speed up learning and network optimization with Extended Back-propagation”, Neural Networks, 6, pp. 365-383. [6] Van Ooten A. , Nienhuis B, 1992, “Improving the convergence of the back-propagation algorithm”, Neural Networks, 5, pp. 465-471. [7] C. Charalambous, 1992, “Conjugate gradient algorithm for efficent training of neural networks”, IEEE Procedings-G , vol. 139, 3. [8] Levenberg, K., 1944, “A method for the solution of certain problem in least squares”, Quart. Appl. Math., 2, pp.164- 168. [9] Marquardt , D. , 1963, “ An algorithm for least sqare estimation of nonlinear parameters”, SIAM J. Appl. Math., 11, pp. 431-441. [10] M. T. Hagan and M. B. Menhaj, 1994, “Training feedforward networks with the Marquardt algorithm,” IEEE Trans. Neural Netw., vol. 5, no. 6, pp.989–993. [11] G. Lera and M. Pinzolas,  Sep. 2002, “Neighborhood based Levenberg–Marquardt algorithm for neural network training,” IEEE Trans. Neural Netw.,vol. 13, no. 5, pp. 1200–1203. [12] Saman R., Bryan A. T., 2011, “ A new formulation for feed forward Neural Networks”, IEEE Trans. Neural Netw., vol.22, 10, pp. 1588- 1598. International Journal of Computer Applications (0975 – 8887) Volume 39– No.8, February 2012 7 [13] Bogdan M. Wilamowski, Serdar Iplikci, Okyay Kaynak, M. Onder Efe, 2001, “An algorithm for fast convergence in training a Neural Network”, IEEE Proceedings,  pp. 1778-1782. [14] Balakrishnan, K. and Honavar, V. (1992). “Improving convergence of back propagation by handling flat-spots in the output layer”, Proceedings of Second International Conference on Artificial Neural Networks, pp. 1-20. [15] Syed Muhammad Aqil Burney, Tahseen Ahmed Jilani, Cemal Ardil, 2003, “Levenberg-Marquardt Algorithm for Karachi Stock Exchange share rate Forecastin”, World Academy of Science, Engineering & Technology,vol.3,41, pp. 171-177. [16] UCI Machine Learning Repository : Iris Data Set - http://archive.ics.uci.edu/ml/datasets/Iris [17] UCI Machine Learning Repository : Wine Data Set - http://archive.ics.uci.edu/ml/datasets/Wine"
+    }
+  ]
+}

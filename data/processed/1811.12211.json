@@ -1,0 +1,280 @@
+{
+  "paper_id": "1811.12211",
+  "title": "Particle Probability Hypothesis Density Filter based on Pairwise Markov Chains",
+  "abstract": "Most multi-target tracking filters assume that one target and its observation follow a Hidden Markov Chain (HMC) model, but the implicit independence assumption of HMC model is invalid in many practical applications, and a Pairwise Markov Chain (PMC) model is more universally suitable than traditional HMC model. A particle probability hypothesis density filter based on PMC model (PF-PMC-PHD) is proposed for the nonlinear multi-target tracking system. Simulation results show the effectiveness of PF-PMC-PHD filter, and that the tracking performance of PF-PMC-PHD filter is superior to the particle PHD filter based on HMC model in a scenario where we kept the local physical properties of nonlinear and Gaussian HMC models while relaxing their independence assumption.",
+  "categories": "eess.SP cs.AI cs.SY eess.SY",
+  "sections": [
+    {
+      "heading": "Abstract",
+      "text": "Most multi-target tracking filters assume that one target and its observation follow a Hidden Markov Chain (HMC) model, but the implicit independence assumption of HMC model is invalid in many practical applications, and a Pairwise Markov Chain (PMC) model is more universally suitable than traditional HMC model. A particle probability hypothesis density filter based on PMC model (PF-PMC-PHD) is proposed for the nonlinear multi-target tracking system. Simulation results show the effectiveness of  PF- PMC-PHD filter, and that the tracking performance of PF-PMC-PHD filter is superior to the particle PHD filter based on HMC model in a scenario where we kept the local physical properties of nonlinear  and Gaussian HMC models while relaxing their independence assumption."
+    },
+    {
+      "heading": "Keywords",
+      "text": "Pairwise Markov Chain, probability hypothesis density, particle filter, unscented Kalman, multi-target tracking system"
+    },
+    {
+      "heading": "1 Introduction",
+      "text": "Random Finite Set (RFS) theory has been widely used in multi-target tracking field. Unlike traditional solutions based on data association, RFS-based solutions provide a theoretical framework without data association [1,2]. Among RFS based solutions, the Probability Hypothesis Density (PHD) filter propagates the first order moment  of the posterior multi-target density[3], which is now widely applied . RFS based solutions can not get the analytical solution directly, and the implementations mainly based on numerical approximations, such as Gauss Mixture (GM) PHD filter [4,5], and on Sequential Monte Carlo (SMC, i.e. particle filter) methods[6,7]. Most multi-target tracking filters, including the classical PHD filter, assume that the targets and the observations they produce  follow the well known HMC model. HMC model assumes that the state of a given target is a Markov Chain (MC), however, the Markovian and independence assumption implicit in the HMC model may not be invalid in practical applications [8]. In 2000, Pieczynski proposed the PMC model in order to relax the independence assumption of the HMC model [9-11], HMC model is a special PMC model,  and PMC model is more universally suitable than HMC model. In 2013, Petetin and Desbouvries proposed a PHD  filter for targets follow the PMC model(PMC- PHD) [8], and prove that the tracking performance of proposed PMC-PHD filter is better than the “classical” PHD filter based on the HMC model under the relaxed independence assumptions. and the PMC-PHD filter proposed by Petetin only considers the first order information of the target state, neglecting its high order information, and leads to the instability of the target number estimation. In view of this problem, Mahler proposed a Cardinalized Probability Hypothesis Density filter based on PMC model (PMC-CPHD), which is developed from  PMC-PHD filter by propagating cardinality distribution function of the target simultaneously[12]. The GM implementation of PMC-PHD filter proposed by Petetin and Desbouvries is only suitable for the linear Gaussian multi-target tracking system. In this article, A particle implementation of PMC-PHD (PF-PMC-PHD) filter is proposed for the nonlinear multi-target tracking system based on PMC model. The sampling importance density function of the proposed PF-PMC-PHD filter does not contain the latest measurement information, which may lead to problems such as filtering divergence and particle degradation. Simulation result verifies the effectiveness of the PF-PMC-PHD filter, and shows that the performance of  PF-PMC-PHD is better than the particle implementation of the typical HMC-PHD filter (PF-HMC-PHD) in a scenario where we kept the local physical properties of nonlinear  and Gaussian HMC models while relaxing their independence assumption."
+    },
+    {
+      "heading": "2 PHD filter based on PMC model",
+      "text": "2.1 PMC model Let m k ¡ x express the state at time k , and the corresponding observation is q k ¡ y , if the joint probability density function(pdf) of 0: 0: ( , ) k k x y can be factorized as follows: 0: 0: 0 0 1 1 1 1 ( , ) ( , ) ( , , ) k k k i i i i i i i p p p     "
+    },
+    {
+      "heading": "",
+      "text": "x y x y x y x y (1) where 0 0 ( , ) p x y is the state distribution at the initial time, and the following formula  (2) can be true[13]: 1 1 1 1 1 ( , ) ( ), ( , , ) ( ) k k k k k k k k k k k f f f g        x x y x x y x x y y x (2) where 1 ( ) k k f  x x and ( ) k k g y x are the target Markov transition density and the sensor likelihood function. Define target motion model follows the PMC model as:    "
+    },
+    {
+      "heading": "",
+      "text": "1 1 , , , k k k k k     w x y x y (3) where 1, , k w w L are independent zero-mean Gaussian noises, and 11 21 21 22 ( ) T T k k k k k k k E             w w (4) A classical example of Gaussian PMC model can be expressed as[8]： 1 2 1 1 2 1 k k k k k k k k k k                       B F F w H H 1 4 2 4 3 x x y y (5) 2.2 PHD filter based on PMC model RFS-based solutions consider that at time k  targets and measurements are two RFS: 1 { , , } k n X  L x x and 1 { , , } k m Z  L z z , where n and m are random integers， which indicate number of targets and measurements. The measurement associated to a given state ix is noted iy , and define random finite set 1 1 {( , ), ,( , )} k n n X  & L x y x y 。 PHD ( ) v x of random finite set X is the first order moment of multi-target density. Directly  computing ( ) kv x in a PMC seems complicated because kx is not necessarily Markovian; However, we can propagate a joint intensity ( , ) kv x y , and then obtain the PHD ( ) kv x as ( ) ( , )d k k v v"
+    },
+    {
+      "heading": "",
+      "text": "x x y y . Assuming that there is no spawning (if there is spawning the extension is immediate), according to the multi-target Bayesian principle, the joint PHD can be propagated through the following prediction and update formula: | 1 , 1 | 1 1 1 1 1 1 1 1 ( , ) ( ) ( , | , ) ( , ) ( , ) k k S k k k k k k k k k k k k v p f v d d b             "
+    },
+    {
+      "heading": "",
+      "text": "x y x x y x y x y x y x y    (6) , | 1 , | 1 Z , | 1 ( ) ( , ) ( ) ( , ) 1 ( ) ( , ) ( ) ( ) ( , ) k D k k k k D k k k k D k k k p v v p v p v d              "
+    },
+    {
+      "heading": "",
+      "text": "z z x x z y x y x x y z x x z x (7) where , ( ) S k p x is the probability that a target with state x at time 1 k- still exists at time k ; , ( ) D k p x is the probability that a target with state x is detected at time k ; ( , ) kb x y is the joint PHD of the birth targets RFS at time k ； ( ) k  z is the PHD of the clutter measurements RFS at time k ； ( ) z y is the Dirac delta function concentrated at z 。 Finally remember that ( ) ( , ) k k v v d"
+    },
+    {
+      "heading": "",
+      "text": "x x y y，where the integral w.r.t. y can reduce to a sum."
+    },
+    {
+      "heading": "3 PF-PMC-PHD filter",
+      "text": "There are two main methods to implement PHD filter, one is particle implementation and the other is GM implementation. The GM implementation of  PMC- PHD filter proposed by Petetin and Desbouvries is only suitable for linear Gaussian multi-target tracking system. The particle PMC-PHD (PF-PMC-PHD) is given for the nonlinear multi-target tracking system based on PMC model in this paper."
+    },
+    {
+      "heading": "",
+      "text": "( ) ( ) ( ) 1 ,( , ) L i i i k k k i w  x y are used to approximate the posterior probability density function of the pair ( , ) x y as follows: ( ) ( ) ( ) 1 ( , ) (( , ) ( , )) L i i i k k k k i v w    "
+    },
+    {
+      "heading": "",
+      "text": "x y x y x y (8) where ( )i k w represents the expected value of pair whose state is ( ) ( ) ( , ) i i k k x y . PF-PMC-PHD filter can be summarized as follow. Step 1: Initialization of particles. At time =0 k ，use"
+    },
+    {
+      "heading": "",
+      "text": "0 ( ) ( ) ( ) 0 0 0 1 ,( , ) L i i i i w  x y to represent the prior probability density 0( ) v  of pair ( , ) x y , and particles number is proportional to the number of targets，that is, if there are 0ˆN targets, ( ) 0 0 0 ˆ i w N L  . joint PHD function 0( , ) v x y of pair ( , ) x y writes as： 0 ( ) ( ) ( ) 0 0 0 0 1 ( , ) (( , ) ( , )) L i i i i v w    "
+    },
+    {
+      "heading": "",
+      "text": "x y x y x y (9) Step 2:  Particles prediction. At time 1 k , the particles ( ) ( ) ( , ) i i k k % % x y generating for surviving targets are sampled from the proposed importance probability density function ( ) ( ) 1 1 ( ( , ),Z ) i i k k k k q   % % x y , 1 1, k i L  L ,  and the particles ( ) ( ) ( , ) i i k k % % x y , 1 1 1, k k k i L L J      L generating for the new birth targets are sampled from another suggested density function ( ) k k p Z  . The corresponding predicted weights are calculated as："
+    },
+    {
+      "heading": "",
+      "text": "( ) ( ) ( ) ( ) 1 1 1 ( ) 1 1 ( ) ( ) ( ) ( ) 1 1 ( ) 1 ( ) ( ) 1 1 ( ) ( ) ( , ),( , ) 1, (( , ) ( , ), ) ( , ) 1 1, (( , ) ) i i i i k k k k k k i k k i i i i k k k k k k i k k i i k k k k k k i i k k k k k w i L q Z w b i L L J J p Z                         % % L % % % % % L % % x y x y x y x y x y x y (10) Assuming that there is no spawning,"
+    },
+    {
+      "heading": "",
+      "text": "( ) ( ) ( ) ( ) ( ) ( ) ( ) ( ) ( ) 1 1 , 1 | 1 1 1"
+    },
+    {
+      "heading": ")",
+      "text": "i i i i i i i i i k k k k S k k k k k k k k k k"
+    },
+    {
+      "heading": "",
+      "text": "      "
+    },
+    {
+      "heading": "1( , )",
+      "text": "k k"
+    },
+    {
+      "heading": "x y writes as：",
+      "text": "1 ( ) ( ) ( ) 1 1 1"
+    },
+    {
+      "heading": "))",
+      "text": "k k L J i i i k k k k k k i"
+    },
+    {
+      "heading": "",
+      "text": "   "
+    },
+    {
+      "heading": "(12)",
+      "text": "Step 3:  Particles update. Recalculating weights of particles using measurements k"
+    },
+    {
+      "heading": "x y writes as：",
+      "text": "1 2"
+    },
+    {
+      "heading": "( , )",
+      "text": "k k k"
+    },
+    {
+      "heading": "x y",
+      "text": "x y                                                 (13) 1 1 1 ( ) ( ) ( ) 1"
+    },
+    {
+      "heading": "))",
+      "text": "k k L J i i i k k k k i"
+    },
+    {
+      "heading": "",
+      "text": " "
+    },
+    {
+      "heading": "",
+      "text": "1 ( ) ( ) ( ) , 1"
+    },
+    {
+      "heading": ")",
+      "text": "i i i k D k k k k"
+    },
+    {
+      "heading": "w",
+      "text": ""
+    },
+    {
+      "heading": "%",
+      "text": "，"
+    },
+    {
+      "heading": "",
+      "text": "1 2 2 ( ) ( ) Z 1"
+    },
+    {
+      "heading": ") ( )",
+      "text": "k k k L J i i k k k i"
+    },
+    {
+      "heading": "",
+      "text": "  "
+    },
+    {
+      "heading": "%，",
+      "text": "z z"
+    },
+    {
+      "heading": "",
+      "text": "1 ( ) ( ) ( ) , 1 2 ( ) ( ) ( ) ( ) , 1 1"
+    },
+    {
+      "heading": "( )",
+      "text": "k k i i i D k k k k k i k L J i i i k D k k k k k i"
+    },
+    {
+      "heading": "",
+      "text": "    "
+    },
+    {
+      "heading": "%",
+      "text": "，"
+    },
+    {
+      "heading": "(17)",
+      "text": "( ) ( ) 22 1"
+    },
+    {
+      "heading": ")",
+      "text": "i i k k k k"
+    },
+    {
+      "heading": "q",
+      "text": ""
+    },
+    {
+      "heading": "(18)",
+      "text": "Step 4:  Resampling of the particles."
+    },
+    {
+      "heading": "",
+      "text": "1 1 1 ( ) 2 ( ) 1 Z 1"
+    },
+    {
+      "heading": "+",
+      "text": "k k k k k L J L J i i k k k i i"
+    },
+    {
+      "heading": "w",
+      "text": "      "
+    },
+    {
+      "heading": "%",
+      "text": "， ， z"
+    },
+    {
+      "heading": "",
+      "text": "1 1 1 ( ) 1 ( ) 1 ( ) 2 ( ) 2 ( ) 1 1 1"
+    },
+    {
+      "heading": ")",
+      "text": "k k k k k Z L J L J i i i i i k k k k k j k k j i i j"
+    },
+    {
+      "heading": "N",
+      "text": "      "
+    },
+    {
+      "heading": "U",
+      "text": "， ， ， ， ，"
+    },
+    {
+      "heading": ",",
+      "text": "meanwhile, keeping the value y of particles which represent"
+    },
+    {
+      "heading": "",
+      "text": "( ) ( ) ( ) 1"
+    },
+    {
+      "heading": ")",
+      "text": "k L i i i k k k k i"
+    },
+    {
+      "heading": "N",
+      "text": ""
+    },
+    {
+      "heading": "y",
+      "text": ". Step 5: Approximation of posterior probability density."
+    },
+    {
+      "heading": "x y as：",
+      "text": "( ) ( ) ( ) 1 ( , )= (( , ) ( , )) k L i i i k k k k i v w   "
+    },
+    {
+      "heading": "",
+      "text": "x y x y x y (20) According to ( ) ( , ) k k v v d"
+    },
+    {
+      "heading": "",
+      "text": "x x y y , and ( ) ( ) 1 i k d   "
+    },
+    {
+      "heading": "",
+      "text": "y y y ， 1 1, k k i L J    L , posterior PHD ( ) kv x of state x writes as: ( ) ( ) 1 ( ) ( ) k L i i k k k i v w    "
+    },
+    {
+      "heading": "",
+      "text": "x x x (21)"
+    },
+    {
+      "heading": "4 Experimental simulation",
+      "text": "4.1 A particular class of Gaussian PMC model In order to verify the effectiveness of the proposed PF-PMC-PHD filter, and compare the tracking performance with traditional PF-HMC-PHD filter, the experimental simulation uses a special Gaussian PMC model, whose 1 ( ) k k p  x x and ( ) k k p y x are the same as 1 1( ) k k k k f  x x and ( ) k k k g y x of HMC model while relaxing the independence assumption. The two models have the same local physical properties. Suppose that for all k , a HMC model satisfies: 0 0 0 0 (x ) (x ;m ;P ) p  (22) | 1 1 1 (x | x ) (x ; x ; ) k k k k k k k k f Q     F (23) ( ) ( ; x ; ) k k k k k k k g  y x y H R (24) The corresponding Gaussian PMC model can be expressed by the following formula [8]： 0 0 0 0 0 0 0 0 0 0 0 0 0 0 m P (H P ) (ξ ) ξ ; ; H m H P R H P H T T p                     (25) 1 1 1( ) ( ; ; ) k k k k k k k k p      ξ ξ ξ B ξ (26) where ( , ) k k k ξ = x y , and 2 2 11 21 1 2 2 21 22 1 , T k k k k k k k k k k k k k k k                        F F H F B H F H H H (27) 11 2 2 1( )T k k k k k Q    F R F (28) 21 2 2 1( )T k k k k k k Q     H H R F (29)   22 2 2 1( ) T T k k k k k k k k Q      R H R H H H (30) 4.2 Performance analysis Let us now analyze quantitatively the tracking performance of PF-PMC-PHD filter and PF-HMC-PHD filter in a nonlinear system based on PMC model. We compute at each time step the OSPA  metric and the target number estimation. Set 2 sin 1 cos 1 0 0.7 0 0 cos 0 sin 0 0 , 1 cos sin 0 0.7 0 1 0 0 0 sin 0 cos k k T T T T T T T T                                                 F F (31) 2 1 0 0 0 0.1 0 , 0 0 1 0 0 0.1 k k               H H (32) 100 1 0 0 1 10 0 0 0 0 100 1 0 0 1 10 k Q             ， 25 0 0 25 k R       (33) We generate uniformly a mean of 10 clutter measurements on region    2000,2000 2000,2000 V   with  sampling period 1 T s  , and simulation experiment step 50 N  . There are 4 targets: target 1 and target 2appear at time 1 k , target 3 and target 4 appear at time 20 k  . We track the position and velocity of targets in Cartesian coordinates, , , , , , , , T k k k k k p p p p     x x y y x & & . We set s, 0.98 k p  , , 0.9 d k p  , and select 2000 L  for particle number of one target. Target trajectories and measurements of such a scenario is displayed in Figure.1. Figure. 1 target trajectories and measurements Figure. 2 shows the Tracking result of PF-PMC-PHD. Tracking result shows that the proposed PF-PMC-PHD filter can effectively achieve the target tracking. Figure. 2 Tracking result of PF-PMC-PHD Figure. 3 and Figure. 4 respectively show target number estimations and the OSPA  metrics of  PF-PMC-PHD filter, PF-HMC-PHD filter and UPF-PMC-PHD filter. Simulation result shows that the tracking performance of PF-PMC-PHD filter is better than that of PF-HMC-PHD filter although two filters share the same 1 ( ) k k p  x x and ( ) k k p y x . This is because that HMC model does not take into account the information given by the observation 1 k y in the case of given 1 k x and 1 k y , and the uncertainty of the state kx increases.The target number estimation error of PF-HMC-PHD filter is large, and the situation of missing target is serious. Simulation result also shows that UPF- PMC-PHD filter has higher accuracy of target number estimation and position error estimation than PF-PMC-PHD filter, because UPF-PMC-PHD filter uses UKF to generate the importance probability density function which makes full use of the new measurements, which results in higher accuracy of particle sampling and improved tracking performance. Figure. 3 Target number estimations of PF-PMC-PHD and PF-HMC-PHD Figure. 4 OSPA  metrics of PF-PMC-PHD and PF-HMC-PHD"
+    },
+    {
+      "heading": "5 Conclusions",
+      "text": "The Pairwise Markov Chain (PMC) model is more universally suitable than the traditional Hidden Markov Chain(HMC) model. A PF-PMC-PHD filter is proposed for nonlinear multi-target tracking system based on PMC model. Simulation result proves the effectiveness of  the filter, but the tracking accuracy needs to be improved. Simulation result also shows that the performance of  PF-PMC-PHD filter is better than the traditional PF-HMC-PHD filter in a scenario where we kept the local physical properties of nonlinear  and Gaussian HMC models while relaxing their independence assumption."
+    },
+    {
+      "heading": "Declaration of Conflicting Interests",
+      "text": "The author(s) declared no potential conflicts of interest with respect to the research, authorship, and/or publication of this article. analysis."
+    },
+    {
+      "heading": "Funding",
+      "text": "This work was supported by the Natural Science Foundation of China under Grants 61141009."
+    },
+    {
+      "heading": "References",
+      "text": "[1] Mahler R. An Introduction to Multisource-Multitarget  Statistics  and  Its Applications. Lockheed Martin, Eagan, MN, Technical Monograph, 2000. [2] Mahler R. Statistical Multisource-Multitarget Information Fusion. Norwood,MA: Artech House, 2007. [3] Mahler R. Multitarget Bayes Filtering via First-Order Multitarget Moments. IEEE Transactions on Aerospace and Electronic Systems, 2003, 39(4): 1152-1178. [4] Vo B N, Singh S, and Doucet A. Sequential Monte Carlo methods for multi-target filtering with random finite sets. IEEE Transactions on Aerospace and Electronic Systems. 2005,41(4): 1224-1245. [5] GAO Yiyue, JIANG Defu, and LIU Ming. Particle-gating SMC-PHD Filter. Signal Processing, 2017, 130: 64–73. [6] Vo B N and Ma W K. The Gaussian mixture probability hypothesis density filter. IEEE Transactions on Signal  Processing , 2006, 54(11): 4091 - 4104. [7] YANG Jinlong, LI Peng, YANG Le, et al.. An Improved ET-GM-PHD Filter for Multiple Closely-spaced Extended Target Tracking. International Journal of Control, Automation and Systems, 2017, 15(1): 468-472. [8] Pieczynski W. Pairwise Markov chains and Bayesian unsupervised fusion. International International Conference on Information Fusion, Paris, France, 2000, MoD4: 24-31. [9] Derrode S and Pieczynski W. Signal and image segmentation using pairwise Markov chains. IEEE Transactions on Signal Processing, 2004, 52(9):2477–89. [10] Pieczynski W. Pairwise Markov chains. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2003, 25(5): 634-639. [11] Petetin Y and Desbouvries F. Bayesian multi-object filtering for pairwise Markovchains. IEEE Transactions on Signal Processing, 2013, 61(18): 4481-4490. [12] Mahler R. Tracking targets with pairwise-Markov dynamics. International Conference on Information Fusion, Washington, D.C., 2015: 280-286. [13] Mahler R, Consultant, Eagan, et al.. On multitarget pairwise-Markov models. Society of Photo-Optical Instrumentation Engineers. 2015, 9474 , 94740D: 1-12. [14] Julier S J, Uhlmann J K, and Durrant-Whyte H F. A new method for nonlinear transformation of means and covariances in filters and estimators. IEEE Transactions on Automatic Control, 2000, 45(3): 477−482. [15] Julier S J, and Uhlmann J K. Unscented filtering and nonlinear estimation. IEEE Transactions on Signal Processing, 2004, 92(3): 401-422."
+    }
+  ]
+}

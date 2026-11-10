@@ -1,0 +1,224 @@
+{
+  "paper_id": "1304.2757",
+  "title": "Estimation Procedures for Robust Sensor Control",
+  "abstract": "Many robotic sensor estimation problems can characterized in terms of nonlinear measurement systems. These systems are contaminated with noise and may be underdetermined from a single observation. In order to get reliable estimation results, the system must choose views which result in an overdetermined system. This is the sensor control problem.  Accurate and reliable sensor control requires an estimation procedure which yields both estimates and measures of its own performance. In the case of nonlinear measurement systems, computationally simple closed-form estimation solutions may not exist. However, approximation techniques provide viable alternatives. In this paper, we evaluate three estimation techniques: the extended Kalman filter, a discrete Bayes approximation, and an iterative Bayes approximation. We present mathematical results and simulation statistics illustrating operating conditions where the extended Kalman filter is inappropriate for sensor control, and discuss issues in the use of the discrete Bayes approximation.",
+  "categories": "eess.SY cs.AI cs.SY",
+  "sections": [
+    {
+      "heading": "Abstract",
+      "text": "Many robotic sensor estimation problems can characterized in terms of nonlinear measurement systems. These systems are contaminated with noise and may be underdetermined from a single observation. In order to get reliable estimation results, the system must choose views which result in an overdetermined system. This is the sensor control problem. Accurate and reliable sensor control requires an estima­ tion procedure which yields both estimates and measures of its own performance. In the case of nonlinear measurement systems, computationally simple closed-form estimation so­ lutions may not exist. However, approximation techniques provide viable alternatives. In this paper, we evaluate three estimation techniques: the extended Kalman filter, a discrete Bayes approximation, and an iterative Bayes approximation. We present mathematical results and simulation statistics il­ lustrating operating conditions where the extended Kalman filter is inappropriate for sensor control, and discuss issues in the use of the discrete Bayes approximation."
+    },
+    {
+      "heading": "Introduction",
+      "text": "Our ability to build intelligent robots will in large part de­ pend on methods for making decisions and planning rela­ tive to a sensor-based world model. This decision-making is complicated by the unavoidable incompleteness of sensor­ based models due to limited sensor scope, sensor noise, and discretization effects. Heretofore, most robot systems de­ signers have either ignored this uncertainty completely, or have used various ad-hoc or approximate methods of repre­ senting or accounting for it. In either case, data is accepted passively with no consideration as to how uncertainty may be reduced or avoided. This often forces decisions about action to be made conservatively in order to account for possible sensor errors or omissions. In the long run, this policy seriously affects the performance of the system. Substantial gains result from explicitly taking action to reduce uncertainty by using active sensing[2]. This removes the restriction of a predetermined data set and replaces it • Acknowledgements: This work was supported in part by NSFIDCR 8410771, NSF DMC-8411879 and DMC-12838, US Air F orce F49620-85- K-0018, US Air Force F33615-83-C-3000, US Air Force F33615-86-C-3610, DARPAIONR, ARMY/DAAG-29-84-K-0061, NSF-CER DCR82-19196 A02, NIH NS-10939-11 as part of the Cerebrovascular Research Center, by DEC Corp., and LORD Corp."
+    },
+    {
+      "heading": "404",
+      "text": "with the more flexible approach of actively seeking and us­ ing several scenes or samples. Of course, this adds the complication of modeling sensors [14] and constructing pro­ cedures to control sensors. The specific problem of sensor control has not received much attention, but it is analogous to art of experimental design [3, Chap. 7] and [16]. The science of experiment design focuses on maximizing the information obtained from an experimental program under resource constraints. In our case, the sensor is a measurement system with control pa­ rameters. We will assume we are given a set within which the parameter lies, and we seek to improve this estimate. Our objective is to find a plan of control will give the \"best'' post-experimental results within the constraints of time and processor resources. Our problem setting includes the following important at­ tributes: First, the systems we consider are nonlinear in both state and control. Second, our measurement noise depends on the control of the measurement system. Third, our con­ trol criterion is a direct function of the information returned by the estimation procedure. Finally, and perhaps most im­ portantly, our information is limited by sensor scope. Our information may vary widely and discontinuously based on what view is presented to the sensory system In this paper, we will focus on statistically based esti­ mation and control techniques for dealing with sensor noise in nonlinear measurement systems. We will first discuss what constitutes a suitable payoff function for sensor con­ trol. Then we will evaluate several estimation techniques. Finally, we will discuss what sampling strategies are appro­ priate and what additional complication control introduces."
+    },
+    {
+      "heading": "A Sensor Control Formulation",
+      "text": "Recovering information from a noisy sensor is a problem in statistical estimation. We shall argue that control should be based on the expected or posterior risk of the estima­ tion procedure. This in tum motivates the requirement that estimation procedures not only estimate well, but have pre­ dictable performance."
+    },
+    {
+      "heading": "2.1",
+      "text": "Formalizing the Control Problem 2.1.1 Estimation A sensor takes observations of the environment as described by some transfer function contaminated by noise. Both the transfer function and the observation noise can be influenced by control parameters. Thus, we can formalize a controllable measurement device subject to additive noise as a mathemat­ ical system of the following general form:"
+    },
+    {
+      "heading": "(1)",
+      "text": "where H is k-dimensional, u.; is an m-dimensional control vector from a set U, and p E P is the s-dimensional quantity we are attempting to estimate. We observe z;, a function of both u.; and p contaminated by additive noise V(·, ·) of dimension k. In general, the distribution of V will be a func­ tion of our control parameter and the parameter of interest Our problem is to optimize, by choice of some sequence :!!. = [ u.1, u.2, . . . , u.n] E U\", the performance of an estima­ tion procedure On(·) estimating p from.&:= [z1, z2, . . . , zr>]· In order to choose a particular estimation procedure, we must pick a criterion or loss by which to judge the merit of a decision rule. A reasonable and commonly assumed loss criterion which often leads to simple, iterative estimation rules is the mean square e\"or loss. The optimal estimation procedure is that which, given a prior 1r( ·) on p and a con­ ditional distribution on the observations, f(·lp), minimizes the quantity"
+    },
+    {
+      "heading": "(2)",
+      "text": "If p is bounded, we know that the o which minimizes this expression is"
+    },
+    {
+      "heading": "(3)",
+      "text": "This is the Bayes solution to our estimation problem [3]. We shall henceforth assume that some estimation procedure, o, implementing or approximating the solution to Equation 3 is given a priori. 2.1.2 Control A control sequence is to be evaluated relative to its expected utility. This utility can be thought of in two parts: the performance of the estimation procedure for that choice of strategy, and the cost of implementing that strategy. This can be expressed as"
+    },
+    {
+      "heading": "(4)",
+      "text": "zd represents the loss attributed to the estimation procedure 0 and c represents the cost of taking n samples via the control strategy:!!.· The choice of actual functional forms for c and ld re­ flects the desired behavior of the system, so before choos­ ing c and ld we must consider what role sensors are to play. In earlier reports [9,10,11,12], we argue that sensors should be independent devices with dedicated computational resources and substantial local intelligence. We present a general organizational structure for robot systems in which Figure 1: The sensor positioning problem. intelligent sensors are organized for specific tasks by higher level agents while functioning with as much autonomy as possible. This organization is coordinated by managers who send agents task requests, and integrate sensor results into a world model. The format of a sensor request consists of three ele­ ments. The quality of the information requested is expressed by a tolerance, £, A better estimate can always be gained by using more samples, but at a higher cost. A priority, w, encodes a time/accuracy tradeoff for the requested informa­ tion. Finally, a query will contain a hard time constraint, t, which should not be violated. Once a sensor performs a sensing task, the results returned should indicate the degree to which the set task was found to be achievable. Since we have adopted probability distributions as a means of charac­ terizing the system's information about p, it is natural that the sensor should return a probability indicating the quality of the final estimate. In summary, a sensor request consists of a triple (c, t, w), and sensor results take the form of a pair (p, P(I:P-PI < cl.&:)). Our choice of an uncertainty region, £, suggest that an appropriate evaluation criterion for the performance of an estimation procedure On in the context of control is the 0-1"
+    },
+    {
+      "heading": "if ion(£) -PI < c;",
+      "text": "otherwise"
+    },
+    {
+      "heading": "(5)",
+      "text": "By taking expectations of Equation 4, we can compute the Bayes decision risk of an estimation procedure On as r(n,:!!,O) = E [ld(p,on(z))+c(n,:!!_)] = rd(7r,On)+c(n,:!!_)"
+    },
+    {
+      "heading": "(6)",
+      "text": "It is easy to show that rd( 1r, On) = P(lon(.&:) -PI > c). In other words, the Bayes decision risk associated with the"
+    },
+    {
+      "heading": "·) is the probability of the estimated value",
+      "text": "falling outside the specified tolerance. 2.1.3 An Example Problem In order to illustrate the above concepts, consider estimating the position of an object using a stereo camera as illustrated 1 It is important to realize that 5 n may have been derived from very different criteria, i.e., the mean square error criterion. Now, given 5n, we are evaluating it relative to the O.w loss."
+    },
+    {
+      "heading": "I",
+      "text": "in Figure 1. For ease of exposition, we will only consider the 2-D case using orthogonal projection. In this case, the sensor can by modeled by the combined transformation from object coordinates to camera coordinates. (7) Let 0f; = 'fx;, y;, 0, If denote a homogeneous feature position in object coordinates, and let cz; = 'fx;, y;, 0, IY represent an observation of f; in camera coordinates. The vector p we are estimating is p = [x0, Yo, aoY of an ob­ ject Our control vector, u = [xc, Yc, ac], corresponds to the choice of camera position. The control problem is es­ sentially a choice of how to move the camera about an ob­ ject (which lies within some region of uncertainty) so as to achieve the best final estimate of position. 2.2 Review of Decision Theory If we fix .!! in Equation 6, then we can consider the problem of finding the n which minimizes r ( n, .u., 8). A procedure where n samples are taken without looking at any interme­ diate results is referred to as a batch procedure. Notice, the optimal control sequence is then that which minimizes the batch size for a given posterior loss. On the other hand could also solve this problem by evaluating the risk conditioned on the observed data, and deriving a stopping rule which <de­ termines when enough data has been taken. This is a more efficient procedure, but sequential problems tend to be more difficult than batch problems. Berger [3] provides a good overview Bayesian sequential and batch decision problems. Results are analytically derivable in some special cases, but there is no general theory for problems of the scope consid­ ered in our setting. There are many unanswered questions as to how estima­ tion and control interact It is well known in control theory that, in the case of a linear dynamic system with a gaussian prior on the initial state and observed via linear measure­ ment equations with additive gaussian noise, estimation and control separate into independent problems [4]; and that the Kalman Filter is the optimal estimation procedure. If either the observation noise or prior are not gaussian, the Kalman filter is still the optimal linear estimation procedure. In the case where the system state is static (i.e., a parameter), the Kalman filter becomes a iterative implementation of Bayes estimation, and the solution to Equation 3 can be written as Pi+l = E[pl£;] = Ai+l = K; = (I- K;H;) p; + K;z;, (1-K;H;)A; A;H'f(H;A;H'f + Av)-1 (8) (9) Sequential and batch rules for sequential Bayes estima­ tion are easily derived based on the magnitude of the error terms [3]. MUller and Weber [17] consider the problem of finding the measurement system design maximizing a suit­ able norm of the observability or controllability of a system linear in both state and control. The norms they discuss are 406 the trace, determinant, an maximum eigenvalue of the ob­ servability matrix. Mehta [15] combines and extends these results to include time varying systems and randomized de­ signs. Meier [13] deals with specializations of Equation 1 in which V (.) is constant zero-mean gaussian noise, and the system is linear in p as in z = H(u)p+ V In this case, the best measurement control to achieve to minimize the control criterion of the driving system can be derived. It is shown that the optimal control is open­ loop and the solution is obtained by a dynamic programming algorithm. There are not many general solutions for nonlinear mea­ surement systems, though there are a number of approxima­ tion techniques [8]. One approximation is to linearize a given nonlinear measurement system about a nominal tra­ jectory and apply linear estimation techniques. In the case of the Kalman filter, the resulting quasi-linear procedure is referred to as the Extended Kalman filter (EKF). An­ ther method of nonlinear estimation which does not rely on linearization is Stochastic Approximation [18]. This is an asymptotic technique akin to Newton's method adapted to work in the presence of noise. The technique can be written as a recurrence of the form The choice of gain sequences a1, a2, • • • is crucial for the convergence of the technique. Asymptotically optimal control results exist for stochastic approximation, but the small-sample behavior of the estimation/control method are not known. Since no priors are assumed it is difficult to deriv<Ð a good measure of the rate of convergence. In our case, it is reasonable to assume some prior knowl­ edge about both the parameter of interest and statistical prop­ erties of sensor noise. Hence we will seek a Bayesian solu­ tion to the problem. This naturally leads us to consider the Kalman filter. 3 The Extended Kalman Filter Kalman filters and Extended Kalman filters have a long and well documented history of use in navigation problems very similar to our sample problem [20]. In the field of robotics, Durrant-Whyte [6] has used a version of this technique to solve the problem of updating location estimates from ob­ servations. Smith et al. [19] have worked this out for a mobile robot estimating position. Ayache and Faugeras [1] have looked at several problems in stereo ranging by building an EKF from a general constraint equation. The EKF is derived in the following fashion. Given a nonlinear, measurement system such as Equation 1, we can approximate with the first order terms of a Taylor se­ ries centered about a prior estimate for p, p, and apply a Kalman filter to the resulting quasi-linear system. The re­ sulting system equations (found in many references, e.g. [8])"
+    },
+    {
+      "heading": "p",
+      "text": "(10) The 0 -w risk of the EKF can be computed by evalu­ ating the probability mass that lies outside the tolerance set based on the error term, A;. This risk may be used to select a batch size, considered sequentially in a stopping rule, or be used to pick control points. In [11], we implemented the EKF for our sample problem and computed. the expected information when observing a simple polygonal object from all possible sensor views. However, it is important to note that Equation 10 depends on the value we are estimating - i.e. it is a random variable itself. Slight errors in the lin­ earization can substantially affect how well the error terms represent the true error of the filter. The possible errors in the linearization can be thought of as uncertainty about the correct parameterization of the filter. Several papers in the literature analyze the sensitiv­ ity of the Kalman filter with regard to uncertainty in filter parameters [7]. When a dynamic system is involved, two types of deficiencies are recognized: divergence and true divergence. The former is a local deviation of the filter to a steady state where errors remain bounded, but the filter does not converge to the correct values. The latter is the case where error terms become unbounded. Most small er­ rors can be overcome by adding extra observation noise, though this slows the convergence of the filter. In our case, we can compute the worst bias introduced by the error in linearization and feed this back as an error term. However, for any substantial uncertainty in the original parameter, the filter converges extremely slowly. In the static cases such as the one we are considering, true divergence will never happen. Still, if the previous estimate is poor, then we can expect that the linearization, and hence the information maps, diverge substantially from the true values. In fact, in real practice it can tum out that even the static filter does not even converge in the limit! This is because the EKF, like stochastic approximation, is a differential correction technique. If the correction factor goes to zero too quickly, the true solution may be excluded. This can be seen by substituting Equation 10 into Equation 8. For a scalar system, this yields:"
+    },
+    {
+      "heading": "E(plz]",
+      "text": "V"
+    },
+    {
+      "heading": "Up +uv",
+      "text": "where h' = h'(u,p) and h = h(u,p). Depending on the values of h', u; and u;, k may or may not be an appropriate gain to choose for convergence. Discovering when k is appropriate will delimit when the computed vari­ ance/covariance matrices are good approximations. Bound Est Err. Obs. Err. %Error"
+    },
+    {
+      "heading": "± 0.1",
+      "text": "0.0033 0.0031 7%"
+    },
+    {
+      "heading": "± 0.2",
+      "text": "0.0134 0.0142 -6%"
+    },
+    {
+      "heading": "± 0.3",
+      "text": "0.0306 0.0417 -27%"
+    },
+    {
+      "heading": "± 0.4",
+      "text": "0.0552 O.Q708 -22%"
+    },
+    {
+      "heading": "± 0.5",
+      "text": "0.0882 0.1772 -50%"
+    },
+    {
+      "heading": "± 0.6",
+      "text": "0.1298 0.2981 -56%"
+    },
+    {
+      "heading": "± 0.7",
+      "text": "0.1839 0.5070 -64% Table 1: A comparison of the EKF term for Oto with ob­ served estimation error of Ot0 in a simulation. Table 1 illustrates the problem.. This data was generated by running the EKF for the example problem. Values for Zo and 1/o were held fixed at mean values, and the interval of uncertainty of Oto was varied from ±.1 to about ±7r/4. It can be seen that as the interval of uncertainty widens, the error terms begin to drastically under-represent the error in estimation. For large enough intervals, the filter often fails to even converge for all practical purposes. We will analyze the sensitivity of the linear filter via game-theoretic techniques. Consider a scalar version of Equation 1. For any given point, p, and linearization point,"
+    },
+    {
+      "heading": "z(71) = h(u,p) + oh\u001e'l) (p- p) + v",
+      "text": "is exact for some '1 between p and p. Instead of building a linear procedure based on assuming z(p), we can build the procedure based on the worst case value of '7· This can be stated as"
+    },
+    {
+      "heading": "min E[max(a z(q)-p)2]",
+      "text": "a '7 At this point, f1 is restricted to fall between p and the linearization point p. We can rewrite this in more standard form by moving the maximization outside the expectations and replacing 71 by a function '1 ( ·) representing the constraint on jl:"
+    },
+    {
+      "heading": "minmax E[(a z(71(p))-p)2] a E A",
+      "text": "a '1(·) where we now maximize over a set of functions 71 E Ei>. To remain consistent, we must restrict Ep to contain only those functions which map a point p into the interval between p and jl. Furthermore, let g(-) = z(q(·)) and let g denote the"
+    },
+    {
+      "heading": "minmax E[(a g(p)- p)2]",
+      "text": "a g"
+    },
+    {
+      "heading": "{11)",
+      "text": "We now ask if there is a single worst case g and best a as the solution to this problem (in the language of game theory, is there a nonrandomized saddle-point solution). To answer, we appeal to a theorem due to Blackwell and Gershick: 2We will suppress indicating p from now on."
+    },
+    {
+      "heading": "I",
+      "text": "Theorem 3.1 Let the triple ( K, .:t', Y) denote a two-person zero-sum game where"
+    },
+    {
+      "heading": "• X is a compact convex subset of Em",
+      "text": "• Y is a compact subset of En"
+    },
+    {
+      "heading": "• K(x, y) is a real-valued mapping defined on the",
+      "text": "Cartesian product of X and Y"
+    },
+    {
+      "heading": "• for each y E Y. K(x,y) is convex in x E .:t'",
+      "text": "• for each y E Y, K(x, y) is continuous in x E .:t' • for each x E .:t', K(x, y) is continuous in y E Y Then the game (K, X, Y) has a saddle-point solution"
+    },
+    {
+      "heading": "minmaxE>.(K(x,y))",
+      "text": "="
+    },
+    {
+      "heading": "maxminE>.(K(x,y))",
+      "text": "xex yEY yEY xex"
+    },
+    {
+      "heading": "= 1 K(x*, y) dA.*",
+      "text": "where x* E .:t', A.* E My, My denotes the class of all probability measures on Y, and A. • is a discrete probability distribution which assigns mass to at most m + 1 points in y. The proof of Theorem 3.1 can be found in [5]. We note that, if Y is convex and K(x, y) is strictly convex in y, then the support of A. • must lie on the boundary of Y. It is easy to show that the set of functions £ is convex as we have defined it As it turns out, g is also convex for any continuous function z(·). However, the statement of the theorem as we have it here applies to Euclidean spaces, not function spaces. 3 In order to apply the theorem, we make heuristic use of a discrete (vector) approximation for the functions in g. Let r = [11, 12, ... , rnf be a se­ quence of approximation points falling in the set P. Let g' = {[g(·n),u(r2), ... ,g(i'nWiu E g}. Then, g' is a compact, convex subset of t;n as required for the theorem."
+    },
+    {
+      "heading": "If we define K(a,g) = E[(a g(p) - P?J where the",
+      "text": "prior on p now assigns mass only to points in r, then the maximizer is essentially choosing an n-vector in g'. K is easily seen to be a continuous function which is convex in both arguments. Hence, the game ( K, A, g') satisfies the conditions of Theorem 3.1. Moreover, since K is convex in g', ilie saddle-point solution comes from the boundary of g' or Mg• as appropriate. We stated that we wanted a single worst case g - that is, we require that g* E g. A qualitative, analysis reveals the choice of a nonrandom or random solution is affected by the size of P, and the signal/noise ratio. If the uncertainty set is large, or the signal/noise ratio is good, the optimal maximizer strategy is likely to be a randomized strategy. The need for a randomized solution complicates the design 3It can be strengthened to include the function space we are interested in. However, this result requires substantially more space and mathematical machinery, and does not lend any more insight than the approach we are taking here."
+    },
+    {
+      "heading": "408",
+      "text": "Figure 2: A comparison of the error terms of the game­ theoretic filter (solid lines) to the error terms of a lower bound filter (dotted lines). The smooth curve represents the calculated error, while the jagged lines are the error observed in a simulation. of tlle optimal EKF and gives us cause to wonder if the EKF based on linearizing about the (single) prior estimate is a reasonable approximation. For a specific example, consider a simple linear system, z = h8 + v where h comes from some set 1{. In this case, we can apply the saddle-point theorem directly and observe that ilie saddle-point solution is a linear combination of the boundary points of 'H. In this case it is straightforward to evaluate K ( x, y) and discover whether or not the optimal maximizer strategy for a given set of parameters is random and, if so, what the strategy is. For example, if 1i = [4, 5] and IT = 1, then it is possible to show that optimal filter is randomized for IT > .6. Figure 2 compares the behavior of the game-theoretic filter witll a filter using the lower bound of the g set by varying over IT . Both filters agree until the game filter (solid lines) uses a random strategy, at which point ilie error terms of the lower bound (dotted lines) filter begin to underestimate the filter error. The game filter error terms continue to behave well. The generalization of this result to the multi variate case, and its utility in predicting the performance of the EKF will be presented in an extended version of this paper."
+    },
+    {
+      "heading": "Given a series of observations, a. = [ z1, z2, •",
+      "text": "• •"
+    },
+    {
+      "heading": ", zn], from",
+      "text": "a system with additive noise distributed as fv(·) and prior fp(·), the Bayesian solution for any estimation problem is given by Equation 3. In general this solution can be only be computed numerically. Moreover, this procedure cannot be realized sequentially. If fv(·) \"' N(p,, A) where the individual components are independent (i.e., A is diagonal), then it is well known that the sample mean, z, is again gaussian with covariance A/ n. In this case, we can rewrite Equation 3 as 8n(a.) = 8(z) = 1 p f(plz) dp = fpP f\u0001zlp) 1r(p) dp p"
+    },
+    {
+      "heading": "(12)",
+      "text": "Bound Obs. Err. % ofEKF ± 0.1 0.0030 95% ±0.2 0.0096 67% ± 0.3 0.0238 57% ± 0.4 0.0428 60% ± 0.5 0.0375 21% ± 0.6 0.0824 28% ± 0.7 0.1076 21% Table 2: The observed mean square error in a0 of the Bayes approximation and its ratio to the observed mean square error of the EKF. If the prior, 1t\"(-), is chosen to have a continuous cumu­ lative density function, then numerical integration appears to be the only solution to Equation 12. However, if we choose 1r{-) to have a discrete c.d.f, i.e., 1r(·) assigns mass to a finite number of atoms, then we achieve a substantial decrease in the complexity of computing Equation 12. Since we only need to consider a finite set of atoms, the integrals become weighted sums."
+    },
+    {
+      "heading": "(13)",
+      "text": "From a computational standpoint, it is important to note that any constants of integration divide out in the fraction. Moreover, if the prior on p is uniform, then the weighting constants are all the same, so no multiplies are required. Also, note that, by considering the grid elements, the con­ dition distribution values, and the prior values as vectors, the nested sums can be computed by a simple dot project operation."
+    },
+    {
+      "heading": "4.1",
+      "text": "Finite Prior Bayes Estimation We have implemented both scalar and multivariate ver­ sions of this estimation procedure. Table 2 shows the ob­ served mean-squared-error of the EKF vs. the observed error of the Bayes approximation with a 5-point support for the same situation as described in Table 1. The first column lists the observed error of the Bayes approximation, while the second column lists the ratio of Bayes observed error to EKF observed error.We see that the Bayes procedure yields a substantial performance improvement over the EKF for all intervals investigated. This is in rough correspondence with the results of the previous section. If we were to compute the interval width at which the solution to Equation 11 is randomized, we would find that it occurs at very small intervals.4 We can compute the risk of 6 conditioned on the ob­ served data by employing Equation 13 with (p- 6(z))2 4We can obtain an upper bound by neglecting the restriction that 'I falls between p and p and generalizing the results to the nrultivariate case. If the solution to this problem requires randomization, the solution to Equation 11 does also. Iter Bound Computed Real % Diff 3 0.1 0.0019 0.0017 13% 3 0.2 0.0029 0.0027 7% 3 0.3 0.0034 0.0030 14% 3 0.4 0.0035 0.0039 -10% 5 0.1 0.0014 0.0015 -4% 5 0.2 0.0018 0.0019 -4% 5 0.3 0.0021 0.0024 -13% 5 0.4 0.0024 0.0035 -31% 7 0.1 0.0012 0.0011 11% 7 0.2 0.0014 0.0015 -11% 7 0.3 0.0015 0.0021 -27% 7 0.4 0.0013 0.0034 -61% Table 3: A comparison of the computed posterior squared error of the Bayes Approximation to the observed error in a simulation. substituted for p. Table 3 shows the results of a scalar sim­ ulation for z = 10 sin(p) + v where v is a gaussian random variable with u| = 1, and p has a uniform prior within ± Bound. The percentages in the righthand column are the difference between the estimated error and the observed simulation error divided by the simulation error. Positive percentages indicate the computed error exceeded the ob­ served error, and negative percentages indicate the opposite. Notice that the performance of the error estimator degrades as a function of both iterations and interval width. This also suggests that the performance of the estimator itself is degrading. The reason for this degraded performance can be best illustrated by Figure 3. This is a plot of the expected value of our Bayes approximation for this system with a uniform prior over P = [ -1t' /2, 1r /2]. The approximation is close to the actual Bayes procedure until the signal to noise ratio becomes good, at which point it begins to exhibit stepwise behavior. This is to be expected since, in the limit, the estimation procedure becomes a quantizer. Since variance of the sample mean is inversely related to sample size, the procedure exhibits quantization for large sample sizes. Sim­ ilarly, as the interval gets larger, a fixed number of prior points become a poorer approximation of the true prior. Obviously, if the procedure begins to quantize, one so­ lution is to use a larger number of prior points. However, the complexity of this method is 0( rm) where r is the num­ ber of prior points and m is the dimensionality of p. For high· dimensional problems, the computation for more than 2 or 3 points is overwhelming."
+    },
+    {
+      "heading": "4.2",
+      "text": "Iterative Finite Prior Bayes Approximation The quantization effects of the Bayes approximation can be used to construct an iterative approximation by the following method: Take samples until the method quantizes. Divide"
+    },
+    {
+      "heading": "I",
+      "text": "........ .... __ .,-\"\" Figure 3: A numerical evaluation of the Bayes estimation procedure (left) vs. the Bayes approximation procedure (right) for f(x) = 10sin(x). The dotted line represents the results for u? = 30, the dashed line represents u2 = 3, and the solid line represents u2 = .1. the interval about the selected prior and continue to sample until this smaller interval quantizes. This can be continued indefinitely, though with increasing risk for fixed sample size. More precisely, let the interval notation [a, b] denote a"
+    },
+    {
+      "heading": "= {p]a; :5 p; =::; b;, i =",
+      "text": "1, ... , n }. Define the left neighbor of a scalar prior point Pi as Pi-1 if j > 1 and Pi if j = 1. The right neighbor of a point is the obvious dual. The left and right neighbors of a vector are the vectors of left and right neighbors of its elements. Then, the neighborhood of a prior p is the interval [a, b] where a is the left neighbor of p and b is right neighbor. The neighborhood of a point which is not a prior point is the neighborhood of the closest prior point. Finally, P a,b will denote the set of grid points for the interval [a, b]. Then the iterative procedure can be written as:"
+    },
+    {
+      "heading": "Finite..Bayes( z, [a;, b;]) :=",
+      "text": "compute Pa;,b; as the new prior"
+    },
+    {
+      "heading": "{p;, P(p; E [a, b])}",
+      "text": "else"
+    },
+    {
+      "heading": "Finite..Bayes(z, [a;+1, b;+1])",
+      "text": "We implement this algorithm using Spt priors - thus reduc­ ing the size of uncertainty set by a factor of two at each step. If c1 is the cost of running the estimation procedure, l is the length of the original interval, and E then is the requested tolerance, then the cost of computing an estimate with this approximation procedure is Ct nog2l/El + c2(£) where c2 (£) represents the sampling cost for the observa­ tions f.·"
+    },
+    {
+      "heading": "410",
+      "text": "If p is estimated to lie in interval T, then the conditional probability of error in the scalar case, P(I.P- p] > Ejz), is given by"
+    },
+    {
+      "heading": "{14)",
+      "text": "In the general nonlinear case, this integral must be computed numerically, though certain heuristics can speed it up."
+    },
+    {
+      "heading": "4.3",
+      "text": "Batch Rules and Control Linear-gaussian systems enjoy the property that batch rules and control laws are generally open-loop (recall the work of Meier). In the case of non-linear or non-Gaussian systems, batch size or control will often depend on the parameter under observation. Hence, optimality is much more difficult to attain, especially in a time-constrained situation. Note that the error terms of all of the procedures men­ tioned above depend on the parameter under observation. Since a batch procedure uses only prior information, a se­ quential experimental design using intermediate information about the parameter seems more appropriate. However, the risk of the EKF is subject to error, and the risk of the ap­ proximation procedures is too expensive to compute at each sample. The optimal design is some combination of a batch procedure and a sequential procedure. For the iterative Bayes approximation, the natural solu­ tion is to compute the batch size to the next quantization for a given risk level. When data is taken during estimation, the estimation risk of the sequential approximation is the prod­ uct of the risk for each estimate. That is, if our target risk is 1- r, and the number of iterations required is i, we will choose the target risk of each stage to be 1 - -jT. 5 Given a current estimate p, we choose the batch size, conditioned on p, which will force quantization. This leads to a series of batches, the size of each conditioned on the latest value ofp. For control; we use batch size as the evaluation criteria. We define the cost of a control point as the time to take the required batch of samples plus the travel time to that point. The optimal point is that which requires the least amount of time. 5 Conclusions and Discussion We have presented a mathematical formulation of the sensor control problem. The solution to this problem requires an accurate and predictable estimation technique. We have two techniques, the extended Kalman filter, and a finite Bayes approximation. We have found via a game-theoretical anal­ ysis that the EKF is very sensitive to the size of the uncer­ tainty interval. This correlates with the observed behavior of Cie:u-ly, 5e estimate will exhibit better localization properties if esti­ mation IS earned out a:rer all o4 the data is taken. Conversely, it is better"
+    },
+    {
+      "heading": "3om a",
+      "text": "_ control perspective to estimate as soon as possible since the informa­ tio gam2 may allow better control. The best tradeoff seems to estimate at umform mtervals. an EKF running on a sample problem. The Bayes approx­ imation does not appear to suffer from these deficiencies. Of these two, the latter appears to be a more robust and predictable estimation technique. T here are several questions still to be addressed in eval­ uating sensor estimation techniques. For instance, what is the time/accuracy tradeoff between an EKF and the finite Bayes technique? Is the Bayes approximation always bet­ ter, worse or mixed for the same set of samples? What sorts of parallelism can be exploited? From a theoretical perspec­ tive, we need to further evaluate our game-theoretic studies and extend them to the general case. We are currently working on the control problem for sequential and batch estimation scenarios. To solve the con­ trol problem, we will have to face new issues dealing with the evaluation of experimental risk, and choosing the next view. We also plan to extend these procedures for multi­ sensor estimation and control. Equation 1 can be easily gen­ eralized for n sensors all observing and correlating informa­ tion. However, multi-sensor control requires the arbitration of communication and negotiation. Finally, we wish to consider the case where the prior knowledge is not a parametric description as we hÂve sup­ posed, but a structural one. In this case, resolving uncer­ tainty involves reasoning about structural and environmental constraints. The higher level will use the low level proce­ dures we have developed here to implement search strate­ gies."
+    },
+    {
+      "heading": "References",
+      "text": "[1] N. Ayache and 0. D. Faugeras. Building, registrating, and fusing noisy visual maps. 1986. Submitted for Publication in In Robotics Research. [2] R. Bajcsy. Active perception vs. passive perception. In Third IEEE Workshop on Vision, pages 55-59, Bellaire, 1985. [3] J. 0. Berger. Statistical Decision Theory and Bayesian Analysis. Springer-Verlag, New York, 1985. [4] D.P. Bertsekas. Dynamic Progamming and Stochastic Control. Volume 125 of Mathematics in Science and Engineering, Acacdemic Press, Inc., New York, first edition edition, 1976. [5] D. Blackwell and M. Girshick. Theory of Games and Statistical Decisions. John Wiley & Sons, Inc., New York, 1954. [6] H. Durrant-Whyte. Integration and Coordination of Multisensor Robot Systems. PhD thesis, University of Pennsylvania, Philadelphia, Pa, August 1986. [7] R. J. Fitzgerald. Divergence of the kalman filter. IEEE Transactions on Automatic Control, AC-16:736-747, December 1971. [8] A. Gelb, editor. Applied Optimal Estimation. MIT Press, Cambridge, 1974. [9] G. Hager. Active Reduction of Uncertainty in Multi­ Sensor Systems. Technical Report MS-CIS-86-76, Uni­ versity of Pennsylvania, Philadelphia, PA, September 1986. Author's Dissertation Proposal. [10] G. Hager. An Agent Specification Language. Techni­ cal Report MS-CIS-87-08, University of Pennsylvania, Philadelphia, PA, February 1987. [11] G. Hager. Information Maps for Active Sensor Con­ trol. Technical Report MS-CIS-87-07, University of Pennsylvania, Philadelphia, PA, February 1987. [12] G. Hager and H. Durrant-Whyte. Information and multi-sensor coordination. In Proceedings of the /986 AAAl Workshop on Uncertainty, pages 99-108, Philadelphia, PA, August 1986. A revised version ap­ pears as Univ. of Penn report MS-CIS-86-68. [13] I. Lewis Meier, J. Peschon, and R. M. Dressler. Opti­ mal control of meaurement subsystems. IEEE Trans­ actions on Automatic Control, AC-12(5):528-536, Oc­ tober 1967. [14] R. Ã&Kendall and M. Mintz. Models of Sensor Noise and Optimal Algorithms for Estimation and Quanti­ zation in VISion Systems. Technical Report MS-CIS- 86-80, University of Pennsylvania, Philadelphia, PA, 1986. [15] R. K. Mehra. Optimal measurement policies and sen­ sor designs for state and parameter estimation. March 1974. presented at the Milwaukee Symposium on Au­ tomatic Controls. [16] W. Mendenhall. Introduction to Linear Models and The Design and Analysis of Experiments. Wadsworth, Belmont, CA, 1968. [17] P. Muller and H. Weber. Analysis and optimization of certain qualities of controllability and observability for linear dynamical systems. Automatica, 8:237-246, 1972. [18] M. B. Nevel'son and R. Z. Has'minskil. Stochastic Approximation and Recursive Estimation. American Mathematic Society, 1976. trans. from Russian. [19] R. Smith, M. Self, and P. Cheeseman. Estimating un­ certain spatial relationships in robotics. In Proceedings of the /986AAA!Workshop on Uncertainty, pages 267- 289, Philadelphia, August 1986. [20] H. W. Sorenson, editor. Kalman Filtering: Theory and Application. IEEE Press, New York, 1985."
+    }
+  ]
+}

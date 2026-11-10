@@ -1,0 +1,420 @@
+{
+  "paper_id": "1709.06080",
+  "title": "Feedforward and Recurrent Neural Networks Backward Propagation and Hessian in Matrix Form",
+  "abstract": "In this paper we focus on the linear algebra theory behind feedforward (FNN) and recurrent (RNN) neural networks. We review backward propagation, including backward propagation through time (BPTT). Also, we obtain a new exact expression for Hessian, which represents second order effects. We show that for $t$ time steps the weight gradient can be expressed as a rank-$t$ matrix, while the weight Hessian is as a sum of $t^{2}$ Kronecker products of rank-$1$ and $W^{T}AW$ matrices, for some matrix $A$ and weight matrix $W$. Also, we show that for a mini-batch of size $r$, the weight update can be expressed as a rank-$rt$ matrix. Finally, we briefly comment on the eigenvalues of the Hessian matrix.",
+  "categories": "cs.LG cs.AI cs.NA math.NA",
+  "sections": [
+    {
+      "heading": "Backward Propagation and Hessian in Matrix Form",
+      "text": "Maxim Naumov NVIDIA, 2701 San Tomas Expressway, Santa Clara, CA 95050 Abstract In this paper we focus on the linear algebra theory behind feedforward (FNN) and recurrent (RNN) neural networks. We review backward propagation, including backward propagation through time (BPTT). Also, we obtain a new exact expression for Hessian, which represents second order eﬀects. We show that for t time steps the weight gradient can be expressed as a rank-t matrix, while the weight Hessian is as a sum of t2 Kronecker products of rank-1 and W T AW matrices, for some matrix A and weight matrix W. Also, we show that for a mini-batch of size r, the weight update can be expressed as a rank-rt matrix. Finally, we brieﬂy comment on the eigenvalues of the Hessian matrix."
+    },
+    {
+      "heading": "Introduction",
+      "text": "The concept of neural networks has originated in the study of human behavior and per- ception in the 1940s and 1950s [18, 29, 36]. Diﬀerent types of neural networks, such as Hopﬁeld, Jordan and and Elman networks, have been developed and successfully adapted for approximating complex functions and recognizing patterns in the 1970s and 1980s [14, 20, 24, 44]. More recently, a wide variety of neural networks has been developed, including convo- lutional (CNNs) and recurrent long short-term memory (LSTMs). These networks have been applied and were able to achieve incredible results in image and video classiﬁcation [25, 42, 43], natural language and speech processing [12, 17, 30, 39], as well as many other ﬁelds. These new results were made possible by a vast amount of available data, more ﬂexible and scalable software frameworks [1, 8, 9, 11, 23, 40] and the computational power provided by the GPUs and other parallel computing platforms [16, 39, 46, 47]. A neural network is a function Φ : RN →RM, where N and M is the number of inputs and outputs to the network. It is usually expressed through a repeated composition of aﬃne (linear + constant) functions Λ : Rn →Rm of the form y = Wx + b (1) 1"
+    },
+    {
+      "heading": "arXiv:1709.06080v1  [cs.LG]  16 Sep 2017",
+      "text": "and non-linear functions f : Rm →Rm of the form z = f(y) (2) where weight matrix W ∈Rm×n, input vector x ∈Rn, while bias, intermediate and output vectors b, y and z ∈Rm, respectively. The function f(.) is typically a component-wise application of a monotonic non-decreasing function f : R →R, such as logistic (sigmoid) f(y) = 1 1+e−y , rectiﬁed linear unit (ReLU) f(y) = max(0, y) or softplus f(y) = ln(1 + ey), which is a smooth approximation of ReLU [31, 15]. A neural network can also be thought of as a composition of neurons, which add the weighted input signals xj with bias b and pass the intermediate result through a threshold activation function f(.) to obtain an output z, as shown on Fig. 1. These single neurons can be further organized into layers, such as the fully connected layer shown in Fig. 2. If the layers are stacked together, with at least one hidden layer that does not directly produce a ﬁnal output, we refer to this network as a deep neural network [5, 37]. f(P j wjxj + b) x1 ... xn z w1 ... wn Fig. 1: A Single Neuron f(y1) f(ym) x1 xn z1 zm ... ... ... z = f(Wx + b) w11 w1n wm1 wmn Fig. 2: A Single Fully Connected Layer The connections between neurons and layers determine the type of a neural network. In particular, in this paper we will work with feedforward (FNNs) and recursive (RNNs) neural networks with fully connected layers [19, 27, 34]. We point out that in general CNNs can be expressed as FNNs [10, 26, 28]. 2 The weights wij associated with a neural network can be viewed as coeﬃcients of the function Φ deﬁned by it. In pattern recognition we often would like to ﬁnd these coeﬃcients, such that the function Φ approximates a training data set D according to a loss function L in the best possible way. The expectation is that when a new previously unknown input is presented to the neural network it will then be able to approximate it reasonably well. The process of ﬁnding the coeﬃcients of Φ is called training, while the process of approximating a previously unknown input is called inference [4, 16]. The data set D is composed of data samples {(x∗, z∗)}, which are pairs of known inputs x∗∈RN and outputs z∗∈RM. These pairs are often ordered and further partitioned into q disjoint mini-batches {(X∗, Z∗)}, so that X∗∈RN×r and Z∗∈RM×r. We assume that the total number of pairs is qr, otherwise the last batch is padded. Also, we do not consider the problem of splitting data into training, validation and test partitions, that are designed to prevent over-ﬁtting and validate the results. We assume this has already been done, and we are already working with the training data set. The choice of the loss function L often depends on a particular application. In this paper we will assume that it has the following form L = 1 q q X p=1 Ep(X) = 1 q q X p=1 1 r||Z∗ p −Z(l) p ||2 F (3) where Z∗is the correct and Z(l) is the obtained output for a given input X∗, while ||.||F denotes the Frobenius norm. In order to ﬁnd the coeﬃcients of Φ we must ﬁnd arg min wij L (4) Notice that we are not trying to ﬁnd weights wij and bias bi that result in a minimum for a particular data point, but rather on “average” across the entire training data set. In the next sections we will choose to work with scaled loss 1 2L to simplify the formulas. The process of adjusting the weights of the neural network to ﬁnd the minimum of (4) is called learning. In particular, when making updates to the weights based on a single data sample r = 1 it is called online, on several data samples r, q > 1 it is called mini-batch, and on all available data samples q = 1 it is called batch learning. In practice, due to large amounts of data, the weight updates are often made based on partial information obtained from individual components Ep of the loss function L. Notice that in this case we are essentially minimizing a function Ep across multiple inputs, and we can interpret this process as a form of stochastic optimization. We note that the optimization process makes a pass over the entire data set p = 1, ..., q making updates to weights wij before proceeding to the next iteration. In this context, a pass over the training data set is called an epoch. There are many optimization algorithms with diﬀerent tradeoﬀs that can ﬁnd the min- imum of the problem (4). Some rely only on function evaluations, many take advantage 3 of the gradient Gw, while others require knowledge of second-order eﬀects using Hessian Hw or its approximation [7, 32, 41]. The most popular approaches for this problem are currently based on variations of stochastic gradient descent (SGD) method, which relies exclusively on function evaluations and gradients [6, 13, 33, 35]. These methods require an evaluation of the partial derivatives of the loss function L or its components E with respect to weights wij (for simplicity we have dropped the subscript p in Ep). However, notice that the function Φ specifying the neural network is not given explicitly and is typically only deﬁned through a composition of aﬃne Λ and non-linear f functions. In the next sections we will discuss the process for evaluating Φ called forward propagation and the derivatives of E called backward propagation [2, 38, 44, 45]."
+    },
+    {
+      "heading": "Contributions",
+      "text": "In this paper we focus on the linear algebra theory behind the neural networks, that often generalizes across many of their types. First, we brieﬂy review backward propagation, obtaining an expression for the weight gradient at level k as a rank-1 matrix G(k) w = v(k)z(k−1)T (5) for FNNs and rank-t matrix G(k,t) w = t X s=1 v(k,t,s)z(k−1,s)T (6) for RNNs at time step t. Here, the yet to be speciﬁed vector v is related to ∂E/∂yi, while vector z is the input to the current layer of the neural network. Therefore, we conclude that for a mini-batch of size r, the weight update can be expressed as a rank-rt matrix. Then, we obtain a new exact expression for the weight Hessian, as a Kronecker product1 H(k) w = C(k) ⊗ \u0010 z(k−1)z(k−1)T \u0011 (7) for FNNs, and as a sum of Kronecker products H(k,t) w = t X s=1 t X ζ=1 C(k,t,s,ζ) ⊗ \u0010 z(k−1,s)z(k−1,ζ)T \u0011 (8) for RNNs at time step t. Here, the yet to be speciﬁed matrix C is related to ∂2E/∂y(k) i ∂y(k) j and will be shown to have the form W T AW, for some matrix A and weight matrix W. 1 The Kronecker product for m × n matrix A and p × q matrix B is deﬁned as a mp × nq matrix A ⊗B =   a11B ... a1nB ... ... ... am1B ... amnB  . 4 Also, we show that expression for Hessian can be further simpliﬁed for ReLU activation function f(y) = max(0, y) by taking advantage of the fact that f′′(y) = 0 for y̸ = 0. Finally, using the fact that Kronecker products (7) and (8) involve a rank-1 matrix, we will show that the eigenvalues λ of mn × mn Hessian matrix can be expressed as and related to λ(H) = n 0, ||z(k−1,s)||2 2λ(C) o (9) for FNNs and RNNs, respectively. Therefore, we can determine whether Hessian is positive, negative or indeﬁnite by looking only at the eigenvalues of m × m matrix C."
+    },
+    {
+      "heading": "Feedforward Neural Network (FNN)",
+      "text": "The feedforward neural network consists of a set of stacked fully connected layers. The layers are deﬁned by their matrix of weights W (k) and vector of bias b(k). They accept an input vector z(k−1) and produce an output vector z(k) for k = 1, ..., l, with the last vector z(l) being the output of the entire neural network, as shown in Fig. 3. In some cases the neural network can be simpliﬁed to have sparse connections, resulting in a sparse matrix of weights W (k). However, the connections between layers are always such that the data ﬂow graph is a directed acyclic graph (DAG). x∗ 1 x∗ N . . . . . . ... Input z(0) = x∗ z(k−1) 1 z(k−1) n z(k) 1 z(k) m ... ... z(k) = f(W (k)z(k−1) + b(k)) . . . . . . z(l) 1 z(l) M ... Output z(l) Fig. 3: A Sample Feedforward Neural Network (FNN) with k = 1, ..., l Levels 3.1 Forward Propagation Let us assume that we are given an input x∗, then we can compute an output of the neural network z(l) by repeated applications of the formula z(k) = f(y(k)) (10) y(k) = W (k)z(k−1) + b(k) (11) for k = 1, ..., l where z(0) = x∗. This process is called forward propagation. 5 3.2 Backward Propagation Let us assume that we have a data sample (x∗, z∗) from the training data set D, as we have discussed in the introduction. Notice that using forward propagation we may also compute the actual output z(l) and the error (associated with scaled loss 1 2L) E = 1 2||z∗−z(l)||2 2 (12) with generalization from online with r = 1 to mini-batch and batch learning with r > 1 being trivial. We would like to ﬁnd the solution for the optimization problem (4) by adjusting the weights wij and bias bi on each layer of the network based on individual components E of the loss function L. The process of updating the weights and bias can be written as W (k) − α∆W (k) (13) b(k) − α∆b(k) (14) where α is some constant, often referred to as the learning rate. It is natural to express these weight ∆W (k) and bias ∆b(k) updates based on ∂E ∂w(k) ij and ∂E ∂b(k) i (15) that indicate the direction where the total eﬀect of the weights and bias on the loss function component is the largest, respectively. Lemma 1. Let the feedforward neural network be deﬁned in (10) and (11), and the loss function component in (12). Then, the gradient of the weights and bias can be written as G(k) w = v(k)z(k−1)T (rank-1 matrix) (16) G(k) b = v(k) (17) where G(k) w = [∂E/∂w(k) ij ] is m × n matrix, G(k) b = [∂E/∂b(k) i ] is m × 1 vector, with v(l) = −(z∗−z(l)) ◦f ′(y(l)) (18) v(k−1) = (W (k)T v(k)) ◦f ′(y(k−1)) (19) for k = l, ..., 2, where ◦is Hadamard (component-wise) product and f ′(.) = [f′(.), ..., f′(.)]T . 6 Proof. Notice that taking partial derivative of the loss function component-wise with re- spect to weight we can write ∂E ∂w(k) ij = ∂E ∂z(k) i ! ∂z(k) i ∂y(k) i ! ∂y(k) i ∂w(k) ij ! (20) = ∂E ∂z(k) i ! f′(y(k) i )z(k−1) j (21) = v(k) i z(k−1) j (22) where f′ denotes a simple ordinary derivative df/dy and v(k) i = \u0012 ∂E ∂z(k) i \u0013 f′(y(k) i ). Also, notice that for the output layer k = l, using (12), we have ∂E ∂z(l) i = −(z∗ i −z(l) i ) (23) while for the hidden layers, using chain rule, we have ∂E ∂z(k−1) i = n X j=1 ∂E ∂z(k) j ! f′(y(k) j )w(k) ji (24) = n X j=1 v(k) j w(k) ji (25) Finally, assembling the indices i and j into a vector and matrix form we obtain the expres- sion for G(k) w . The derivation for G(k) b is analogous, with ∂y(k) i ∂b(k) i = 1 in (20). Notice that the computation of the auxiliary vector v(k) in (18) - (19) represents the propagation of the error (12) from the output layer l through the hidden network layers k = l −1, ..., 2. Therefore, this process is often called backward propagation. Corollary 1. Let the feedforward neural network be deﬁned in (10) and (11), and the loss function in (3). Then, for mini-batch of size r the weight update based on the gradient G(k) w in (16) can be expressed as rank-r matrix ∆W (k) = V (k)Z(k−1)T (26) where V (k) = [v(k) 1 , ..., v(k) r ] and Z(k) = [z(k) 1 , ..., z(k) r ] for r data pairs. 7 3.3 Hessian and Second Order Eﬀects We can also incorporate second order eﬀects based on ∂ ∂w(k) gh ( ∂E ∂w(k) ij ) and ∂ ∂b(k) g ( ∂E ∂b(k) i ) (27) into the optimization process for updating the weights by looking at the expression for Hessian of the neural network. Theorem 1. Let the feedforward neural network be deﬁned in (10) and (11), and the loss function component in (12). Then, Hessian of weight and bias can be written as H(k) w = \u0010 C(k) ◦F (k) + D(k)\u0011 ⊗ \u0010 z(k−1)z(k−1)T \u0011 (28) H(k) b = C(k) ◦F (k) + D(k) (29) where H(k) w = [∂/∂w(k) gh {∂E/∂w(k) ij }] is (mn) × (mn) matrix, H(k) b = [∂/∂b(k) g {∂E/∂b(k) i }] is m × m matrix, with F (k) = f ′(y(k))f ′(y(k))T (rank-1 matrix) (30) D(k) = diag(v(k)) (diagonal matrix) (31) C(l) = I ◦F (l) (diagonal matrix) (32) C(k−1) = W (k)T \u0010 C(k) ◦F (k) + D(k)\u0011 W (k) (33) where I is m × m identity matrix and vectors v(l) = −(z∗−z(l)) ◦f ′′(y(l)) (34) v(k−1) = (W (k)T v(k)) ◦f ′′(y(k−1)) (35) for k = l, ..., 2, where ◦is Hadamard (component-wise) and ⊗is Kronecker matrix product, while vectors f ′(.) = [f′(.), ..., f′(.)]T and f ′′(.) = [f′′(.), ..., f′′(.)]T . Proof. Notice that using (21) the second derivative with respect to weight is ∂ ∂w(k) gh ( ∂E ∂w(k) ij ) = ∂ ∂w(k) gh ( ∂E ∂z(k) i ! f′(y(k) i )z(k−1) j ) (36) = ∂ ∂z(k) g ( ∂E ∂z(k) i ! f′(y(k) i ) ) f′(y(k) g )z(k−1) h z(k−1) j (37) = \" ∂ ∂z(k) g ( ∂E ∂z(k) i ) f′(y(k) g )f′(y(k) i ) + ∂E ∂z(k) i ! f′′(y(k) i )δgi # z(k−1) h z(k−1) j 8 where we have taken advantage of the fact that ∂ ∂z(k) g n f′(y(k) i ) o f′(y(k) g ) = ∂ ∂y(k) g n f′(y(k) i ) o = f′′(y(k) i )δgi (38) and previous level output z(k−1) j does not depend on the current level weight w(k) gh and therefore is treated as a constant, while δgi is Kronecker delta2. Let us now ﬁnd an expression for the ﬁrst term in (37). Notice that using (23) at the output layer k = l we have ∂ ∂z(l) g ( ∂E ∂z(l) i ) = ∂ ∂z(l) g n −(z∗ i −z(l) i ) o = δgi (39) while using (24) at the hidden layers we may write ∂ ∂z(k−1) g ( ∂E ∂z(k−1) i ) = ∂ ∂z(k−1) g    n X j=1 ∂E ∂z(k) j ! f′(y(k) j )w(k) ji    (40) = n X h=1 n X j=1 ∂ ∂z(k) h ( ∂E ∂z(k) j ! f′(y(k) j ) ) f′(y(k) h )w(k) hg w(k) ji (41) = n X h=1 n X j=1 \" ∂ ∂z(k) h ( ∂E ∂z(k) j ) f′(y(k) j )f′(y(k) h ) + ∂E ∂z(k) j ! f′′(y(k) j )δhj # w(k) hg w(k) ji where we have used (38) and the fact that the current level weight w(k) ji does not depend on the previous level output z(k−1) g and therefore is treated as a constant. We may conclude the proof by noticing the following two results. First, a matrix with block elements C(zhzj) for h, j = 1, ..., n can be expressed as Kronecker product (zzT )⊗C, which under a permutation is equivalent to C ⊗(zzT ). Second, a matrix C = W T AW has elements cgi = P h P j ahjwjiwhg. The former and latter results can be used to write (37) and (41) in the matrix form, respectively. Finally, the derivation for H(k) b is analogous, with ∂y(k) g ∂b(k) g = 1 in (37). Notice that using (39) we may drop the double sum at level l −1 and write ∂ ∂z(l−1) g ( ∂E ∂z(l−1) i ) = n X j=1 \" ∂ ∂z(l) j ( ∂E ∂z(l) j ) f′(y(l) j )2 + ∂E ∂z(l) j ! f′′(y(l) j ) # w(l) ji w(l) jg (42) 2 Kronecker delta δgi = \u001a 1 if g = i 0 otherwise 9 which matches the expression obtained for a single hidden layer in [3]. However, we may not drop the double sum at an arbitrary layer k̸ = l, because in general the term ∂ ∂z(k) h \u001a ∂E ∂z(k) j \u001b may be nonzero even when h̸ = j. Finally, notice that to compute Hessian we once again need to perform backward prop- agation for both vector v(k) in (34) - (35) and matrix C(k) in (32) - (33). Corollary 2. Suppose that we are using piecewise continuous ReLU activation function f(y) = max(0, y) in Theorem 1. Notice that its ﬁrst derivative f′(y) = 1 if y > 0, f′(y) = 0 if y < 0, and f′(y) is undeﬁned if y = 0. Also, its second derivative f′′(y) = 0 for ∀y̸ = 0. Then, for ∀y(k) i = 0 Hessian of weights can be written as H(k) w = ˜C(k) ⊗ \u0010 z(k−1)z(k−1)T \u0011 (43) ˜C(k−1) = W (k)T ˜C(k)W (k) ◦F (k−1) (44) with ˜C(l) = I ◦F (l) and binary matrix F (k) = f ′(y(k))f ′(y(k))T for k = l, ..., 2. Notice that the eigenvalues of Kronecker product of two square m × m and n × n matrices are λq(A ⊗B) = λi(A)λj(B) (45) for i = 1, ..., m, j = 1, ..., n and q = 1, ..., mn, see Theorem 4.2.12 in [22]. Therefore, the eigenvalues of the Hessian matrix can be expressed as λq(H(k) w ) = n 0, ||z(k−1)||2 2λi( ˜C(k)) o (46) with λq(H(k) w ) = 0 eigenvalue multiplicity being (n −1)m."
+    },
+    {
+      "heading": "Recurrent Neural Network (RNN)",
+      "text": "The recurrent neural network consists of a set of stacked fully connected layers, where neurons can receive feedback from other neurons at the previous, same and next layer at earlier time steps. However, in this paper for simplicity we will assume that the feedback is received only from the same level at earlier time steps, as shown in Fig. 4. Therefore, the layers are deﬁned by their matrix of weights W (k), matrix of feedback U(k) and vector of bias b(k). They accept an input vector z(k−1,s) from the previous level k −1 and the hidden state vector z(k,s−1) from the previous s −1 time step. They produce an output vector z(k,s) for layers k = 1, ..., l and time steps s = 1, ..., τ. The output of the entire neural network is often a sub-sequence of vectors z(l,t) at the last layer l and time steps t = a, ..., τ with starting time step 1 ≤a ≤τ. In some cases the neural network can be simpliﬁed to have sparse connections, resulting in a sparse matrix of weights W (k) and feedback U(k). Also, notice that in our example the connections within a layer have cycles due to feedback, but the connections between layers are always such that the data ﬂow graph between them is a DAG. 10 x(∗,s) 1 x(∗,s) N . . . . . . ... Input z(0,s) = x(∗,s) z(k−1,s) 1 z(k−1,s) n z(k,s) 1 z(k,s) m ... ... z(k,s) = f(W (k)z(k−1,s) + U(k)z(k,s−1) + b(k)) . . . . . . z(l,t) 1 z(l,t) M ... Output z(l,t) Fig. 4: A Sample Recurrent Neural Network (RNN) with k = 1, ..., l Levels and s = 1, ..., τ Time Steps 4.1 Forward Propagation Let us assume that we are given an input sequence x(∗,s), then we can compute an output sequence z(l,s) generated by the neural network by repeated applications of the formula z(k,s) = f(y(k,s)) (47) y(k,s) = W (k)z(k−1,s) + U(k)z(k,s−1) + b(k) (48) for k = 1, ..., l and s = 1, ..., τ, where initial hidden state z(k,0) = 0 and input z(0,s) = x(∗,s). Notice that the ﬁnal output is often a sub-sequence z(l,t), where t = a, ..., τ with starting time step 1 ≤a ≤τ. This process is called forward propagation. 4.2 Backward Propagation (Through Time) Let us assume that we have a data sample (x∗, z∗) from the training data set D, as we have discussed in the introduction. Notice that here the input x∗and output z∗are actually a sequence x(∗,s) and z(∗,t) for time steps s = 1, ..., τ and t = a, ..., τ with starting time step 1 ≤a ≤τ, respectively. Also, notice that using forward propagation we may compute the actual output z(l,t) and the error (associated with scaled loss 1 2L) E = τ X t=a E(t) = τ X t=a 1 2||z(∗,t) −z(l,t)||2 2 (49) with generalization from online with r = 1 to mini-batch and batch learning with r > 1 being trivial. We would like to ﬁnd the solution for the optimization problem (4) by adjusting the weights wij, feedback uij and bias bi on each layer of the network based on individual 11 components E of the loss function L. So that the updating process can be written as W (k) − α∆W (k) (50) U(k) − α∆U(k) (51) b(k) − α∆b(k) (52) where α is some constant, often referred to as the learning rate. It is natural to express these weight ∆W (k), feedback ∆U(k) and bias ∆b(k) updates based on ∂E ∂w(k) ij , ∂E ∂u(k) ij and ∂E ∂b(k) i (53) that indicate the direction where the total eﬀect of the weights, feedback and bias on the loss function component is the largest, respectively. Notice in turn that these quantities can be expressed through the sum of their sub-components ∂E(t) ∂w(k) ij , ∂E(t) ∂u(k) ij and ∂E(t) ∂b(k) i (54) for t = a, ..., τ, which will be our focus next. Lemma 2. Let the recurrent neural network be deﬁned in (47) and (48), and the loss function components in (49). Then, the gradient of the weights and bias can be written as G(k,t) w = t X s=1 ˜v(k,t,s)z(k−1,s)T (rank-t matrix) (55) G(k,t) u = t X s=1 ˜v(k,t,s)z(k,s−1)T (rank-t matrix) (56) G(k,t) b = t X s=1 ˜v(k,t,s) (57) where G(k,t) w = [∂E(t)/∂w(k) ij ] is m × n matrix, G(k,t) u = [∂E(t)/∂u(k) ij ] is m × m matrix and G(k,t) b = [∂E(t)/∂b(k) i ] is m × 1 vector, with ˜v(k,t,s) = t−1 Y h=s U(k)diag(f ′(y(k,h))) !T v(k,t) (58) and v(l,t) = − \u0010 z(∗,t) −z(l,t)\u0011 ◦f ′(y(l,t)) (59) v(k−1,t) = \u0010 W (k)T v(k,t) + U(k−1)T v(k−1,t+1)\u0011 ◦f ′(y(k−1,t)) (60) for k = l, ..., 2 and t = τ, ..., a, where we consider the terms for time t + 1 > τ to be zero. Also, ◦is Hadamard (component-wise) product, e = [1, ..., 1]T and f ′(.) = [f′(.), ..., f′(.)]T . 12 Proof. Notice that in RNNs all components of output vector z(k,t) depend on weight w(k) ij due to presence of feedback matrix U, unlike FNNs where only i-th component depends on this weight. Therefore, taking partial derivative of the loss function component-wise with respect to weight we can write ∂E(t) ∂w(k) ij = m X g=1 ∂E(t) ∂z(k,t) g ! ∂z(k,t) g ∂y(k,t) g ! ∂y(k,t) g ∂w(k) ij ! (61) = m X g=1 ∂E(t) ∂z(k,t) g ! f′(y(k,t) g ) z(k−1,t) j δgi + m X h=1 u(k) gh ∂z(k,t−1) h ∂w(k) ij ! (62) = m X g=1 v(k,t) g z(k−1,t) j δgi + m X h=1 ˜u(k,t−1) gh ∂y(k,t−1) h ∂w(k) ij ! (63) where v(k,t) i = \u0012 ∂E(t) ∂z(k,t) i \u0013 f′(y(k,t) i ), ˜u(k,t) gh = u(k) gh f′(y(k,t) h ), ∂y(k,1) g ∂w(k) ij = z(k−1,1) j δig and f′ denotes a simple ordinary derivative df/dy, while δgi is the Kronecker delta. We can unroll the above expression for a few time steps to obtain ∂E(t) ∂w(k) ij = v(k,t) i z(k−1,t) j + m X g=1 v(k,t) g ˜u(k,t−1) gi z(k−1,t−1) j + (64) + m X g=1 v(k,t) g m X h=1 ˜u(k,t−1) gh ˜u(k,t−2) hi z(k−1,t−2) j + ... where the last sum disappears for the term involving z(k−1,s) j due to Kronecker delta. Therefore, in matrix form leading to creation of the terms \u0010 Iz(k−1,t) j + ˜U(k,t−1)z(k−1,t−1) j + ˜U(k,t−1) ˜U(k,t−2)z(k−1,t−2) j + ... \u0011T v(k,t) = t X s=1 t−1 Y h=s ˜U(k,h) !T z(k−1,s) j v(k,t) (65) Also, notice that for the output layer k = l at time s = t, using using (49), we have ∂E(t) ∂z(l,t) i = −(z(∗,t) i −z(l,t) i ) (66) 13 while for other layers and time steps, using chain rule, we have ∂E(t) ∂z(k−1,t) i = n X j=1 ∂E(t) ∂z(k,t) j ! f′(y(k,t) j )w(k) ji + m X j=1 ∂E(t) ∂z(k−1,t+1) j ! f′(y(k−1,t+1) j )u(k−1) ji (67) = n X j=1 v(k,t) j w(k) ji + m X j=1 v(k−1,t+1) j u(k−1) ji (68) Finally, assembling the indices i and j into a vector and matrix forms we obtain an expression for G(k,t) w . The derivation for G(k,t) u and G(k,t) b is analogous, with exception that ∂y(k,t) g ∂u(k) ij = z(k,t−1) j δgi + m X h=1 u(k) gh ∂z(k,t−1) h ∂u(k) ij (69) and ∂y(k,t) g ∂b(k) i = δgi + m X h=1 u(k) gh ∂z(k,t−1) h ∂b(k) i (70) in (61), respectively. Notice that the computation of the auxiliary vector v(k,t) in (59) - (60) represents the propagation of the error (49) from the output layer l through the hidden network layers k = l−1, ..., 2 and time steps t = τ −1, ..., a. Therefore, this process is often called backward propagation through time (BPTT). Corollary 3. Let the recurrent neural network be deﬁned in (47) and (48), and the loss function in (3). Then for mini-batch of size r the weight update based on the gradient G(k,t) w in (55) and G(k,t) u in (56) can be expressed as rank-rt matrix ∆W (k) = t X s=1 ˜V (k,s)Z(k−1,s)T (71) ∆U(k) = t X s=1 ˜V (k,s)Z(k,s−1)T (72) where ˜V (k,s) = [˜v(k,s) 1 , ..., ˜v(k,s) r ] and Z(k,s) = [z(k,s) 1 , ..., z(k,s) r ] for r data pairs. 4.3 Hessian and Second Order Eﬀects (Through Time) We can also incorporate second order eﬀects based on ∂ ∂w(k) pq ( ∂E(t) ∂w(k) ij ) , ∂ ∂u(k) pq ( ∂E(t) ∂u(k) ij ) and ∂ ∂b(k) p ( ∂E(t) ∂b(k) i ) (73) into the optimization process for updating the weights by looking at the expression for Hessian of the neural network. 14 Theorem 2. Let the recurrent neural network be deﬁned in (47) and (48), and the loss function component in (49). Then, Hessian of weight and bias can be written as H(k,t) w = t X s=1 t X ζ=1 ˜C(k,t,s,ζ) ⊗ \u0010 z(k−1,s)z(k−1,ζ)T \u0011 (74) H(k,t) u = t X s=1 t X ζ=1 ˜C(k,t,s,ζ) ⊗ \u0010 z(k,s−1)z(k,ζ−1)T \u0011 (75) H(k,t) b = t X s=1 t X ζ=1 ˜C(k,t,s,ζ) (76) where H(k,t) w = [∂/∂w(k) pq {∂E(t)/∂w(k) ij }] is (mn)×(mn) matrix, H(k,t) u = [∂/∂u(k) pq {∂E(t)/∂u(k) ij }] is (mm) × (mm) matrix, H(k,t) b = [∂/∂b(k) p {∂E(t)/∂b(k) i }] is m × m matrix , with ˜C(k,t,s,ζ) = t−1 Y h=s U(k)diag(f ′(y(k,h))) !T A(k,t)   t−1 Y h=ζ U(k)diag(f ′(y(k,h)))   (77) and A(k,t) = C(k,t) ◦F (k,t) + D(k,t) (78) F (k,t) = f ′(y(k,t))f ′(y(k,t))T (rank-1 matrix) (79) D(k,t) = diag(v(k,t)) (diagonal matrix) (80) C(l,t) = I ◦F (l,t) (81) C(k−1,t) = W (k)T A(k,t)W (k) + U(k−1)T A(k−1,t+1)U(k−1) (82) where I is m × m identity matrix and vectors v(l,t) = − \u0010 z(∗,t) −z(l,t)\u0011 ◦f ′′(y(l,t)) (83) v(k−1,t) = \u0010 W (k)T v(k,t) + U(k−1)T v(k−1,t+1)\u0011 ◦f ′′(y(k−1,t)) (84) for k = l, ..., 2 and t = τ, ..., a, where we consider the terms for time t + 1 > τ to be zero. Also, ◦is Hadamard (component-wise) and ⊗is Kronecker matrix product, while vectors f ′(.) = [f′(.), ..., f′(.)]T and f ′′(.) = [f′′(.), ..., f′′(.)]T . 15 Proof. Notice that using (62) the second derivative with respect to weight is"
+    },
+    {
+      "heading": "∂w(k)",
+      "text": "pq"
+    },
+    {
+      "heading": "∂w(k)",
+      "text": "ij"
+    },
+    {
+      "heading": "=",
+      "text": "m"
+    },
+    {
+      "heading": "X",
+      "text": "r=1"
+    },
+    {
+      "heading": "∂z(k,t)",
+      "text": "r"
+    },
+    {
+      "heading": "",
+      "text": "m"
+    },
+    {
+      "heading": "X",
+      "text": "g=1"
+    },
+    {
+      "heading": "∂z(k,t)",
+      "text": "g"
+    },
+    {
+      "heading": "f′(y(k,t)",
+      "text": "g"
+    },
+    {
+      "heading": "z(k−1,t)",
+      "text": "j"
+    },
+    {
+      "heading": "δgi +",
+      "text": "m"
+    },
+    {
+      "heading": "X",
+      "text": "h=1"
+    },
+    {
+      "heading": "u(k)",
+      "text": "gh"
+    },
+    {
+      "heading": "∂z(k,t−1)",
+      "text": "h"
+    },
+    {
+      "heading": "∂w(k)",
+      "text": "ij"
+    },
+    {
+      "heading": "× f′(y(k,t)",
+      "text": "r"
+    },
+    {
+      "heading": "z(k−1,t)",
+      "text": "q"
+    },
+    {
+      "heading": "δrp +",
+      "text": "m"
+    },
+    {
+      "heading": "X",
+      "text": "h=1"
+    },
+    {
+      "heading": "u(k)",
+      "text": "rh"
+    },
+    {
+      "heading": "∂z(k,t−1)",
+      "text": "h"
+    },
+    {
+      "heading": "∂w(k)",
+      "text": "pq"
+    },
+    {
+      "heading": "=",
+      "text": "m"
+    },
+    {
+      "heading": "X",
+      "text": "r=1 m"
+    },
+    {
+      "heading": "X",
+      "text": "g=1"
+    },
+    {
+      "heading": "∂z(k,t)",
+      "text": "r"
+    },
+    {
+      "heading": "∂z(k,t)",
+      "text": "g"
+    },
+    {
+      "heading": "f′(y(k,t)",
+      "text": "g"
+    },
+    {
+      "heading": ")f′(y(k,t)",
+      "text": "r"
+    },
+    {
+      "heading": "∂z(k,t)",
+      "text": "g"
+    },
+    {
+      "heading": "f′′(y(k,t)",
+      "text": "g"
+    },
+    {
+      "heading": "z(k−1,t)",
+      "text": "j"
+    },
+    {
+      "heading": "δgi +",
+      "text": "m"
+    },
+    {
+      "heading": "X",
+      "text": "h=1"
+    },
+    {
+      "heading": "u(k)",
+      "text": "gh"
+    },
+    {
+      "heading": "∂z(k,t−1)",
+      "text": "h"
+    },
+    {
+      "heading": "∂w(k)",
+      "text": "ij"
+    },
+    {
+      "heading": "z(k−1,t)",
+      "text": "q"
+    },
+    {
+      "heading": "δrp +",
+      "text": "m"
+    },
+    {
+      "heading": "X",
+      "text": "h=1"
+    },
+    {
+      "heading": "u(k)",
+      "text": "rh"
+    },
+    {
+      "heading": "∂z(k,t−1)",
+      "text": "h"
+    },
+    {
+      "heading": "∂w(k)",
+      "text": "pq"
+    },
+    {
+      "heading": "∂z(k,t)",
+      "text": "r"
+    },
+    {
+      "heading": "f′(y(k,t)",
+      "text": "g"
+    },
+    {
+      "heading": "f′(y(k,t)",
+      "text": "r"
+    },
+    {
+      "heading": "∂y(k,t)",
+      "text": "r"
+    },
+    {
+      "heading": "f′(y(k,t)",
+      "text": "g"
+    },
+    {
+      "heading": "= f′′(y(k,t)",
+      "text": "g"
+    },
+    {
+      "heading": "and neither previous level output z(k−1,t)",
+      "text": "j"
+    },
+    {
+      "heading": "nor previous time step quantity ∂z(k,t−1)",
+      "text": "h"
+    },
+    {
+      "heading": "/∂w(k)",
+      "text": "ij"
+    },
+    {
+      "heading": "depend on the current level output z(k,t)",
+      "text": "r and therefore are treated as a constants."
+    },
+    {
+      "heading": "Letting a(k,t)",
+      "text": "gr be the term in square brackets in (86), we can unroll this expression as m"
+    },
+    {
+      "heading": "X",
+      "text": "r=1 m"
+    },
+    {
+      "heading": "X",
+      "text": "g=1"
+    },
+    {
+      "heading": "a(k,t)",
+      "text": "gr"
+    },
+    {
+      "heading": "z(k−1,t)",
+      "text": "j"
+    },
+    {
+      "heading": "δgi + ˜u(k,t−1)",
+      "text": "gi"
+    },
+    {
+      "heading": "z(k−1,t−1)",
+      "text": "j"
+    },
+    {
+      "heading": "+",
+      "text": "m"
+    },
+    {
+      "heading": "X",
+      "text": "h=1"
+    },
+    {
+      "heading": "˜u(k,t−1)",
+      "text": "gh"
+    },
+    {
+      "heading": "˜u(k,t−2)",
+      "text": "hi"
+    },
+    {
+      "heading": "z(k−1,t−2)",
+      "text": "j + ..."
+    },
+    {
+      "heading": "z(k−1,t)",
+      "text": "q"
+    },
+    {
+      "heading": "δrp + ˜u(k,t−1)",
+      "text": "rp"
+    },
+    {
+      "heading": "z(k−1,t−1)",
+      "text": "q"
+    },
+    {
+      "heading": "+",
+      "text": "m"
+    },
+    {
+      "heading": "X",
+      "text": "h=1"
+    },
+    {
+      "heading": "˜u(k,t−1)",
+      "text": "rh"
+    },
+    {
+      "heading": "˜u(k,t−2)",
+      "text": "hp"
+    },
+    {
+      "heading": "z(k−1,t−2)",
+      "text": "q + ..."
+    },
+    {
+      "heading": "where ˜u(k,t)",
+      "text": "gh"
+    },
+    {
+      "heading": "gh f′(y(k,t)",
+      "text": "h ) and the last sum disappears for the term involving z(k−1,s) j"
+    },
+    {
+      "heading": "due",
+      "text": "to Kronecker delta. Therefore, in matrix form leading to creation of the terms"
+    },
+    {
+      "heading": "Iz(k−1,t)",
+      "text": "j"
+    },
+    {
+      "heading": "+ ˜U(k,t−1)z(k−1,t−1)",
+      "text": "j"
+    },
+    {
+      "heading": "+ ˜U(k,t−1) ˜U(k,t−2)z(k−1,t−2)",
+      "text": "j + ..."
+    },
+    {
+      "heading": "Iz(k−1,t)",
+      "text": "q"
+    },
+    {
+      "heading": "+ ˜U(k,t−1)z(k−1,t−1)",
+      "text": "q"
+    },
+    {
+      "heading": "+ ˜U(k,t−1) ˜U(k,t−2)z(k−1,t−2)",
+      "text": "q + ..."
+    },
+    {
+      "heading": "=",
+      "text": "t"
+    },
+    {
+      "heading": "X",
+      "text": "s=1"
+    },
+    {
+      "heading": "Y",
+      "text": "h=s"
+    },
+    {
+      "heading": "z(k−1,s)",
+      "text": "j"
+    },
+    {
+      "heading": "× A(k,t) ×",
+      "text": "t"
+    },
+    {
+      "heading": "X",
+      "text": "ζ=1"
+    },
+    {
+      "heading": "",
+      "text": "t−1"
+    },
+    {
+      "heading": "Y",
+      "text": "h=ζ"
+    },
+    {
+      "heading": "z(k−1,ζ)",
+      "text": "q"
+    },
+    {
+      "heading": "where we have used the fact that cip = P",
+      "text": "g"
+    },
+    {
+      "heading": "P",
+      "text": "r agrurpugi are elements of matrix C = UT AU."
+    },
+    {
+      "heading": "16",
+      "text": "Let us now ﬁnd an expression for the ﬁrst term in (86). Notice that using (66) at the output layer k = l and time s = t we have ∂ ∂z(l,t) r ( ∂E(t) ∂z(l,t) g ) = ∂ ∂z(l,t) r n −(z(∗,t) g −z(l,t) g ) o = δrg (90) while using (67) and (87) for other layers and time steps we may write ∂ ∂z(k−1,t) r ( ∂E(t) ∂z(k−1,t) g ) = = n X h=1 n X ζ=1 ∂ ∂z(k,t) h     ∂E(t) ∂z(k,t) ζ  f′(y(k,t) ζ )w(k) ζg   f′(y(k,t) h )w(k) hr + m X h=1 m X ζ=1 ∂ ∂z(k−1,t+1) h      ∂E(t) ∂z(k−1,t+1) ζ  f′(y(k−1,t+1) ζ )u(k−1) ζg   f′(y(k−1,t+1) h )u(k−1) hr (91) = n X h=1 n X ζ=1   ∂ ∂z(k,t) h    ∂E(t) ∂z(k,t) ζ   f′(y(k,t) ζ )f′(y(k,t) h ) +  ∂E(t) ∂z(k,t) ζ  f′′(y(k,t) ζ )δhζ  w(k) ζg w(k) hr + m X h=1 m X ζ=1   ∂ ∂z(k−1,t+1) h    ∂E(t) ∂z(k−1,t+1) ζ   f′(y(k−1,t+1) ζ )f′(y(k−1,t+1) h ) +   ∂E(t) ∂z(k−1,t+1) ζ  f′′(y(k−1,t+1) ζ )δhζ  u(k−1) ζg u(k−1) hr Notice that in (91) the terms ∂ ∂z(k,t) r    m X ζ=1   ∂E(t) ∂z(k−1,t+1) ζ  f′(y(k−1,t+1) ζ )u(k−1) ζg   = 0 (92) ∂ ∂z(k−1,t+1) r    n X ζ=1  ∂E(t) ∂z(k,t) ζ  f′(y(k,t) ζ )w(k) ζg   = 0 (93) because in (92) functions on the previous level k −1 do not depend on the current level k and in (93) functions at the previous time t do not depend on the current time t + 1. We may conclude the proof by noticing the following two results. First, a matrix with block elements C(zqzj) for q, j = 1, ..., n can be expressed as Kronecker product (zzT )⊗C, which under a permutation is equivalent to C ⊗(zzT ). Second, a matrix C = W T AW has elements crg = P h P ζ ahζwζgwhr. The former and latter results can be used to write (89) and (91) in the matrix form, respectively. 17 Finally, the derivation for H(k) u and H(k) b is analogous, with exception that ∂y(k,t) r ∂u(k) pq = z(k,t−1) q δrp + m X h=1 u(k) rh ∂z(k,t−1) h ∂u(k) pq (94) and ∂y(k,t) r ∂b(k) p = δrp + m X h=1 u(k) rh ∂z(k,t−1) h ∂b(k) p (95) in (86), respectively. Finally, notice that to compute Hessian we once again need to perform backward prop- agation through time for both vector v(k,t) in (83) - (84) and matrix C(k,t) in (81) - (82). Corollary 4. Suppose that we are using piecewise continuous ReLU activation function f(y) = max(0, y) in Theorem 2. Notice that its ﬁrst derivative f′(y) = 1 if y > 0, f′(y) = 0 if y < 0, and f′(y) is undeﬁned if y = 0. Also, its second derivative f′′(y) = 0 for ∀y̸ = 0. Then, for ∀y(k,s) i = 0 Hessian of weights can be written as H(k,t) w = t X s=1 t X ζ=1 ˜C(k,t,s,ζ) ⊗ \u0010 z(k−1,s)z(k−1,ζ)T \u0011 (96) H(k,t) u = t X s=1 t X ζ=1 ˜C(k,t,s,ζ) ⊗ \u0010 z(k,s−1)z(k,ζ−1)T \u0011 (97) ˜C(k,t,s,ζ) = t−1 Y h=s U(k)diag(f ′(y(k,h))) !T A(k,t)   t−1 Y h=ζ U(k)diag(f ′(y(k,h)))   (98) where A(l,t) = I ◦F (l,t) (99) A(k−1,t) = \u0010 W (k)T A(k,t)W (k) + U(k−1)T A(k−1,t+1)U(k−1)\u0011 ◦F (k−1,t) (100) with binary matrix F (k,t) = f ′(y(k,t))f ′(y(k,t))T for k = l, ..., 2 and t = τ, ..., a, where we consider the terms for time step t + 1 > τ to be zero. Suppose that the eigenvalues of n × n Hermitian matrix have been ordered so that λ1 ≤... ≤λn. Then, the eigenvalues of a sum of two Hermitian matrices satisfy λq(A) + λ1(B) ≤λq(A + B) ≤λq(A) + λn(B) (101) see Weyl Theorem 4.3.1 in [21]. Also, suppose that singular values of n × n nonsymmetric matrix have been ordered so that σ1 ≤... ≤σn. Then the singular values of a sum of two nonsymmetric matrices satisfy σq(A) −σn(B) ≤σq(A + B) ≤σq(A) + σn(B) (102) 18 see Theorem 3.3.16 in [22], where a reverse ordering of singular values is used. Then, the Hessian matrix eigenvalues satisfy λq(B(k,t)) + t X s=1 s X ζ=1,ζ̸=t λ1(B(k,t,s,ζ)) ≤λq(H(k,t) w ) ≤λq(B(k,t)) + t X s=1 s X ζ=1,ζ̸=t λn(B(k,t,s,ζ)) (103) where auxiliary symmetric matrix B(k,t,s,ζ) =    ˜C(k,t,s,ζ) ⊗ \u0010 z(k−1,s)z(k−1,ζ)T \u0011 if s = ζ ˜C(k,t,s,ζ) ⊗ \u0010 z(k−1,s)z(k−1,ζ)T \u0011 + ˜C(k,t,ζ,s) ⊗ \u0010 z(k−1,ζ)z(k−1,s)T \u0011 otherwise (104) and we have abbreviated B(k,t) the term with s = ζ = t. Notice that when s = ζ = t the products with U(k) disappear in (77) and (98) and the term B(k,t) ≡H(k) w in (28) and (43), with all quantities taken at time t. Therefore, using (46) we may conclude that λq(B(k,t)) = n 0, ||z(k−1,t)||2 2λi(A(k,t)) o (105) with λq(B(k,t)) = 0 eigenvalue multiplicity being (n −1)m and i = 1, ...m. Notice that similar bounds can be obtained analogously for all terms B(k,t,s,ζ) with s = ζ. Also, notice that for symmetric matrix |λq| = σq and that the singular values of Kro- necker product of two square m × m and n × n matrices are σq(A ⊗B) = σi(A)σj(B) (106) for i = 1, ..., m, j = 1, ..., n and q = 1, ..., mn, see Theorem 4.2.15 in [22]. Therefore, using (102) and (106) for the terms with s̸ = ζ we obtain 0 ≤ |λq(B(k,t,s,ζ))| ||z(k−1,ζ)||2||z(k−1,s)||2 ≤σq( ˜C(k,t,s,ζ)) + σn( ˜C(k,t,ζ,s)) (107) where we have used the fact that σi(A) = σi(AT ) and σn(vwT ) = σn(wvT ) = ||v||2||w||2. Finally, using (45) and (103) as well as (106) and (107) we obtain that the Hessian matrix eigenvalues satisfy the following bounds (t −1) min s̸=t µ(k,t,s) 1 −t(t −1) max s̸=ζ σn( ˜C(k,t,s,ζ))||z(k−1,ζ)||2||z(k−1,s)||2 ≤λq(H(k,t) w ) −λq(B(k,t)) ≤ (108) (t −1) max s̸=t µ(k,t,s) n + t(t −1) max s̸=ζ σn( ˜C(k,t,s,ζ))||z(k−1,ζ)||2||z(k−1,s)||2 where µ(k,t,s) 1 = min{0, ||z(k−1,s)||2 2λ1( ˜C(k,t,s,s))}, µ(k,t,s) n = max{0, ||z(k−1,s)||2 2λn( ˜C(k,t,s,s))}. 19"
+    },
+    {
+      "heading": "Conclusion",
+      "text": "In this paper we have reviewed backward propagation, including backward propagation through time. We have shown that the weight gradient can be expressed as a rank-1 and rank-t matrix for FNNs and RNNs respectively. Therefore, we have concluded that for mini-batch of size r the weight updates based on the gradient can be expressed as rank-rt matrix. Also, we have shown that for t time steps the weight Hessian can be expressed as a sum of t2 Kronecker products of rank-1 and W T AW matrices, for some matrix A and weight matrix W. Finally, we have found an expression and bounds for the eigenvalues of the Hessian matrix in terms of smaller m × m matrices. In the future we would like to explore gradient and Hessian structure to develop novel optimization algorithms for computing weight and bias updates."
+    },
+    {
+      "heading": "Acknowledgements",
+      "text": "The author would like to acknowledge Andrei Bourchtein, Ludmila Bourchtein, Thomas Breuel, Boris Ginsburg, Michael Garland, Oleksii Kuchaiev, Pavlo Molchanov and Saurav Muralidharan for their useful comments and suggestions."
+    },
+    {
+      "heading": "References",
+      "text": "[1] M. Abadi, A. Agarwal, P. Barham, E. Brevdo, Z. Chen, C. Citro, G. S. Corrado, A. Davis, J. Dean, M.u Devin, S. Ghemawat, I. Goodfellow, A. Harp, G. Irving, M. Isard, Y. Jia, R. Jozefowicz, L. Kaiser, M. Kudlur, J. Levenberg, D. Mane, R. Monga, S. Moore, D. Murray, C. Olah, M. Schuster, J. Shlens, B. Steiner, I. Sutskever, K. Talwar, P. Tucker, V. Vanhoucke, V. Vasudevan, F. Viegas, O. Vinyals, P. Warden, M. Wat- tenberg, M. Wicke, Y. Yu and X. Zheng, TensorFlow: Large-Scale Machine Learning on Heterogeneous Systems, http://tensorﬂow.org, 2015. [2] Y. Bengio, P. Simard and P. Frasconi, Learning Long-Term Dependencies with Gradient Descent is Diﬃcult, IEEE Trans. Neural Networks, Vol. 5, pp. 157-166, 1994. [3] C. Bishop, Exact Calculation of the Hessian Matrix for the Multilayer Perceptron, Neural Computation, January, 1992. [4] C. Bishop, Neural Networks for Pattern Recognition, Oxford University Press, Jan- uary, 1995. [5] C. Bishop, Pattern Recognition and Machine Learning, Springer, January, 2006. [6] L. Bottou, F. E. Curtis and J. Nocedal, Optimization Methods for Large Scale Machine Learning, Technical Report, arXiv:1606.04838, 2016. 20 [7] S. Boyd and L. Vandenberghe, Convex Optimization, Cambridge University Press, New York, NY, 2004. [8] S. Chetlur, C. Woolley, P. Vandermersch, J. Cohen, J. Tran, B. Catan- zaro and E. Shelhamer, cuDNN: Eﬃcient Primitives for Deep Learning, Technical Report, arXiv:1410.0759, 2014. [9] F. Chollet, Keras, https://github.com/fchollet/keras, 2015. [10] D. Ciresan, U. Meier, J. Masci, L. M. Gambardella and J. Schmidhuber, Flexible, High Performance Convolutional Neural Networks for Image Classiﬃcation, Proc. 22nd Int. Conf. Artiﬁcial Intelligence, Vol. 2, pp. 1237-1242, 2011. [11] R. Collobert, S. Bengio and J. Mariethoz, Torch: a Modular Machine Learning Software Library, Technical Report, IDIAP-RR 02-46, 2002. [12] Y. Wu, M. Schuster, Z. Chen, Q. V. Le, M. Norouzi, W. Macherey, M. Krikun, Y. Cao, Q. Gao, K. Macherey, J. Klingner, A. Shah, M. Johnson, X. Liu, L. Kaiser, S. Gouws, Y. Kato, T. Kudo, H. Kazawa, K. Stevens, G. Kurian, N. Patil, W. Wang, C. Young, J. Smith, J. Riesa, A. Rudnick, O. Vinyals, G. Corrado, M. Hughes and J. Dean, Google’s Neural Machine Trans- lation System: Bridging the Gap between Human and Machine Translation, Technical Report, arXiv:1609.08144, 2016. [13] J. Duchi, E. Hazan and Y. Singer, Adaptive Subgradient Methods for Online Learning and Stochastic Optimization, Journal of Machine Learning Research, Vol. 12, pp. 2121-2159, 2011. [14] J. L. Elman, Finding Structure in Time, Cognitive Sci., Vol. 14, pp. 179-211, 1990. [15] X. Glorot, A. Bordes and Y. Bengio, Deep Sparse Rectiﬁer Neural Networks, International Conference on Artiﬁcial Intelligence and Statistics, 2011. [16] I. Goodfellow, Y. Bengio and A. Courville, Deep Learning, MIT Press, 2016. [17] A. Hannun, C. Case, J. Casper, B. Catanzaro, G. Diamos, E. Elsen, R. Prenger, S. Satheesh, S. Sengupta, A. Coates and A. Ng, Deep Speech: Scaling Up End-to-End Speech Recognition, Technical Report, arXiv:1412.5567, 2014. [18] D. Hebb, The Organization of Behavior, New York, Wiley, 1949. [19] S. Hochreiter and J. Schmidhuber, Long Short-Term Memory, Neural Compu- tation, Vol. 9, pp. 1735-1780, 1997. [20] J. J. Hopfield, Neural Networks and Physical Systems with Emergent Collective Computational Abilities, Proc. Nat. Acad. Science, Vol. 79, pp. 2554-2558, 1982. 21 [21] R. A. Horn and C. R. Johnson, Matrix Analysis, Cambridge University Press, 1999. [22] R. A. Horn and C. R. Johnson, Topics in Matrix Analysis, Cambridge University Press, 2008. [23] Y. Jia, E. Shelhamer, J. Donahue, S. Karayev, J. Long, R. Girshick, S. Guadarrama and T. Darrell, Caﬀe: Convolutional Architecture for Fast Feature Embedding, Technical Report, arXiv preprint arXiv:1408.5093, 2014. [24] M. I. Jordan, Serial Order: A Parallel Distributed Processing Approach, ICS Tech- nical Report 8604, University of California, San Diego, 1986. [25] A. Karpathy, G. Toderici, S. Shetty, T. Leung, R. Sukthankar and L. Fei-Fei, Large-Scale Video Classiﬁcation with Convolutional Neural Networks, IEEE Conference on Computer Vision and Pattern Recognition, 2014. [26] A. Krizhevsky, I. Sutskever and G. E. Hinton, Imagenet Classiﬁcation with Deep Convolutional Neural Networks, Adv. Neural Proc. Syst., pp. 1097-1105, 2012. [27] Y. LeCun, Learning Processes in an Asymmetric Threshold Network, Disordered Systems and Biological Organization, pp. 233-240, 1986. [28] Y. LeCun, L. Bottou, Y. Bengio and P. Haffner, Gradient-based Learning Applied to Document Recognition, Proc. IEEE, Vol. 86, pp. 2278-2324, 1998. [29] W. McCulloch and W. Pitts, A Logical Calculus of Ideas Immanent in Nervous Activity, Bulletin of Mathematical Biophysics, Vol. 5, pp. 115-133, 1943. [30] T. Mikolov, K. Chen, G. Corrado and J. Dean, Eﬃcient Estimation of Word Representations in Vector Space, Technical Report, arXiv:1301.3781, 2013. [31] V. Nair, and G. E. Hinton, Rectiﬁed Linear Units Improve Restricted Boltzmann Machines, Proc. 27th International Conference on Machine Learning (ICML), 2010. [32] J. Nocedal and S. J. Wright, Numerical Optimization, Springer Science, 2nd Ed., New York, NY, 2006. [33] Y. Nesterov, A method of Solving a Convex Programming Problem with Convergence Rate O(1/k2), Soviet Mathematics Doklady, Vol. 27, pp. 372-376, 1983. [34] R. Pascanu, T. Mikolov and Y. Bengio, On the Diﬃculty of Training Recurrent Neural Networks, Proc. 30th Int. Conf. Machine Learning, 2013. [35] B. T. Polyak, Some Methods of Speeding Up the Convergence of Iteration Methods, USSR Computational Mathematics and Mathematical Physics, Vol. 4, pp. 1-17, 1964. 22 [36] F. Rosenblatt, The Perceptron: A Probabilistic Model For Information Storage And Organization In The Brain, Psychological Review, Vol. 65, pp. 386-408, 1958. [37] D. E. Rumelhart, G. E. Hinton and R. J. Williams, Learning Internal Repre- sentations by Error Propagation, Parallel Distributed Processing: Explorations in the Microstructure of Cognition, Foundations, Vol. 1, MIT Press, Cambridge, MA. [38] D. E. Rumelhart, G. E. Hinton and R. J. Williams, Learning Representations by Back-Propagating Errors, Nature, Vol. 323, pp. 533-536, 1986. [39] J. Schmidhuber, Deep Learning in Neural Networks: An Overview, Neural Networks, Vol. 61, pp. 85-117, 2015. [40] F. Seide and A. Agarwal, CNTK: Microsoft’s Open-Source Deep-Learning Toolkit, Proc. 22nd ACM SIGKDD Int. Conf. Know. Disc. Data Mining, pp. 2135-2135, 2016. [41] J. C. Spall, Introduction to Stochastic Search and Optimization, John Wiley and Sons, New York, NY, 2003. [42] C. Szegedy, W. Liu, Y. Jia, P. Sermanet, S. Reed, D. Anguelov, D. Erhan, V. Vanhoucke and A. Rabinovich, Going Deeper with Convolutions, Technical Report, arXiv:1409.4842, 2011. [43] G. W. Taylor, R. Fergus, Y. LeCun and C. Bregler, Convolutional Learning of Spatio-temporal Features, Proc. 11th European Conference on Computer Vision: Part VI, pp. 140-153, 2010. [44] P. Werbos, Maximizing Long-Term Gas Industry Proﬁts in Two Minutes in Lotus Using Neural Networks Methods, IEEE Trans. Syst. Man. Cyber, 1989. [45] P. Werbos, BackPropagation Through Time: What it Does and How to Do It?, Proc. IEEE, 1990. [46] Nvidia, Nvidia Tesla P100 GPU, Pascal Architecture White Paper, 2016. [47] Nvidia, Nvidia Tesla V100 GPU, Volta Architecture White Paper, 2017. 23"
+    }
+  ]
+}

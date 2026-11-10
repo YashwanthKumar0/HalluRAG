@@ -1,0 +1,616 @@
+{
+  "paper_id": "1505.00274",
+  "title": "Stick-Breaking Policy Learning in Dec-POMDPs",
+  "abstract": "Expectation maximization (EM) has recently been shown to be an efficient algorithm for learning finite-state controllers (FSCs) in large decentralized POMDPs (Dec-POMDPs). However, current methods use fixed-size FSCs and often converge to maxima that are far from optimal. This paper considers a variable-size FSC to represent the local policy of each agent. These variable-size FSCs are constructed using a stick-breaking prior, leading to a new framework called \\emph{decentralized stick-breaking policy representation} (Dec-SBPR). This approach learns the controller parameters with a variational Bayesian algorithm without having to assume that the Dec-POMDP model is available. The performance of Dec-SBPR is demonstrated on several benchmark problems, showing that the algorithm scales to large problems while outperforming other state-of-the-art methods.",
+  "categories": "cs.AI cs.SY eess.SY stat.ML",
+  "sections": [
+    {
+      "heading": "Stick-Breaking Policy Learning in Dec-POMDPs",
+      "text": "Miao Liu1, Christopher Amato2, Xuejun Liao3, Lawrence Carin3, and Jonathan P. How4 1Laboratory for Information and Decision Systems , MIT, Cambridge, MA 02139, USA, miaoliu@mit.edu 2Department of Computer Science , University of New Hampshire, Durham, NH 03824, USA , camato@cs.unh.edu 3Department of Electrical & Computer Engineering , Duke University, Durham NC 27708, USA , {xjliao,lcarin}@duke.edu 4Department of Aeronautics & Astronautics , MIT, Cambridge, MA 02139, USA , jhow@mit.edu Abstract Expectation maximization (EM) has recently been shown to be an efﬁcient algorithm for learning ﬁnite-state controllers (FSCs) in large decentralized POMDPs (Dec-POMDPs). However, current methods use ﬁxed-size FSCs and often converge to maxima that are far from optimal. This paper considers a variable-size FSC to represent the local policy of each agent. These variable-size FSCs are constructed using a stick-breaking prior, leading to a new framework called decentralized stick-breaking policy representation (Dec-SBPR). This approach learns the controller parameters with a variational Bayesian algorithm without having to assume that the Dec-POMDP model is available. The performance of Dec-SBPR is demonstrated on several benchmark problems, showing that the algorithm scales to large problems while outperforming other state-of-the-art methods."
+    },
+    {
+      "heading": "Introduction",
+      "text": "Decentralized partially observable Markov decision processes (Dec-POMDPs) [3, 25] provide a general framework for solving the cooperative multiagent sequential decision-making problems that arise in numerous applications, including robotic soccer [24], transportation [4], extraplanetary exploration [8], and trafﬁc control [35]. Dec-POMDPs can be viewed as a POMDP controlled by multiple distributed agents. These agents make decisions based on their own local streams of information (i.e., observations), and their joint actions control the global state dynamics and the expected reward of the team. Because of the decentralized decision-making, an individual agent generally does not have enough information to compute the global belief state, which is a 1"
+    },
+    {
+      "heading": "arXiv:1505.00274v2  [cs.AI]  23 Nov 2015",
+      "text": "sufﬁcient statistic for decision making in POMDPs. This makes generating an optimal solution in a Dec-POMDP more difﬁcult than for a POMDP [10], especially for long planning horizons. To circumvent the difﬁculty of solving long-horizon Dec-POMDPs optimally, while still generat- ing a high quality policy, this paper presents scalable learning methods using a ﬁnite memory policy representation. For inﬁnite-horizon problems (which continue for an inﬁnite number of steps), sig- niﬁcant progress has been made with agent policies represented as ﬁnite-state controllers (FSCs) that map observation histories to actions [9, 2]. Recent work has shown that expectation-maximization (EM) [14] is a scalable method for generating controllers for large Dec-POMDPs [19, 27]. In addition, EM has also been shown to be an efﬁcient algorithm for policy-based reinforcement learning (RL) in Dec-POMDPs, where agents learn FSCs based on trajectories, without knowing or learning the Dec-POMDP model [35]. An important and yet unanswered question is how to deﬁne an appropriate number of nodes in each FSC. Previous work assumes a ﬁxed FSC size for each agent, but the number of nodes affects both the quality of the policies and the convergence rate. When the number of nodes is too small, the FSC is unable to represent the optimal policy and therefore will quickly converge to a sub-optimal result. By contrast, when the number is too large, the FSC overﬁts data, often yielding slow convergence and, again, a sub-optimal policy. This paper uses a Bayesian nonparametric approach to determine the appropriate controller size in a variable-size FSC. Following previous methods [35, 25], learning is assumed to be centralized, and execution is decentralized. That is, learning is accomplished ofﬂine based on all available information, but the optimization is only over decentralized solutions. Such a controller is constructed using the stick-breaking (SB) prior [18]. The SB prior allows the number of nodes to be variable, but the set of nodes that is actively used by the controller is encouraged to be compact. The nodes that are actually used are determined by the posterior, combining the SB prior and the information from trajectory data. The framework is called the decentralized stick-breaking policy representation (Dec-SBPR) to recognize the role of the SB prior. In addition to the use of variable-size FSCs, the paper also makes several other contributions. Speciﬁcally, our algorithm directly operates on the (shifted) empirical value function of Dec- POMDPs, which is simpler than the likelihood functions (a mixture of dynamic Bayes nets (DBNs)) in existing planning-as-inference frameworks [19, 35]. Moreover, we derive a variational Bayesian (VB) algorithm for learning the Dec-SBPR based only on the agents’ trajectories (or episodes) of actions, observations, and rewards. The VB algorithm is linear in the number of agents and at most square in the problem size, and is therefore scalable to large application domains. In practice, these trajectories can be generated by a simulator or a set of real-world experiences that are provided, and this batch data scenario is general and realistic, as it is widely adopted in learning from demonstration [23], and reinforcement learning. To the best of our knowledge, this is the ﬁrst application of Bayesian nonparametric methods to the difﬁcult and little-studied problem of policy-based RL in Dec-POMDPs, and the proposed method is able to generate high-quality solutions for large problems."
+    },
+    {
+      "heading": "Background and Related Work",
+      "text": "Before introducing the proposed method, we ﬁrst describe the Dec-POMDP model and some related work. 2 2.1 Decentralized POMDPs A Dec-POMDP can be represented as a tuple M = ⟨N, A, S, O, T , Ω, R, γ⟩, where N = {1, · · · , N} is a ﬁnite set of agent indices; A = ⊗nAn and O = ⊗nOn respectively are sets of joint actions and observations, with An and On available to agent n. At each step, a joint action a = (a1, · · · , aN) ∈A is selected and a joint observation⃗o = (o1, · · · , oN) is received; S is a set of ﬁnite world states; T : S × A × S →[0, 1] is the state transition function with T (s′|s,⃗a) denoting the probability of transitioning to s′ after taking joint action⃗a in s; Ω: S × A × O →[0, 1] is the observation function with Ω(⃗o|s′,⃗a) the probability of observing⃗o after taking joint action⃗a and arriving in state s′; R : S × A →R is the reward function with r(s,⃗a) the immediate reward received after taking joint action⃗a in s; γ ∈[0, 1) is a discount factor. A global reward signal is generated for the team of agents after joint actions are taken, but each agent only observes its local observation. Because each agent lacks access to other agents’ observations, each agent maintains a local policy πn, deﬁned as a mapping from local observation histories to actions. A joint policy consists of the local policies of all agents. For an inﬁnite-horizon Dec-POMDP with initial belief state b0, the objective is to ﬁnd a joint policy Ψ = ⊗nΨn, such that the value of Ψ starting from b0, V Ψ(b(s0)) = E \u0002 P∞ t=0 γtr(st,⃗at)|b0, Ψ \u0003 , is maximized. An FSC is a compact way to represent a policy as a mapping from histories to actions. Formally, a stochastic FSC for agent n is deﬁned as a tuple Θn = ⟨An, On, Zn, µn, Wn, πn⟩, where, An and On are the same as deﬁned in the Dec-POMDP; Zn is a ﬁnite set of controller nodes for agent n; µn is the initial node distribution with µz n the probability of agent n initially being in z; Wn is a set of Markov transition matrices with W z,z′ n,a,o denoting the probability of the controller node transiting from z to z′ when agent n takes action a in z and sees observation o; πn is a set of stochastic policies with πa n,z the probability of agent n taking action a in z. For simplicity, we use the following notational conventions. Zn = {1, 2, · · · , Cn}, where Cn def. = |Zn| is the cardinality of Zn, and An and On follow similarly. Θ = {Θ1, · · · , ΘN} is the joint FSC of all agents. A consecutively-indexed variable is abbreviated as the variable with the index range shown in the subscript or superscript; when the index range is obvious from the context, a simple “:” is used instead. Thus, an,0:T = (an,0, an,1 , . . . , an,T) represents the actions of agent n from step 0 to T and W z,: n,a,o = (W z,1 n,a,o, W z,2 n,a,o, · · · , W z,|Zn| n,a,o ) represents the node transition probabilities for agent n when starting in node z, taking action a and seeing observation o. Given hn,t = {an,0:t−1, on,1:t}, a local history of actions and observations up to step t, as well as an agent controller, Θn, we can calculate a local policy p(an,t|hn,t,Θn), the probability that agent n chooses its action an,t. 2.2 Planning as Inference in Dec-POMDPs A Dec-POMDP planning problem can be transformed into an inference problem and then efﬁciently solved by EM algorithms. The validity of this method is based on the fact that by introducing binary rewards R such that P(R = 1|a, s) ∝r(a, s), ∀a ∈A, s ∈S and choosing the geometric time prior p(T) = γT(1−γ), maximizing the likelihood L(Θ) = P(R = 1; Θ) = P∞ T=0 P(T)P(R = 1|T; Θ) of a mixture of dynamic Bayes nets is equivalent to optimizing the associated Dec-POMDP policy, 3 as the joint-policy value V (Θ) and L(Θ) can be related through an afﬁne transform [19] L(Θ)= (1 −γ)(V (Θ)−P TγTRmin) Rmax −Rmin = (1 −γ)ˆV (Θ) Rmax −Rmin , (1) where Rmax and Rmin are maximum and minimum reward values and ˆV (Θ) def. =V (Θ)−P TγTRmin is a shifted value. Previous EM methods [19, 27] have achieved success in scaling to larger problems by factoring the distribution over states and histories for inference, but these methods require using a Dec- POMDP model to construct a Bayes net for policy evaluation. When the exact model parameters T , Ωand R are unknown, one needs to solve a reinforcement learning (RL) problem. To address this important yet less addressed problem, a global empirical value function extended from the single-agent case [20], is constructed based on all the action, observation and reward trajectories, and the product of local policies of all agents. This serves as the basis for learning (ﬁxed-size) FSCs in RL settings. Deﬁnition 1. (Global empirical value function) Let D(K) = {(⃗o k 0⃗a k 0 rk 0⃗o k 1⃗a k 1 rk 1 · · ·⃗o k Tk⃗a k Tk rk Tk)}k=1,··· ,K be a set of episodes resulting from N agents who choose actions according to Ψ = ⊗nΨn, a set of stochastic behavior policies with pΨn(a|h) > 0, ∀action a, ∀history h. The global empirical value function is deﬁned as ˆV \u0000 D(K); Θ \u0001 def. = PK k=1 PTk t=0 γt(rk t −Rmin) K Qt τ=0 QN n=1 p(ak n,τ|hk n,τ,Θn) Qt τ=0 QN n=1 pΨn(akn,τ|hkn,τ) where h k n,t = (ak n,0:t−1, ok n,1:t), 0 ≤γ < 1 is the discount. According to the strong law of large numbers [32], ˆV (Θ) = limK→∞ˆV \u0000 D(K); Θ \u0001 , i.e., with a large number of trajectories, the empirical value function ˆV \u0000 D(K); Θ \u0001 approximates ˆV (Θ) accu- rately. Hence, applying (1), ˆV \u0000 D(K); Θ \u0001 approximates L(Θ), and offers an objective for learning the decentralized policies and can be directly maximized by the EM algorithms in [20]."
+    },
+    {
+      "heading": "Bayesian Learning of Policies",
+      "text": "EM algorithms infer policies based on ﬁxed-size representation and observed data only, it is difﬁcult to explicitly handle model uncertainty and encode prior (or expert) knowledge. To address these issues, a Bayesian learning method is proposed in this section. This is accomplished by measuring the likelihood of Θ using L \u0000 D(K); Θ \u0001 , which is combined with the prior p(Θ) in Bayes’ rule to yield the posterior p(Θ|D(K)) = L \u0000 D(K); Θ \u0001 p(Θ) \u0002 p \u0000 D(K)\u0001\u0003−1 , (2) where p \u0000 D(K)\u0001 is the marginal likelihood of the joint FSC and, up to additive constant, proportional to the marginal value function, ˆV \u0000 D(K)\u0001 def. = Z ˆV \u0000 D(K); Θ \u0001 p(Θ)dΘ ∝ R L \u0000 D(K); Θ \u0001 p(Θ)dΘ = p \u0000 D(K)\u0001 . (3) To compute the posterior, p(Θ|D(K)), Markov chain Monte Carlo (MCMC) simulation [32] is the most straight forward method. However, MCMC is costly in terms of computation and storage, and 4 lacks a strong convergence guarantee. An alternative is a variational Bayes (VB) method [7], which performs approximate posterior inference by minimizing the Kullback-Leibler (KL) divergence between the true and approximate posterior distributions. Because the VB method has a (local) convergence guarantee and is able to trade-off scalability and accuracy, we focus on the derivation of VB method here. Denoting q(Θ) as the variational approximation to p(Θ|D(K)), and qk t (⃗z k 0:t) as the approximation to p(⃗z k 0:t|⃗o k 1:t, Θ), a VB objective function 1 is KL \u0000\b qk t (⃗z k 0:t)q(Θ) k=1:K|| \b ν k t p(⃗z k 0:t, Θ) k=1:K \u0001 = lnˆV \u0000 D(K)\u0001 −LB \u0000\b qk t (⃗z k 0:t) , q(Θ) \u0001 , (4) where LB \u0000\b qk t (⃗z k 0:t) , q(Θ) \u0001 def. = X k,t,z k 1:N,0:t Z qk t (⃗z k 0:t) K/q(Θ) ln νk t p(⃗zk 0:t, Θ|hk 0:t) qk t (⃗z k 0:t)q(Θ) dΘ (5) is the lower bound of lnˆV \u0000 D(K)\u0001 and ν k t def. = γtrk t QN n=1 p(ak n,0:t|ok n,1:t) QN n=1 Qt τ=0 pΨn(ak n,τ|hk n,τ)bV (D(K)) , ∀t, k, (6) is the re-weighted reward. Since lnˆV \u0000 D(K)\u0001 in equation (4) is independent of Θ and {qk t (⃗z k 0:t)}, minimizing the KL divergence is equivalent to maximizing the lower bound, leading to the following constrained optimization problem, max\b qk t \u0000 z k 0:t \u0001 q(Θ) LB \u0000\b qk t (⃗z k 0:t) , q(Θ) \u0001 subject to: qk t (⃗z k 0:t, Θ) = QN n=1 qk t (z k n,0:t)q(Θn), K X k=1 Tk X t=0 |Z| X z k 1:N,0:t=1 qk t (⃗z k 0:t) = K, qk t (⃗z k 0:t) ≥0, ∀⃗z k t , t, k, R p(Θ)dΘ = 1 and p(Θ) ≥0, ∀Θ, (7) where the constraint in the second line arises both from the mean-ﬁeld approximation and from the decentralized policy representation, and the last two lines summarize the normalization constraints. It is worth emphasizing that we developed this variational mean-ﬁeld approximation to optimize a decentralized policy representation, showing that the VB learning problem formulation (7) is both a general and accurate method for the multiagent problem considered in this paper. 3.1 Stick-breaking Policy Priors To solve the Bayesian learning problem described above and obtain the variable-size FSCs, the stick-breaking prior is used to specify the policy’s structure. As such, Dec-SBPR is formally given in deﬁnition 2. 1Refer to the appendix for derivation details 5 Deﬁnition 2. The decentralized stick breaking policy representation (Dec-SBPR) is a tuple (N, A, O, Z, µ, η, ρ), where N, A and O are as in the deﬁnition of Dec-POMDP; Z is an unbounded set of nodes indexed by positive integers; for notational simplicity2,µ are assumed to be deterministic with µ1 n = 1, µ2:∞ n = 0, ∀n; (η, ρ) determine (W, π), the FSC parameters deﬁned in section 2.1, as follows W i,1:∞ n,a,o ∼SB(σi,1:∞ n,a,o , ηi,1:∞ n,a,o ), π1:|An| n,i ∼Dir(ρ1:|An| n,i ) (8) where Dir represents Dirichlet distribution and SB represents the stick-breaking process with W i,j n,a,o = V i,j n,a,o Qj−1 m=1(1 −V i,m n,a,o) and V i,j n,a,o ∼Beta(σi,j n,a,o, ηi,j n,a,o), ηi,j n,a,o ∼Gamma(c, d), n = 1, · · · , N and i, j = 1, · · · , ∞. DECSBPR differs from previous nonparametric Bayesian RL methods [21, 16]. Speciﬁcally, Dec-SBPR performs policy-based RL and generalizes the nonparametric Bayesian policy represen- tation of POMDPs [21] to the decentralized domain. Whereas [16] is a model-based RL method that doesn’t assume knowledge about the world’s model, but explicitly learns it and then performs planning. Moreover, Dec-SBPR further distinguishes from previous methods [16, 21] by the prior distributions and inference methods employed. These previous methods employed hierarchical Dirichlet processes hidden Markov models (HDP-HMM) to infer the number of controller nodes. However, due to the lack of conjugacy between two levels of DPs in the HDP-HMM, a fully conju- gate Bayesian variational inference does not exist3. Therefore, these methods used MCMC which requires high computational and storage costs, making them not ideal for solving large problems. In contrast, Dec-SBPR employs single layer SB priors over FSC transition matrices W and sparse Gamma priors over SB weight hyperparameters η to bias transition among nodes with smaller indices. A similar framework has been explored to infer HMMs, and we refer readers to [26] for more details. It is worth noting that SB processes subsume Dirichlet Processes (DPs) [17] as a special case, when σi,j n,a,o= 1, ∀i, j, n, a, o (in Dec-SBPR). The purpose of using SB priors is to encourage a small number of FSC nodes. Compared to a DP, the SB priors can represent richer patterns of sparse transition between the nodes of an FSC, because it allows arbitrary correlation between the stick-breaking weights (the weights are always negatively correlated in a DP). 3.2 Variational Stick-breaking Policy Inference It is shown in [18] that the random weights constructed by the SB prior are equivalently governed by a generalized Dirichlet distribution (GDD) and are therefore conjugate to the multinomial distribution; hence an efﬁcient variational Bayesian algorithm for learning the decentralized policies can be derived. To accommodate an unbounded number of nodes, we apply the retrospective representation of SB priors [28] to the Dec-SBPR. For agent n, the SB prior is set with a truncation level |Zn|, taking into account the current occupancy as well as additional nodes reserved for future new occupancies. The solution to (7) under the stick-breaking priors is given in Theorem 3, the proof of which is provided in the appendix. 2Nonparametric priors over µ can also be used. 3The VB method in [12] imposes point-mass proposals over top level DPs, lacking a uncertainty measure. 6 Algorithm 1: Batch VB Inference for Dec-SBPR 1: Input: Episodes D(K), the number of agents N, initial policies Θ, VB lower bound LB0 = −Inf, ∆LB = 1, Iter = 0; 2: while ∆LB > 10−3 do 3: for k = 1 to K, n = 1 to N do 4: Update the global rewards {ˆνk t } using (9). 5: Compute {αn,k τ } and {βn,k t,τ }. 6: end for 7: Iter = Iter + 1. 8: Compute LBIter using (5) 9: ∆LB = (LBIter −LBIter−1)/|LBIter−1| 10: for n = 1 to N do 11: Compute {ξn,k t,τ (i, j)} and {φn,k t,τ (i)} using (11). 12: Update the hyper-parameters of Θn using (10). 13: Compute |Zn| using (13). 14: end for 15: end while 16: Return: Policies {Θn}N n=1, and controller sizes {|Zn|}N n=1. Theorem 3. Let p(Θ) be constructed by the SB priors deﬁned in (8) with hyper-parameters (ˆσ, ˆη, ˆρ), then iterative application of the following updates leads to monotonic increase of (5), until conver- gence to a maxima. The updates of {qk t } are qk t (zk n,0:t) = ˆνk t p(zk n,0:t|ok n,1:t, ak n,0:t, eΘn), ∀n, t, k, (9) where ˆνk t is computed using (6) with Θ replaced by eΘ = {eπ, eµ, f W}, a set of under-normalized probability (mass) functions , with eπa n,i = e⟨ln πa n,i⟩p(π|ˆ ρ), and f W i,j n,a,o = e⟨ln W i,j n,a,o⟩p(W |ˆσ,ˆ η), and ⟨·⟩p denotes expectations of · with respect to distributions p. The hyper-parameters of the posterior distribution are updated as ˆσi,j n,a,o = σi,j n,a,o + ζi,j n,a,o, ˆηi,j n,a,o = ηi,j n,a,o + |Zn| X l=j+1 ζi,l n,a,o, ˆρa n,i = ρa n,i + K X k=1 Tk X t=0 t X τ=1 ˆν k t K φn,k t,τ−1(i)Ia(a k τ ) (10) with ζi,j n,a,o=PK k=1 PTk t=0 Pt τ=1 ˆν k t Kξn,k t,τ−1(i, j)Ia,o(a k τ−1, o k τ ), where I(·) is the indicator function, and both ξn,k t,τ and φn,k t,τ are marginals of qk t (zk n,0:t), i.e. ξn,k t,τ (i, j)=p(zk n,τ = i, zk n,τ+1 = j|ak n,0:t, ok n,1:t, eΘn) (11) φn,k t,τ (i)=p(zk n,τ = i|ak n,0:t, ok n,1:t, eΘn) (12) The update equations in Theorem 3 constitute the VB algorithm for learning a variable-size joint FSCs under SB priors with batch data. In particular, (9) is a policy-evaluation step where the rewards are reweighted to reﬂect the improved marginal value of the new policy posterior updated in the previous iteration, and (10) is a policy-improvement step where the reweighted rewards are 7 used to further improve the policy posterior. Both steps require (11), which are computed based on αn,k τ (i)=p \u0000 zk n,τ=i|a k n,0:τ, o k n,1:τ, eΘn \u0001 and βn,k t,τ (i)= p(a k n,τ+1:t|z k n,τ=i,o k n,τ+1:t,eΘn) Qt τ′=τ p(a k τ |h k n,τ′,eΘn) , ∀n, k, t, τ. The (α, β) are forward-backward messages. Their updating equations are derived in the appendix. To determine the number of controller nodes {|Zn|}N n=1, the occupancy of a node is computed by checking if there is a positive reward assigned to it. For example, for action a and node i, ˆρa n,i −ρa n,i is the reward being assigned. If this quantity is greater than zero, then node i is visited. Summing over all actions gives the value of node i. Hence |Zn| can be computed based on the following formula |Zn| = P∞ i=1 I \u0000 P|An| a=1(ˆρa n,i −ρa n,i) > 0 \u0001 . (13) The complete algorithm is described in Algorithm 1. Upon the convergence of Algorithm 1, point estimates of the decentralized policies may be obtained by calculating the expectation: E[ˆµi n], E[ˆπa n,i], and E[ ˆW i,j n,a,o] (see the appendix for details). Table 1: Computational Complexity of Algorithm 1. VAR BEST CASE WORST CASE α Ω(N|Z|2KT) O(N|Z|2KT) β Ω(N|Z|2KT) O(N|Z|2KT 2) νk t Ω(K) O(KT) Θ Ω(N|Z|2KT) O(N|Z|2KT 2) LB Ω(|Z|2 PN n=1 |An||On|) O(|Z|2 PN n=1 |An||On|) 3.3 Computational complexity The time complexity of Algorithm 1 for each iteration is summarized in Table 1, assuming the length of an episode is on the order of magnitude of T, and the number of nodes per controller is on the order of magnitude of |Z|. In Table 1, the worst case refers to when there is a nonzero reward at every time step of an episode (dense rewards), while the best case is when nonzero reward is received only at the terminal step. Hence in general, the algorithm scales linearly with the number of episodes and the number of agents. The time dependency on T is between linear and quadratic. In any case, the computational complexity of Algorithm 1 is independent of the number of states, making it is scalable to large problems. 3.4 Exploration and Exploitation Tradeoff Algorithm 1 assumes off-policy batch learning where trajectories are collected using a separate behavior policy. This is appropriate when data has been generated from real-world or simulated experiences without any input from the learning algorithm (e.g., learning from demonstration). Off-policy learning is efﬁcient if the behavior policy is close to optimal, as in the case when expert information is available to guide the agents. With a random behavior policy, it may take a long time 8 for the policy to converge to optimality; in this case, the agents may want to exploit the policies learned so far to speed up the learning process. An important issue concerns keeping a proper balance between exploration and exploitation to prevent premature convergence to a suboptimal policy, but allow the algorithm to learn quickly. Since the execution of Dec-POMDP policies is decentralized, it is difﬁcult to design an efﬁcient exploration strategy that guarantees optimality. [35] count the visiting frequency of FSC nodes and apply upper-conﬁdence-bound style heuristic to select next controller nodes, and use ϵ-greedy strategy to select actions. However ϵ-greedy might be sample inefﬁcient. [6] proposed a distributed learning approach where agents take turns to learn the best response to each other’s policies. This framework applies an R-max type of heuristic, using the counts of trajectories to distinguish known and unknown histories, to tradeoff exploration and exploitation. However, this method is conﬁned to tree-based policies in ﬁnite-horizon problems, and requires synchronized multi-agent learning. To better accommodate our Bayesian policy learning framework for RL in inﬁnite-horizon Dec-POMDPs, we deﬁne an auxiliary FSC, Ωn = ⟨Y, On, Zn, Wn, µn, ϕn⟩, to represent the policy of each agent in balancing exploration and exploitation. To avoid confusion, we refer to Θn as a primary FSC. The only two components distinguishing Ψn from Θn are Y and ϕn, where Y = {0, 1} encodes exploration (y = 1) or exploitation (y = 0), and ϕn = {ϕn,z y } with ϕn,z y denoting the probability of agent n choosing y in z. One can express p(yn,t|hn,t, Ψn) in the same way as one expresses p(an,t|hn,t, Θn) (which is described in section 2.1). The behavior policy Πn of agent n is given as pΠn(a|h, Θn, Ωn) = X y=0,1 p(a|y, h)p(y|h, Ωn), (14) where p(a|y = 0, h) ≡p(a|h, Θn) is the primary FSC policy, and p(a|y = 1, h) is the exploration policy of agent n, which is usually a uniform distribution. The behavior policy in (14) has achieved signiﬁcant success in the single-agent case [13, 21, 22]. Here we extend it to the multi-agent case (centralized learning and decentralized explo- ration/execution) and provide empirical evaluation in the next section."
+    },
+    {
+      "heading": "Experiments",
+      "text": "The performance of the proposed algorithms are evaluated on ﬁve benchmark problems [1] and a large-scale problem (trafﬁc control) [35]. The experimental procedure in [35] was used for all the results reported here. For Dec-SBPR, the hyperparameters in (8) are set to c = 0.1 and d = 10−6 to promote sparse usage of FSC nodes.4 The policies are initialized as FSCs converted from the episodes with the highest rewards using a method similar to [5]. Learning variable-size FSC vs learning ﬁxed-size FSC To demonstrate the advantage of learn- ing variable-size FSCs, Dec-SBPR is compared with an implementation of the previous EM algorithm [35]. The comparison is for the Mars Rover problem using K = 300 episodes 5 to learn the FSCs and evaluating the policy by the discounted accumulated reward averaged over 100 test episodes of 1000 steps. Here, we consider off-policy learning and apply a semi-random policy to 4These values were chosen for testing, but our approach is robust to other values of c and d. 5Using smaller training sample size K, our method can still perform robustly, as it is shown in the appendix. 9 10 1 10 2 −10 −5 0 5 10 15 20 25 Number of Nodes Policy Value Mars Rover (|S|=256,|A|=6,|O|=8) EM (max) EM (mean) SB DP 10 1 10 2 10 1 10 2 10 3 10 4 Number of Nodes CPU Time (sec) Mars Rover (|S|=256,|A|=6,|O|=8) EM SB DP Figure 1: Comparison between the variable-size controller learned by Dec-SBPR and ﬁxed-size controllers learned by EM. Left: testing value; Right: averaged computation time. Although EM has less computational complexity than our VB algorithm per iteration, empirically, the VB algorithm uses less time to reach convergence. Moreover, the average value of using the SB prior and its special Dirichlet instance (DP) are close to the best result of EM (dotted sky-blue line), but are much better than the average results of EM (solid back line). Using the SB prior achieves slightly better performance than the DP, which can be explained the ﬂexibility of SB prior, as explained by the last paragraph of section 3.1. Table 2: Performance of Dec-SBPR on benchmark problems compared to other state-of-art algorithms. Shows policy values (higher value indicates better performance) and CPU times of all algorithms, and the average controller size |Z| inferred by Dec-SBPR. POLICY LEARNING (UNKNOWN MODEL) PLANNING (KNOWN MODEL) PROBLEMS (|S|, |A|, |O|) DEC-SBPR(FIXED ITERATION) DEC-SBPR(FIXED TIME) MCEM PERIEM FB-HSVI VALUE |Z| TIME VALUE |Z| TIME VALUE |Z| TIME VALUE |Z| TIME VALUE |Z| TIME DEC-TIGER (2, 3, 3) -18.63 6 96S -19.42 8 20S -32.31 3 20S 9.42 7 × 10 6540S 13.45 52 6.0S BROADCAST (4, 2, 5) 9.20 2 7S 9.27 2 24S 9.15 3 24S – 9.27 102 19.8S RECYCLING ROBOTS (3, 3, 2) 31.26 3 147S 25.16 2 19S 30.78 3 19S 31.80 6 × 10 272S 31.93 108 0S BOX PUSHING (100, 4, 5) 77.65 14 290S 58.27 9 32S 59.95 3 32S 106.68 4 × 10 7164S 224.43 331 1715.1S MARS ROVERS (256, 6, 8) 20.62 5 1286S 15.2 6 160S 8.16 3 160S 18.13 3 × 10 7132S 26.94 136 74.31S collect samples. Speciﬁcally, the learning agent is allowed access to episodes collected by taking actions according to a POMDP algorithm (point-based value iteration (PBVI) [29]). Let ϵ be the probability that the agents follow the PBVI policy and 1 −ϵ be the probability that the agents take random actions. This procedure mimics the approach used in previous work [35]. The results with η = 0.3 are reported in Figure 1, which shows the exact value and computation time as a function of the number of controller nodes |Z|. As expected, for the EM algorithm, when |Z| is too small, the FSCs cannot represent the optimal policy (under-ﬁtting), and when the number of nodes is too large, FSCs overﬁts a limited amount of data and perform poorly. Even if |Z| is set to the number inferred by Dec-SBPR, EM can still suffer severely from initialization and local maxima issues, as can be seen from a large error-bar. By setting a high truncation level (|Z| = 50), Dec-SBPR employs Algorithm 1 to integrate out the uncertainty of the policy representation (under the SB prior). As a result, Dec-SBPR can infer both the number of nodes that is needed (≈5) and optimal controller parameters simultaneously. Furthermore, this inference is done with less computation time and with a higher value and improved robustness (low variance of test value) than EM."
+    },
+    {
+      "heading": "10",
+      "text": "0 20 40 0 50 100 150 200 Number of Iterations Value MCEM Dec−SBPR w/o heuristic Dec−SBPR w/ heuristic 0 10 20 30 40 50 1 2 3 4 5 Number of Iterations |Z| MCEM Dec−SBPR w/o heuri Dec−SBPR w/ heuri Figure 2: Performance comparison on trafﬁc control problem (1020 states and 100 agents). Test reward (left) and inferred controller size (right) of Dec-SBPR, as a function of algorithmic iteration. Comparison with other methods The performance of Dec-SBPR is also compared to several state-of-art methods, including: Monte Carlo EM (MCEM) [35]. Similar to Dec-SBPR, MCEM is a policy-based RL approach. We apply the exploration-exploitation strategy described in section 3.4 and follow the same experimental procedure in [35] to report the results6. The rewards after running a ﬁxed number of iterations and a ﬁxed amount of time are summarized (respectively) in Table 2 (the ﬁrst column under policy-learning category). Dec-SBPR is shown to achieve better policy values than MCEM on all problems 7. These results can be explained by the fact that EM is (more) sensitive to initialization and (more) prone to local optima. Moreover, by ﬁxing the size of the controllers, the optimal policy from EM algorithms might be over/under ﬁtted . By using a Bayesian nonparametric prior, Dec-SBPR learns the policy with variable-size controllers, allowing more ﬂexibility for representing the optimal policy. We also show the result of Dec-SBPR running the same amount of clock time as MCEM (Dec-SBPR (ﬁxed time)), which indicates Dec-SBPR can achieve a better trade-off between policy value and learning time than MCEM. Finally, Dec-SBPR is compared to Periodic EM (PeriEM) [27] and FB-HSVI [15], two state-of- art planing methods (with known models) for generating controllers. Because having a Dec-POMDP model allows more accurate value function calculations than a ﬁnite number of trajectories, the value of PeriEM and FB-HSVI are treated as upper-bounds for the policy-based methods. Our Dec-SBPR approach can sometimes outperform PeriEM, but produces lower value than FB-HSVI. FB-HSVI is a boundedly-optimal method, showing that Dec-SBPR can produce near optimal solutions in some of these problems and produces solutions that are much closer to the optimal than previous RL methods. It is also worth noting that neither PeriEM nor FB-HSVI can scale to large problems (such as the one discussed below), while by using a policy-based RL approach, Dec-SBPR can scale well. Scaling up to larger domains To demonstrate scalability to both large problem sizes and large numbers of agents, we test our algorithm on a trafﬁc problem [35], with 1020 states. Here, there are 100 agents controlling the trafﬁc ﬂow at 10 × 10 intersections with one agent located at each intersection. Except for MCEM, no previous Dec-POMDPs algorithms are able to solve such large 6The learning curves of Dec-SBPR are shown in the appendix. 7The results are provided by personal communication with its authors and run on the same benchmarks that are available online. 11 problems. Since the authors in [35] use a hand-coded policy (comparing the trafﬁc ﬂow between two directions) as a heuristic for generating training trajectories, we also use such a heuristic for a fair comparison. In addition, to examine the effectiveness of the exploration-exploitation strategy described in Section 3.4, we also consider the case where the initial behavior policy is random and then it is optimized as discussed. From Figure 2, we can see that, with the help of the heuristic, Dec-SBPR can achieve the best performance. Without using the heuristic (by just using our exploration-exploitation strategy), in a few iterations, Dec-SBPR is able to produce a higher quality policy than MCEM. Moreover, the inferred number of FSC nodes (averaged over all agents) is smaller than the number preselected by MCEM. This shows that not only can Dec-SBPR scale to large problems, but it can also produce higher-quality solutions than other methods for those large problems."
+    },
+    {
+      "heading": "Conclusions",
+      "text": "The paper presented a scalable Bayesian nonparametric policy representation and an associated learning framework (Dec-SBPR) for generating decentralized policies in Dec-POMDPs. An new exploration-exploitation method, which extends the popular ϵ-greedy method, was also provided for reinforcement learning in Dec-POMDPs. Experimental results show Dec-SBPR produces higher-quality solutions than the state-of-art policy-based method, and has the additional beneﬁt of inferring the number of nodes needed to represent the optimal policy. The resulting method is also scalable to large domains (in terms of both the number of agents and the problem size), allowing high-quality policies for large Dec-POMDPs to be learned efﬁciently from data."
+    },
+    {
+      "heading": "Acknowledgments",
+      "text": "Acknowledgments This research was supported by the US Ofﬁce of Naval Research (ONR) under MURI program award #N000141110688 and NSF award #1463945."
+    },
+    {
+      "heading": "Appendices",
+      "text": "A Proof of Theorem 3:(Mean-ﬁeld) Variational Bayesian (VB) Inference for DEC-SBPR Under the standard variational theory [7, 11], minimizing the KL divergence between q(Θ, z) and p(Θ, z|D) is equivalent to minimizing the lower bound of log marginal likelihood (empirical value function for our case). Using Jensen’s inequality, we can obtain the following lower bound of the log marginal value function ln bV (D(K)) = ln 1 K K X k=1 Tk X t=0 X zk 0 ,··· ,⃗zk t Z qk t (⃗zk 0:t)q(Θ)q(η)˜rk t p(Θ)p(η)p(⃗ak 0:t,⃗zk 0:t|⃗ok 1:t, Θ) qk t (⃗zk 0:t)q(Θ)q(η) dΘdη 12 ≥1 K K X k=1 Tk X t=0 X zk 0 ,··· ,⃗zk t Z qk t (⃗zk 0:t)q(Θ)q(η) ln ˜rk t p(Θ)p(η)p(ρ)p(⃗ak 0:t,⃗zk 0:t|⃗ok 1:t, Θ) qk t (⃗zk 0:t)q(Θ)q(η) dΘdη = ln bV (D(K)) −KL \u0012\b qk t (⃗zk 0:t)q(Θ)q(η) ξk t bV (D(K)) p(⃗zk 0:t, Θ, η|⃗ak 0:t,⃗ok 1:t) \u0013 def = LB \u001a\b qk t (zk n,0:t) k,t, q(Θn), q(ηn) \u001b n=1···N ! (15) where ξk t = ˜rk t R p(⃗ak 0:t|⃗ok 1:t, Θ)p(Θ)dΘ and ˜rk t = γtrk t /pΨ(⃗a|⃗hk t ). We assume p(Θ) = QN n=1 p(Θ) and p(⃗a0:t,⃗z0:t|⃗o0:t, Θ) = QN n=1 p(an,0:t, zn,0:t|on,0:t, Θn) to accommodate decentralized policy rep- resentations. To derive the VB updating equations, we rewrite the lower bound in equation (15) as follows LB \u001a\b qk t (zk n,0:t) k,t, q(Θn), q(ηn) \u001b n=1,···N ! = − Z q(Θ) ln q(Θ) p(Θ)dΘ − Z q(η) ln q(η) p(η)dη −1 K K X k=1 Tk X t=0 X zk 0 ,··· ,⃗zk t qk t (⃗zk 0:t) ln \u0000 qk t (⃗zk 0:t) \u0001 + 1 K K X k=1 Tk X t=0 X zk 0 ,··· ,⃗zk t N Y n=1 Z qk t (⃗zk 0:t)q(Θn)q(ηn) ln \u0000 ˜rk t N Y n=1 pk t (ak n,0:t, zk n,0:t|ok n,1:t, Θn) \u0001 dΘndηn.(16) The VB Inference algorithm for DEC-SBPR is based on maximizing LB w.r.t. the distribution of the joint DEC-SBPR parameters \b {qk t (zk n,0:t)}k,t, q(Θn), q(ηn) n=1,··· ,N, which can be achieved by alternating the following steps. Update the distribution of nodes (VB E-step): Keeping {q(Θn)}n=1,··· ,N and {q(ηn)}n=1,··· ,N ﬁxed, solve max{qk t (zk n,0:t)} LB \u001a\b qk t (zk n,0:t) k,t, q(Θn), q(ηn) \u001b n=1,··· ,N ! , ∀n, k, t subject to the normalization constraint for qk t (zk n,0:t). In this step, we construct the Lagrangian Fqk t (zk n,0:t) = LB \u001a\b qk t (zk n,0:t) k,t, q(Θn), q(ηn) \u001b n=1,··· ,N ! −λ \u0012 K− X k,t,zk n,0:t N Y n=1 qk t (zk n,0:t) \u0013 , (17) then take derivative w.r.t qk t (zk n,0:t) and set the result to zero ∂Fqk t (zk n,0:t) ∂ \u0000 qk t (zk n,0:t) \u0001 = 1 K Z p(Θn) ln ˜rk t p(ak n,0:t, zk n,0:t|ok 1:t, Θn)dΘn + 1 K K X k=1 Tk X t=0 X zk 0 ,··· ,⃗zk t Y i̸=n Z qk t (zk i,0:t)q(Θn)q(ηn) ln \u0012 ˜rk t N Y n=1 pk t (ak n,0:t, zk n,0:t|ok n,1:t, Θn) \u0013 dΘndηn −1 K K X k=1 Tk X t=0 X zk 0 ,··· ,⃗zk t Y i̸=n qk t (zk i,0:t) ln \u0012 N Y n=1 qk t (zk n,0:t) \u0013 −1 K K X k=1 Tk X t=0 X zk 0 ,··· ,⃗zk t Y i̸=n qk t (zk i,0:t) 13"
+    },
+    {
+      "heading": "+λ",
+      "text": "K"
+    },
+    {
+      "heading": "X",
+      "text": "k=1 Tk"
+    },
+    {
+      "heading": "X",
+      "text": "t=0"
+    },
+    {
+      "heading": "X",
+      "text": "zk 0 ,··· ,⃗zk t"
+    },
+    {
+      "heading": "Y",
+      "text": "i̸=n"
+    },
+    {
+      "heading": "(18)",
+      "text": "which is solved to give the distribution of nodes zk"
+    },
+    {
+      "heading": "n,0:t) = ˜rk",
+      "text": "t"
+    },
+    {
+      "heading": "= ˜rk",
+      "text": "t"
+    },
+    {
+      "heading": "ln µ",
+      "text": "zk n,0 n"
+    },
+    {
+      "heading": "+",
+      "text": "t"
+    },
+    {
+      "heading": "X",
+      "text": "τ=0"
+    },
+    {
+      "heading": "⟨ln π",
+      "text": "ak n,τ"
+    },
+    {
+      "heading": "n,zkn,τ⟩p(π|ˆρ) +",
+      "text": "t"
+    },
+    {
+      "heading": "X",
+      "text": "τ=1"
+    },
+    {
+      "heading": "⟨ln W",
+      "text": "zk n,τ−1,zk n,τ n,ak"
+    },
+    {
+      "heading": "= ˜rk",
+      "text": "t"
+    },
+    {
+      "heading": "µ",
+      "text": "zk n,0 n"
+    },
+    {
+      "heading": "eπ",
+      "text": "ak n,0 n,zk n,0"
+    },
+    {
+      "heading": "tY",
+      "text": "τ=1"
+    },
+    {
+      "heading": "eπ",
+      "text": "zk n,τ n,akn,τ f W zkn,τ ,zk τ−1 n,ak τ−1,okτ"
+    },
+    {
+      "heading": "a ) −ψ(",
+      "text": "|A|"
+    },
+    {
+      "heading": "X",
+      "text": "m=1"
+    },
+    {
+      "heading": "n,a,o⟩p(V |ˆσ,ˆη) +",
+      "text": "j−1"
+    },
+    {
+      "heading": "X",
+      "text": "m=1"
+    },
+    {
+      "heading": "X",
+      "text": "m=1"
+    },
+    {
+      "heading": "n,a,o⟩+",
+      "text": "|Zn|"
+    },
+    {
+      "heading": "X",
+      "text": "l=j"
+    },
+    {
+      "heading": "ωi,l",
+      "text": "n,a,o"
+    },
+    {
+      "heading": "n,a,o⟩+",
+      "text": "|Zn|"
+    },
+    {
+      "heading": "X",
+      "text": "l=j+1"
+    },
+    {
+      "heading": "ωi,l",
+      "text": "n,a,o"
+    },
+    {
+      "heading": "n,a,o⟩+",
+      "text": "|Zn|"
+    },
+    {
+      "heading": "X",
+      "text": "l=j"
+    },
+    {
+      "heading": "ωi,l",
+      "text": "n,a,o"
+    },
+    {
+      "heading": "n,a,o/ ˆdi,j",
+      "text": "n,a,o"
+    },
+    {
+      "heading": "where ψ(·) is digamma function, ωi,j",
+      "text": "n,a,o is the reward (soft-count) allocated to the transition from"
+    },
+    {
+      "heading": "n,a,o are the posterior parameters of ηi,j",
+      "text": "n,a,o. Update the sufﬁcient statistics (VB-M Step) In VB-M Step, the distribution of nodes {qk"
+    },
+    {
+      "heading": "0···t)},",
+      "text": "∀k, t are ﬁxed, the objective is to solve maxq(Θn),q(ηn) LB"
+    },
+    {
+      "heading": "\u001b",
+      "text": "n=1,··· ,N"
+    },
+    {
+      "heading": "R",
+      "text": "q(Θ)dΘ = 1. First we consider ﬁnding q(Θn). To that"
+    },
+    {
+      "heading": "\u001b",
+      "text": "n=1,··· ,N"
+    },
+    {
+      "heading": "\u0013",
+      "text": "."
+    },
+    {
+      "heading": "X",
+      "text": "k,t,zk n,0:t"
+    },
+    {
+      "heading": "Z",
+      "text": "N"
+    },
+    {
+      "heading": "Y",
+      "text": "n=1"
+    },
+    {
+      "heading": "n,0:t) ln ˜rk",
+      "text": "t N"
+    },
+    {
+      "heading": "Y",
+      "text": "n=1"
+    },
+    {
+      "heading": "q(Θ) =",
+      "text": "N"
+    },
+    {
+      "heading": "Y",
+      "text": "n=1"
+    },
+    {
+      "heading": "X",
+      "text": "k,t,z"
+    },
+    {
+      "heading": "=",
+      "text": "N"
+    },
+    {
+      "heading": "Y",
+      "text": "n=1"
+    },
+    {
+      "heading": "X",
+      "text": "k,t"
+    },
+    {
+      "heading": "Kνk",
+      "text": "t"
+    },
+    {
+      "heading": "\u0014",
+      "text": "t"
+    },
+    {
+      "heading": "X",
+      "text": "τ=1 |Zn|"
+    },
+    {
+      "heading": "X",
+      "text": "i=1"
+    },
+    {
+      "heading": "t,τ (i) ln π",
+      "text": "n,ak n,τ i"
+    },
+    {
+      "heading": "+",
+      "text": "t"
+    },
+    {
+      "heading": "X",
+      "text": "τ=1 |Zn|"
+    },
+    {
+      "heading": "X",
+      "text": "i,j=1"
+    },
+    {
+      "heading": "t,τ (i, j) ln W",
+      "text": "n,ak τ−1,ok τ i,j"
+    },
+    {
+      "heading": "=",
+      "text": "N"
+    },
+    {
+      "heading": "Y",
+      "text": "n=1"
+    },
+    {
+      "heading": "e1−λ",
+      "text": "|Zn|"
+    },
+    {
+      "heading": "Y",
+      "text": "i=1 |An|"
+    },
+    {
+      "heading": "Y",
+      "text": "a=1"
+    },
+    {
+      "heading": "n,a]",
+      "text": "P k,t,τ νk t φk t,τ(i)I(ak n,τ,a) |Zn|"
+    },
+    {
+      "heading": "Y",
+      "text": "j=1 |On|"
+    },
+    {
+      "heading": "Y",
+      "text": "o=1"
+    },
+    {
+      "heading": "n,a,o]",
+      "text": "P k,t,τ νk t ξn,k t,τ−1(i,j)I(ak n,τ−1,a)I(ok"
+    },
+    {
+      "heading": "n,τ,o)\t\u001b",
+      "text": "(from the relation between stick-breaking weights p and independent beta random variables in V (28))"
+    },
+    {
+      "heading": "=",
+      "text": "N"
+    },
+    {
+      "heading": "Y",
+      "text": "n=1"
+    },
+    {
+      "heading": "e1−λ",
+      "text": "|Zn|"
+    },
+    {
+      "heading": "Y",
+      "text": "i=1 |An|"
+    },
+    {
+      "heading": "Y",
+      "text": "a=1"
+    },
+    {
+      "heading": "n,i]",
+      "text": "P k,t,τ νk t φn,k t,τ (i)I(a,an,k τ )"
+    },
+    {
+      "heading": "×",
+      "text": "|Zn|"
+    },
+    {
+      "heading": "Y",
+      "text": "j=1 |On|"
+    },
+    {
+      "heading": "Y",
+      "text": "o=1"
+    },
+    {
+      "heading": "V i,j",
+      "text": "n,a,o j−1"
+    },
+    {
+      "heading": "Y",
+      "text": "m=1"
+    },
+    {
+      "heading": "\u0003P",
+      "text": "k,t,τ νk t ξn,k t,τ−1(i,j)I(ak n,τ−1,a)I(ok n,τ,o)"
+    },
+    {
+      "heading": "=",
+      "text": "N"
+    },
+    {
+      "heading": "Y",
+      "text": "n=1"
+    },
+    {
+      "heading": "Dir(ˆρn,i)",
+      "text": "|An|"
+    },
+    {
+      "heading": "Y",
+      "text": "a=1 |O|n"
+    },
+    {
+      "heading": "Y",
+      "text": "o=1"
+    },
+    {
+      "heading": "n,i + 1",
+      "text": "K"
+    },
+    {
+      "heading": "PK",
+      "text": "k=1"
+    },
+    {
+      "heading": "PTk",
+      "text": "t=0"
+    },
+    {
+      "heading": "n,a,o + ωi,j",
+      "text": "n,a,o"
+    },
+    {
+      "heading": "K",
+      "text": "K"
+    },
+    {
+      "heading": "X",
+      "text": "k=1 Tk"
+    },
+    {
+      "heading": "X",
+      "text": "t=0 t"
+    },
+    {
+      "heading": "X",
+      "text": "τ=1"
+    },
+    {
+      "heading": "n,a,o +",
+      "text": "|Zn|"
+    },
+    {
+      "heading": "X",
+      "text": "l=j+1"
+    },
+    {
+      "heading": "ωi,l",
+      "text": "n,a,o"
+    },
+    {
+      "heading": "K",
+      "text": "|Zn|"
+    },
+    {
+      "heading": "X",
+      "text": "l=j+1 K"
+    },
+    {
+      "heading": "X",
+      "text": "k=1 Tk"
+    },
+    {
+      "heading": "X",
+      "text": "t=0"
+    },
+    {
+      "heading": "ˆνk",
+      "text": "t t"
+    },
+    {
+      "heading": "X",
+      "text": "τ=1"
+    },
+    {
+      "heading": "and ν k",
+      "text": "t is the marginalized re-weighted reward computed by equation 6."
+    },
+    {
+      "heading": "15",
+      "text": "∂Fη ∂ \u0000 q(η) \u0001 = 1 K Z q(Θ) ln p(η)p(Θ)dΘ −1 K ln q(η) + λ = 0 (24) ⇒ q(η) ∝exp \u001a Z q(Θ) ln p(η)p(Θ|η)dΘ \u001b ∝exp \u001a Z q(Θ) ln p(Θ|η)dΘ + ln p(η) \u001b ∝p(η) exp \b ⟨ln p(Θ)⟩ (25) = N Y n=1 |An| Y a=1 |On| Y j=1 |Zn| Y i=1 |Zn| Y j=1 Ga(ηn,a,o i,j ; c, d) Γ(σn,a,o i,j + ηn,a,o i,j ) Γ(σn,a,o i,j )Γ(ηn,a,o i,j )V n,a,o i,j σn,a,o i,j −1 (1 −V n,a,o j )ηn,a,o i,j −1 ≈ N Y n=1 |An| Y a=1 |On| Y j=1 |Zn| Y i=1 |Zn| Y j=1 Γ(σn,a,o i,j + ηn,a,o i,j ) Γ(ηn,a,o i,j ) \b ηn,a,o i,j c−1 exp \b −ηn,a,o i,j (d −ln(1 −V n,a,o j )) One can set σn,a,o i,j = 1, in this case, the VB approximation of q(σ) is a product of independent gamma distributions. However, when σn,a,o i,j = 1, (24) is no longer a gamma distribution (the prior and likelihood are not conjugate). To solve this issue, one might consider the VB inference method for non-conjugate priors [33], by which we consider a point estimate of η, such at q(η) is maximized. One way to obtain the maximum estimate of η is to solve ∂q(η) ∂η = 0, however this operation involves taking derivative w.r.t gamma functions, which does not have a simple form solution. To circumvent this difﬁcult, we use grid search. To make the search more efﬁcient, we use the bounds of Γ(a+x) Γ(x) to give an initial estimate of the searching range. The bounds are from Wendel’s double Inequality [30]. x(x + a)a−1 ≤Γ(a + x)/Γ(x) ≤xa (26) where x, a > 0. B Some Basics of Stick-breaking Priors Here we provide the deﬁnition of stick-breaking prior (SBP), its connection to generalized Dirichlet distribution and the corresponding posterior inference, as well as the main statistics characteristics which are useful for developing the inference methods in our paper. For more detailed mathematical treatment, readers are referred to [18, 34] Deﬁnition 4. The stick-breaking priors [18] are almost surely discrete random probability measures P over the the measurable space (Ω, B) which are partitioned into d disjoint regions with Ω= ∪Bk for 1, · · · , d. It is expressed as Pd a,b = d X k=1 piδΘi (27) and p1 = V1 and pi = (1 −V1)(1 −V2) · · · (1 −Vi−1)Vi, i > 2 (28) are the weights with Vi are independent Beta(ak, bk) random variables for ai, bi > 0. 16 SBP allows Beta-distributed RVs Vi, ∀i and the atoms Θi, ∀i associated with the resulting weights to be drawn simultaneously. B.1 Stick-breaking prior and generalized Dirichlet distribution We denote p ∼SB(v, w) as constructing p as an inﬁnite process (d →∞) as (28), and p ∼ GDD(v, w) when p is ﬁnite. Here, GDD stands for generalized Dirichlet distribution. To see the connection between SBP and GDD, set the truncation level (number of occupied states) to d with pd+1 = 1 −Pd i=1 pi, then we can write down the density function of V = (V1, · · · , Vd) as f(V ) = d Y i=1 f(Vi) = d Y i=1 Γ(vi + wi) Γ(vi)Γ(wi)V vi−1 i (1 −Vi)wi−1. (29) By changing variables from V to p and using the relation between V and p as described by (28), the density of p can be obtained as follows, f(p) = |∂V ∂p |f(V ) = d Y i=1 \u0012 Γ(vi + wi) Γ(vi)Γ(wi)pvi−1 i \u0000 1 − i X j=1 pj \u0001wi−(vi+1+wi+1) \u0013 pwd−1 d+1 (30) which has a mean and variance for an element pi, E[pi] = vi Qi−1 l=1 wl Qi l=1(vl + wl) , V[pi] = vi(vi + 1) Qi−1 l=1 wl(wl −1) Qi l=1(vl + wl)(vl + wl + 1) . (31) When wi = PK j=i+1 vi for i < d, and keeping wd = wd, the GDD is equivalent to the standard Dirichlet distribution. As a concrete example, consider the case d = 3, we have p1 = V1 p2 = (1 −V1)V2 p3 = (1 −V1)(1 −V2)V3 p4 = (1 −V1)(1 −V2)(1 −V3)V4 = (1 −V1)(1 −V2)(1 −V3) ⇐⇒ V1 = p1 V2 = p2 1 −p1 V3 = p3 1 −p1 −p2 V4 = p4 1 −p1 −p2 −p3 = 1. Plugging these relations into (30), we can obtain f(p) = |∂V ∂p |f(V ) = 4 Y i=1 (1 − i−1 X j=1 pj) Γ(vi + wi) Γ(vi)Γ(wi) × pv1−1 1 (1 −p1)w1−1 · ( p2 1 −p1 )v2−1(1 − p2 1 −p1 )w2−1 (32) = ( p3 1 −p1 −p2 )v3−1(1 − p2 1 −p1 −p2 )w3−1 · ( p4 1 −p1 −p2 −p3 )v4−1(1 − p4 1 −p1 −p2 −p3 )w4−1 = 4 Y i=1 Γ(vi + wi) Γ(vi)Γ(wi)pvi−1 i (1 − i X j=1 pj)wi−(vi+1+wi+1). 17"
+    },
+    {
+      "heading": "Given a set of discrete observations {Xn}",
+      "text": "i.i.d."
+    },
+    {
+      "heading": "p(p|{Xn}) ∝",
+      "text": "N"
+    },
+    {
+      "heading": "Y",
+      "text": "n=1 d"
+    },
+    {
+      "heading": "Y",
+      "text": "i=1"
+    },
+    {
+      "heading": "pI(Xn,i)",
+      "text": "i d"
+    },
+    {
+      "heading": "Y",
+      "text": "i=1"
+    },
+    {
+      "heading": "Γ(vi)Γ(wi)pvi−1",
+      "text": "i"
+    },
+    {
+      "heading": "1 −",
+      "text": "i"
+    },
+    {
+      "heading": "X",
+      "text": "j=1"
+    },
+    {
+      "heading": "pwd−1",
+      "text": "d+1"
+    },
+    {
+      "heading": "∝",
+      "text": "d"
+    },
+    {
+      "heading": "Y",
+      "text": "i=1"
+    },
+    {
+      "heading": "Vi",
+      "text": "i−1"
+    },
+    {
+      "heading": "Y",
+      "text": "j=1"
+    },
+    {
+      "heading": "\u0001",
+      "text": "PN n=1 I(Xn,i)"
+    },
+    {
+      "heading": "V vi−1",
+      "text": "i"
+    },
+    {
+      "heading": "∝",
+      "text": "d"
+    },
+    {
+      "heading": "Y",
+      "text": "i=1"
+    },
+    {
+      "heading": "V",
+      "text": "vi+PN n=1 I(Xn,i)−1 i"
+    },
+    {
+      "heading": "(1 −Vi)wi+P",
+      "text": "j>i PN n=1 I(Xn,i)−1"
+    },
+    {
+      "heading": "(33)",
+      "text": "where the posterior hyper-parameters are updated as v′"
+    },
+    {
+      "heading": "wi + P",
+      "text": "j>i"
+    },
+    {
+      "heading": "PN",
+      "text": "n=1 I(Xn = i), where I(·) is an indicator function with value equal to one when the argument is true and zero otherwise."
+    },
+    {
+      "heading": "C",
+      "text": "The Computation of Forward and Backward Variables (α, β)"
+    },
+    {
+      "heading": "t,τ (i) =",
+      "text": "p(a k n,τ+1:t|z k n,τ=i,o k n,τ+1:t,Θn) Qt τ′=τ p(a k τ |h k n,τ′,Θn) , ∀n, k, t, τ deﬁned in section 3.2 are similar to the forward-backward messages in the Baum-Welch algorithm for hidden Markov models [31]. These variables are computed recursively by each agent using (34)-(36)."
+    },
+    {
+      "heading": "",
+      "text": "µ(z k n,0=i)π(z k n,0=i,a k n,0) p(a k n,0|h k n,0,Θn)"
+    },
+    {
+      "heading": "if τ = 0",
+      "text": "P|Zn| j=1 α(z k i,τ−1(j)W(z k i,τ−1=j,a k n,τ−1,o k n,τ,z k n,τ=i)π(z k n,τ=i,a k n,τ) p(a k n,τ|h k n,τ,Θn)"
+    },
+    {
+      "heading": "",
+      "text": "1 p(a k n,0|h k n,0,Θn)"
+    },
+    {
+      "heading": "if τ = 0",
+      "text": "P|Zn| n=1 W(z k n,τ=i,a k n,τ−1,o k n,τ,z k n,τ+1=j)π(z k n,τ+1=j,a k n,τ+1)β k n,t,τ+1(j) p(a k n,τ|h k n,τ,Θn)"
+    },
+    {
+      "heading": "D.1",
+      "text": "learning variable-size FSC vs learning ﬁxed-size FSC Additional experiments are added to study the impact of number of training samples."
+    },
+    {
+      "heading": "18",
+      "text": "10 1 10 2 −10 −5 0 5 10 15 20 25 Number of Nodes Policy Value Mars Rover (|S|=256,|A|=6,|O|=8) EM (max) EM (mean) SB DP 10 1 10 2 −10 −5 0 5 10 15 20 25 Number of Nodes Policy Value Mars Rover (|S|=256,|A|=6,|O|=8) EM (max) EM (mean) SB DP 10 1 10 2 −15 −10 −5 0 5 10 15 20 25 Number of Nodes Policy Value Mars Rover (|S|=256,|A|=6,|O|=8) EM (max) EM (mean) SB DP 10 1 10 2 10 1 10 2 10 3 10 4 Number of Nodes CPU Time (sec) Mars Rover (|S|=256,|A|=6,|O|=8) EM (K=30) EM (K=100) EM(K=300) 10 1 10 2 10 3 0 20 40 60 80 100 Number of Nodes CPU Time (sec) Mars Rover (|S|=256,|A|=6,|O|=8) SB DP Figure 3: Comparison between variable-size controller learned by Dec-SBPR and ﬁxed-size controller learned by EM algorithm. Top: testing value of policies learned using different number of training episodes(K = 30(left),K = 100(middle),K = 300(right)); Bottom: averaged computation time of EM (left) and SB (right)."
+    },
+    {
+      "heading": "D.2",
+      "text": "Sequential Batch Learning with Exploration Exploitation Trade-offs Additional results from sequential batch learning with exploration exploitation trade-offs for ﬁve domains are plotted in Figure 4. In each iteration, a batch of samples are collected with updated behavior policies8 and are used to learn a set new policies with Algorithm 1. These results are associated with the numbers reported in the ﬁrst two columns of Table 2 in the main body of the paper. 8To generate these plots, 50 trajectories are collected in each iteration and the exploration parameter is set to be u = 100."
+    },
+    {
+      "heading": "19",
+      "text": "Figure 4: Additional plots for illustrating exploration-exploitation tradeoff, including testing value (left), inferred controller numbers (middle) and exploration rate (right). In each iteration, a batch of samples are collected with updated behavior policies and are used to learn a set new policies with Algorithm 1. 20"
+    },
+    {
+      "heading": "References",
+      "text": "[1] Benchmarks. http://rbr.cs.umass.edu/camato/decpomdp/download.html. 2015. [2] C. Amato, D. S. Bernstein, and S. Zilberstein. Optimizing ﬁxed-size stochastic controllers for POMDPs and decentralized POMDPs. J. Autonomous Agents and Multi-Agent Systems, 2(3):293–320, 2010. [3] C. Amato, G. Chowdhary, A. Geramifard, N. K. Ure, and M. J. Kochenderfer. Decentralized control of partially observable Markov decision processes. In Proc. of the Conf. on Decision and Control, 2013. [4] C. Amato, G. D. Konidaris, G. Cruz, C. A. Maynor, J. P. How, and L. P. Kaelbling. Planning for decentralized control of multiple robots under uncertainty. In ICRA, 2015. [5] C. Amato and S. Zilberstein. Achieving goals in decentralized POMDPs. In Proc. of the 8th Int’l Conf. on Autonomous Agents and Multiagent Systems, 2009. [6] B. Banerjee, J. Lyle, L. Kraemer, and R. Yellamraju. Sample bounded distributed reinforcement learning for decentralized POMDPs. In Proc. of the 26th AAAI Conf. on Artiﬁcial Intelligence, 2012. [7] M. J. Beal. Variational algorithms for approximate Bayesian inference. PhD thesis, University of London, 2003. [8] D. Bernstein, S. Zilberstein, R. Washington, and J. Bresina. Planetary rover control as a Markov decision process. In 6th Int’l Symposium on Artiﬁcial Intelligence, Robotics, and Automation in Space, 2001. [9] D. S. Bernstein, C. Amato, E. A. Hansen, and S. Zilberstein. Policy iteration for decentralized control of Markov decision processes. J. Artiﬁcial Intelligence Research, 34:89–132, 2009. [10] D. S. Bernstein, R. Givan, N. Immerman, and S. Zilberstein. The complexity of decentralized control of Markov decision processes. Mathematics of Operations Research, 27(4):819–840, 2002. [11] C. M. Bishop et al. Pattern recognition and machine learning, volume 1. springer New York, 2006. [12] M. Bryant and E. B. Sudderth. Truly nonparametric online variational inference for hierarchical dirichlet processes. In Advances in Neural Information Processing Systems, 2012. [13] C. Cai, X. Liao, and L. Carin. Learning to explore and exploit in POMDPs. In Proc. of the 23th Annual Conf. on Neural Information Processing Systems, 2009. [14] A. Dempster, N. Laird, and D. Rubin. Maximum likelihood from incomplete data via the EM algorithm. J. Royal Statistical Society B, 39:1–38, 1977. [15] J. S. Dibangoye, O. Buffet, and F. Charpillet. Error-bounded approximations for inﬁnite-horizon discounted decentralized POMDPs. In Machine Learning and Knowledge Discovery in Databases. Springer, 2014. [16] F. Doshi-Velez, D. Wingate, N. Roy, and J. B. Tenenbaum. Nonparametric Bayesian policy priors for reinforcement learning. In Advances in Neural Information Processing Systems, 2010. [17] T. S. Ferguson. A Bayesian analysis of some nonparametric problems. Annals of Statistics, 1:209–230, 1973. [18] H. Ishwaran and L. F. James. Gibbs sampling methods for stick-breaking priors. J. Am. Statist. Assoc., 96(453), 2001. [19] A. Kumar and S. Zilberstein. Anytime planning for decentralized POMDPs using expectation. In Proc. of the 26th Conf. on Uncertainty in Artiﬁcial Intelligence, 2010. [20] H. Li, X. Liao, and L. Carin. Multi-task reinforcement learning in partially observable stochastic environment. J. Machine Learning Research, 10(1):1131–1186, 2009. 21 [21] M. Liu, X. Liao, and L. C. and. Inﬁnite regionalized policy representation. In Proc. of the 28th Int’l Conf. on Machine Learning, 2011. [22] M. Liu, X. Liao, and L. Carin. Online expectation maximization for reinforcement learning in POMDPs. In Proc. of 23rd Int Joint Conf. on Artiﬁcial Intelligence, 2013. [23] M. F. Martins and Y. Demiris. Learning multirobot joint action plans from simultaneous task execution demon- strations. In Proc. of the 9th Int’l Conf. on Autonomous Agents and Multiagent Systems, 2010. [24] J. Messias, M. Spaan, and P. Lima. Multi-robot planning under uncertainty with communication: a case study. In Fifth Workshop on Multi-agent Sequential Decision Making in Uncertain Domains (MSDM), 2010. [25] F. A. Oliehoek. Decentralized POMDPs. In Reinforcement Learning: State of the Art, Adaptation, Learning, and Optimization, pages 471–503. Springer Berlin Heidelberg, Berlin, Germany, 2012. [26] J. Paisley and L. Carin. Hidden Markov models with stick-breaking priors. Signal Processing, IEEE Trans. on, 57(10):3905–3917, 2009. [27] J. Pajarinen and J. Peltonen. Periodic ﬁnite state controllers for efﬁcient POMDP and DEC-POMDP planning. In Proc. of the 25th Annual Conf. on Neural Information Processing Systems, 2011. [28] O. Papaspiliopoulos and G. O. Roberts. Retrospective Markov chain Monte Carlo methods for Dirichlet process hierarchical models. Biometrika, 95(1):169–186, 2008. [29] J. Pineau, G. Gordon, and S. Thrun. Point-based value iteration: an anytime algorithm for POMDPs. In Proc. of the 18th Int Joint Conf. on Artiﬁcial Intelligence, 2003. [30] F. Qi and L. Losonczi. Bounds for the ratio of two gamma functions. Journal of Inequalities and Applications, 2010:204, 2010. [31] L. R. Rabiner. A tutorial on hidden Markov models and selected applications in speech recognition. Proceedings of the IEEE, 77(2):257–286, 1989. [32] C. P. Robert and G. Casella. Monte Carlo statistical methods, volume 319. Citeseer, 2004. [33] C. Wang and D. Blei. Variational Inferecne in Nonconjugate Models. Journal of Machine Learning Rsearch, 14:1005–1031, 2013. [34] T.-T. Wong. Generalized dirichlet distribution in bayesian analysis. Applied Mathematics and Computation, 97(2):165–181, 1998. [35] F. Wu, S. Zilberstein, and N. R. Jennings. Monte-carlo expectation maximization for decentralized POMDPs. In Proc. 23rd Int’l. Joint Conf. on Artiﬁcial Intelligence, 2013. 22"
+    }
+  ]
+}

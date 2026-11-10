@@ -1,0 +1,249 @@
+config,qid,question,recall@1,recall@3,recall@5,recall@10,mrr,faithfulness,hallucination,answer_relevance,answer_correctness,overall_flag,latency,answer,abstained,claims,status
+fixed_dense_rerank0,1704.01148_semantic_0004,What does the quantitative model produce when it encounters something unquantifiable?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1805.04419_semantic_0006,Why are exact belief updates considered impractical in POMDPs according to the passage?,0.0,0.0,0.0,1.0,0.1,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1805.04419_semantic_0009,"What does the pair {ot, θM} represent according to the passage?",0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1807.01739_semantic_0002,What is the worst-case complexity scaling of generic solvers for the SDP-representable problems described in the passage?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1809.01898_semantic_0003,What do True Positive (TP) and True Negative (TN) represent according to the passage?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1809.01898_semantic_0000,What are the two case studies presented to demonstrate the Propheticus framework?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1705.03338_semantic_0000,By what factor was the model complexity reduced compared to the base model?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1707.04459_semantic_0005,What is the formula for calculating the influenced neighbors score (INS) of a vertex v?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1808.10024_semantic_0000,What has hard non-monotonic attention previously required for gradient computation?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1703.03161_semantic_0000,What procedures is the fuzzy controller modified to contain so that its output is a membership function representing the behavior's objective?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1803.03407_semantic_0016,How are scripts described in relation to prior agent deliberations according to the passage?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1711.10166_semantic_0005,"What does discretisation replace precise numerical values with, according to the passage?",0.0,0.0,0.0,1.0,0.1,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1711.10166_semantic_0001,What is a major impediment of existing association rule-based classification algorithms according to the passage?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1808.08720_semantic_0003,What does organizing hidden dimensions into N disjoint segments do to the Whh matrix?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1808.08720_semantic_0001,What are the three contributions of the paper 'Predefined Sparseness in Recurrent Sequence Models'?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1612.07139_semantic_0000,What are the three main categories of Imitation Learning discussed in the survey?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1708.08133_semantic_0013,What is the title of reference [17]?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1706.03741_semantic_0000,What percentage of an agent's interactions with the environment require human feedback according to the passage?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1610.00001_semantic_0001,What are the two steady state modes of operation of STATCOM?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1610.00001_semantic_0002,What is the goal of incorporating PSS and STATCOM into the SMIB system?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1710.05465_semantic_0000,What is the maximum improvement in system-level velocity achieved by learned control laws with 4-7% autonomous vehicle adoption?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1710.05465_semantic_0001,"What is the maximum potential increase in energy consumption once autonomous fleets of vehicles are rolled out, according to the passage?",0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1004.2027_semantic_0004,"In dynamic policy programming (DPP), what is the asymptotic performance-loss bound expressed in terms of?",0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1004.2027_semantic_0005,What is the name of the new RL algorithm introduced in the DPP paper that relies on a sampling-based variant of DPP?,0.0,0.0,1.0,1.0,0.2,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1004.2027_semantic_0006,What does the Boltzmann soft-max Mη replace in the more tractable version of the DPP equation?,0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,1004.2027_semantic_0000,What is the name of the policy iteration method proposed in the Dynamic Policy Programming paper?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,,What is the capital of Australia?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,,Who won the 2023 FIFA World Cup?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,,What is the current population of Tokyo?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,,What is the chemical formula for table salt?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank0,,In what year did the first moon landing occur?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1704.01148_semantic_0004,What does the quantitative model produce when it encounters something unquantifiable?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1805.04419_semantic_0006,Why are exact belief updates considered impractical in POMDPs according to the passage?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1805.04419_semantic_0009,"What does the pair {ot, θM} represent according to the passage?",0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1807.01739_semantic_0002,What is the worst-case complexity scaling of generic solvers for the SDP-representable problems described in the passage?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1809.01898_semantic_0003,What do True Positive (TP) and True Negative (TN) represent according to the passage?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1809.01898_semantic_0000,What are the two case studies presented to demonstrate the Propheticus framework?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1705.03338_semantic_0000,By what factor was the model complexity reduced compared to the base model?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1707.04459_semantic_0005,What is the formula for calculating the influenced neighbors score (INS) of a vertex v?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1808.10024_semantic_0000,What has hard non-monotonic attention previously required for gradient computation?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1703.03161_semantic_0000,What procedures is the fuzzy controller modified to contain so that its output is a membership function representing the behavior's objective?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1803.03407_semantic_0016,How are scripts described in relation to prior agent deliberations according to the passage?,0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1711.10166_semantic_0005,"What does discretisation replace precise numerical values with, according to the passage?",1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1711.10166_semantic_0001,What is a major impediment of existing association rule-based classification algorithms according to the passage?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1808.08720_semantic_0003,What does organizing hidden dimensions into N disjoint segments do to the Whh matrix?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1808.08720_semantic_0001,What are the three contributions of the paper 'Predefined Sparseness in Recurrent Sequence Models'?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1612.07139_semantic_0000,What are the three main categories of Imitation Learning discussed in the survey?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1708.08133_semantic_0013,What is the title of reference [17]?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1706.03741_semantic_0000,What percentage of an agent's interactions with the environment require human feedback according to the passage?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1610.00001_semantic_0001,What are the two steady state modes of operation of STATCOM?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1610.00001_semantic_0002,What is the goal of incorporating PSS and STATCOM into the SMIB system?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1710.05465_semantic_0000,What is the maximum improvement in system-level velocity achieved by learned control laws with 4-7% autonomous vehicle adoption?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1710.05465_semantic_0001,"What is the maximum potential increase in energy consumption once autonomous fleets of vehicles are rolled out, according to the passage?",1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1004.2027_semantic_0004,"In dynamic policy programming (DPP), what is the asymptotic performance-loss bound expressed in terms of?",1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1004.2027_semantic_0005,What is the name of the new RL algorithm introduced in the DPP paper that relies on a sampling-based variant of DPP?,0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1004.2027_semantic_0006,What does the Boltzmann soft-max Mη replace in the more tractable version of the DPP equation?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,1004.2027_semantic_0000,What is the name of the policy iteration method proposed in the Dynamic Policy Programming paper?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,,What is the capital of Australia?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,,Who won the 2023 FIFA World Cup?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,,What is the current population of Tokyo?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,,What is the chemical formula for table salt?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_dense_rerank1,,In what year did the first moon landing occur?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1704.01148_semantic_0004,What does the quantitative model produce when it encounters something unquantifiable?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1805.04419_semantic_0006,Why are exact belief updates considered impractical in POMDPs according to the passage?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1805.04419_semantic_0009,"What does the pair {ot, θM} represent according to the passage?",1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1807.01739_semantic_0002,What is the worst-case complexity scaling of generic solvers for the SDP-representable problems described in the passage?,0.0,0.0,0.0,1.0,0.14285714285714285,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1809.01898_semantic_0003,What do True Positive (TP) and True Negative (TN) represent according to the passage?,0.0,1.0,1.0,1.0,0.3333333333333333,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1809.01898_semantic_0000,What are the two case studies presented to demonstrate the Propheticus framework?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1705.03338_semantic_0000,By what factor was the model complexity reduced compared to the base model?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1707.04459_semantic_0005,What is the formula for calculating the influenced neighbors score (INS) of a vertex v?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1808.10024_semantic_0000,What has hard non-monotonic attention previously required for gradient computation?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1703.03161_semantic_0000,What procedures is the fuzzy controller modified to contain so that its output is a membership function representing the behavior's objective?,0.0,0.0,0.0,1.0,0.125,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1803.03407_semantic_0016,How are scripts described in relation to prior agent deliberations according to the passage?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1711.10166_semantic_0005,"What does discretisation replace precise numerical values with, according to the passage?",1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1711.10166_semantic_0001,What is a major impediment of existing association rule-based classification algorithms according to the passage?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1808.08720_semantic_0003,What does organizing hidden dimensions into N disjoint segments do to the Whh matrix?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1808.08720_semantic_0001,What are the three contributions of the paper 'Predefined Sparseness in Recurrent Sequence Models'?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1612.07139_semantic_0000,What are the three main categories of Imitation Learning discussed in the survey?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1708.08133_semantic_0013,What is the title of reference [17]?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1706.03741_semantic_0000,What percentage of an agent's interactions with the environment require human feedback according to the passage?,0.0,0.0,0.0,1.0,0.1,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1610.00001_semantic_0001,What are the two steady state modes of operation of STATCOM?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1610.00001_semantic_0002,What is the goal of incorporating PSS and STATCOM into the SMIB system?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1710.05465_semantic_0000,What is the maximum improvement in system-level velocity achieved by learned control laws with 4-7% autonomous vehicle adoption?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1710.05465_semantic_0001,"What is the maximum potential increase in energy consumption once autonomous fleets of vehicles are rolled out, according to the passage?",0.0,0.0,1.0,1.0,0.2,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1004.2027_semantic_0004,"In dynamic policy programming (DPP), what is the asymptotic performance-loss bound expressed in terms of?",0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1004.2027_semantic_0005,What is the name of the new RL algorithm introduced in the DPP paper that relies on a sampling-based variant of DPP?,0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1004.2027_semantic_0006,What does the Boltzmann soft-max Mη replace in the more tractable version of the DPP equation?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,1004.2027_semantic_0000,What is the name of the policy iteration method proposed in the Dynamic Policy Programming paper?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,,What is the capital of Australia?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,,Who won the 2023 FIFA World Cup?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,,What is the current population of Tokyo?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,,What is the chemical formula for table salt?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank0,,In what year did the first moon landing occur?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1704.01148_semantic_0004,What does the quantitative model produce when it encounters something unquantifiable?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1805.04419_semantic_0006,Why are exact belief updates considered impractical in POMDPs according to the passage?,0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1805.04419_semantic_0009,"What does the pair {ot, θM} represent according to the passage?",1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1807.01739_semantic_0002,What is the worst-case complexity scaling of generic solvers for the SDP-representable problems described in the passage?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1809.01898_semantic_0003,What do True Positive (TP) and True Negative (TN) represent according to the passage?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1809.01898_semantic_0000,What are the two case studies presented to demonstrate the Propheticus framework?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1705.03338_semantic_0000,By what factor was the model complexity reduced compared to the base model?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1707.04459_semantic_0005,What is the formula for calculating the influenced neighbors score (INS) of a vertex v?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1808.10024_semantic_0000,What has hard non-monotonic attention previously required for gradient computation?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1703.03161_semantic_0000,What procedures is the fuzzy controller modified to contain so that its output is a membership function representing the behavior's objective?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1803.03407_semantic_0016,How are scripts described in relation to prior agent deliberations according to the passage?,0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1711.10166_semantic_0005,"What does discretisation replace precise numerical values with, according to the passage?",1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1711.10166_semantic_0001,What is a major impediment of existing association rule-based classification algorithms according to the passage?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1808.08720_semantic_0003,What does organizing hidden dimensions into N disjoint segments do to the Whh matrix?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1808.08720_semantic_0001,What are the three contributions of the paper 'Predefined Sparseness in Recurrent Sequence Models'?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1612.07139_semantic_0000,What are the three main categories of Imitation Learning discussed in the survey?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1708.08133_semantic_0013,What is the title of reference [17]?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1706.03741_semantic_0000,What percentage of an agent's interactions with the environment require human feedback according to the passage?,0.0,0.0,0.0,1.0,0.16666666666666666,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1610.00001_semantic_0001,What are the two steady state modes of operation of STATCOM?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1610.00001_semantic_0002,What is the goal of incorporating PSS and STATCOM into the SMIB system?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1710.05465_semantic_0000,What is the maximum improvement in system-level velocity achieved by learned control laws with 4-7% autonomous vehicle adoption?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1710.05465_semantic_0001,"What is the maximum potential increase in energy consumption once autonomous fleets of vehicles are rolled out, according to the passage?",1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1004.2027_semantic_0004,"In dynamic policy programming (DPP), what is the asymptotic performance-loss bound expressed in terms of?",1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1004.2027_semantic_0005,What is the name of the new RL algorithm introduced in the DPP paper that relies on a sampling-based variant of DPP?,0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1004.2027_semantic_0006,What does the Boltzmann soft-max Mη replace in the more tractable version of the DPP equation?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,1004.2027_semantic_0000,What is the name of the policy iteration method proposed in the Dynamic Policy Programming paper?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,,What is the capital of Australia?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,,Who won the 2023 FIFA World Cup?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,,What is the current population of Tokyo?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,,What is the chemical formula for table salt?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+fixed_hybrid_rerank1,,In what year did the first moon landing occur?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1704.01148_semantic_0004,What does the quantitative model produce when it encounters something unquantifiable?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1805.04419_semantic_0006,Why are exact belief updates considered impractical in POMDPs according to the passage?,0.0,0.0,0.0,1.0,0.1111111111111111,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1805.04419_semantic_0009,"What does the pair {ot, θM} represent according to the passage?",0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1807.01739_semantic_0002,What is the worst-case complexity scaling of generic solvers for the SDP-representable problems described in the passage?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1809.01898_semantic_0003,What do True Positive (TP) and True Negative (TN) represent according to the passage?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1809.01898_semantic_0000,What are the two case studies presented to demonstrate the Propheticus framework?,0.0,1.0,1.0,1.0,0.3333333333333333,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1705.03338_semantic_0000,By what factor was the model complexity reduced compared to the base model?,0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1707.04459_semantic_0005,What is the formula for calculating the influenced neighbors score (INS) of a vertex v?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1808.10024_semantic_0000,What has hard non-monotonic attention previously required for gradient computation?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1703.03161_semantic_0000,What procedures is the fuzzy controller modified to contain so that its output is a membership function representing the behavior's objective?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1803.03407_semantic_0016,How are scripts described in relation to prior agent deliberations according to the passage?,0.0,0.0,0.0,1.0,0.16666666666666666,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1711.10166_semantic_0005,"What does discretisation replace precise numerical values with, according to the passage?",0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1711.10166_semantic_0001,What is a major impediment of existing association rule-based classification algorithms according to the passage?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1808.08720_semantic_0003,What does organizing hidden dimensions into N disjoint segments do to the Whh matrix?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1808.08720_semantic_0001,What are the three contributions of the paper 'Predefined Sparseness in Recurrent Sequence Models'?,0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1612.07139_semantic_0000,What are the three main categories of Imitation Learning discussed in the survey?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1708.08133_semantic_0013,What is the title of reference [17]?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1706.03741_semantic_0000,What percentage of an agent's interactions with the environment require human feedback according to the passage?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1610.00001_semantic_0001,What are the two steady state modes of operation of STATCOM?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1610.00001_semantic_0002,What is the goal of incorporating PSS and STATCOM into the SMIB system?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1710.05465_semantic_0000,What is the maximum improvement in system-level velocity achieved by learned control laws with 4-7% autonomous vehicle adoption?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1710.05465_semantic_0001,"What is the maximum potential increase in energy consumption once autonomous fleets of vehicles are rolled out, according to the passage?",0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1004.2027_semantic_0004,"In dynamic policy programming (DPP), what is the asymptotic performance-loss bound expressed in terms of?",1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1004.2027_semantic_0005,What is the name of the new RL algorithm introduced in the DPP paper that relies on a sampling-based variant of DPP?,0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1004.2027_semantic_0006,What does the Boltzmann soft-max Mη replace in the more tractable version of the DPP equation?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,1004.2027_semantic_0000,What is the name of the policy iteration method proposed in the Dynamic Policy Programming paper?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,,What is the capital of Australia?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,,Who won the 2023 FIFA World Cup?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,,What is the current population of Tokyo?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,,What is the chemical formula for table salt?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank0,,In what year did the first moon landing occur?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1704.01148_semantic_0004,What does the quantitative model produce when it encounters something unquantifiable?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1805.04419_semantic_0006,Why are exact belief updates considered impractical in POMDPs according to the passage?,0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1805.04419_semantic_0009,"What does the pair {ot, θM} represent according to the passage?",0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1807.01739_semantic_0002,What is the worst-case complexity scaling of generic solvers for the SDP-representable problems described in the passage?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1809.01898_semantic_0003,What do True Positive (TP) and True Negative (TN) represent according to the passage?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1809.01898_semantic_0000,What are the two case studies presented to demonstrate the Propheticus framework?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1705.03338_semantic_0000,By what factor was the model complexity reduced compared to the base model?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1707.04459_semantic_0005,What is the formula for calculating the influenced neighbors score (INS) of a vertex v?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1808.10024_semantic_0000,What has hard non-monotonic attention previously required for gradient computation?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1703.03161_semantic_0000,What procedures is the fuzzy controller modified to contain so that its output is a membership function representing the behavior's objective?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1803.03407_semantic_0016,How are scripts described in relation to prior agent deliberations according to the passage?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1711.10166_semantic_0005,"What does discretisation replace precise numerical values with, according to the passage?",0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1711.10166_semantic_0001,What is a major impediment of existing association rule-based classification algorithms according to the passage?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1808.08720_semantic_0003,What does organizing hidden dimensions into N disjoint segments do to the Whh matrix?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1808.08720_semantic_0001,What are the three contributions of the paper 'Predefined Sparseness in Recurrent Sequence Models'?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1612.07139_semantic_0000,What are the three main categories of Imitation Learning discussed in the survey?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1708.08133_semantic_0013,What is the title of reference [17]?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1706.03741_semantic_0000,What percentage of an agent's interactions with the environment require human feedback according to the passage?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1610.00001_semantic_0001,What are the two steady state modes of operation of STATCOM?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1610.00001_semantic_0002,What is the goal of incorporating PSS and STATCOM into the SMIB system?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1710.05465_semantic_0000,What is the maximum improvement in system-level velocity achieved by learned control laws with 4-7% autonomous vehicle adoption?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1710.05465_semantic_0001,"What is the maximum potential increase in energy consumption once autonomous fleets of vehicles are rolled out, according to the passage?",1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1004.2027_semantic_0004,"In dynamic policy programming (DPP), what is the asymptotic performance-loss bound expressed in terms of?",1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1004.2027_semantic_0005,What is the name of the new RL algorithm introduced in the DPP paper that relies on a sampling-based variant of DPP?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1004.2027_semantic_0006,What does the Boltzmann soft-max Mη replace in the more tractable version of the DPP equation?,0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,1004.2027_semantic_0000,What is the name of the policy iteration method proposed in the Dynamic Policy Programming paper?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,,What is the capital of Australia?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,,Who won the 2023 FIFA World Cup?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,,What is the current population of Tokyo?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,,What is the chemical formula for table salt?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_dense_rerank1,,In what year did the first moon landing occur?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1704.01148_semantic_0004,What does the quantitative model produce when it encounters something unquantifiable?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1805.04419_semantic_0006,Why are exact belief updates considered impractical in POMDPs according to the passage?,0.0,0.0,1.0,1.0,0.25,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1805.04419_semantic_0009,"What does the pair {ot, θM} represent according to the passage?",0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1807.01739_semantic_0002,What is the worst-case complexity scaling of generic solvers for the SDP-representable problems described in the passage?,0.0,0.0,0.0,1.0,0.14285714285714285,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1809.01898_semantic_0003,What do True Positive (TP) and True Negative (TN) represent according to the passage?,0.0,0.0,1.0,1.0,0.25,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1809.01898_semantic_0000,What are the two case studies presented to demonstrate the Propheticus framework?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1705.03338_semantic_0000,By what factor was the model complexity reduced compared to the base model?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1707.04459_semantic_0005,What is the formula for calculating the influenced neighbors score (INS) of a vertex v?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1808.10024_semantic_0000,What has hard non-monotonic attention previously required for gradient computation?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1703.03161_semantic_0000,What procedures is the fuzzy controller modified to contain so that its output is a membership function representing the behavior's objective?,0.0,0.0,0.0,1.0,0.16666666666666666,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1803.03407_semantic_0016,How are scripts described in relation to prior agent deliberations according to the passage?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1711.10166_semantic_0005,"What does discretisation replace precise numerical values with, according to the passage?",0.0,1.0,1.0,1.0,0.3333333333333333,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1711.10166_semantic_0001,What is a major impediment of existing association rule-based classification algorithms according to the passage?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1808.08720_semantic_0003,What does organizing hidden dimensions into N disjoint segments do to the Whh matrix?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1808.08720_semantic_0001,What are the three contributions of the paper 'Predefined Sparseness in Recurrent Sequence Models'?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1612.07139_semantic_0000,What are the three main categories of Imitation Learning discussed in the survey?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1708.08133_semantic_0013,What is the title of reference [17]?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1706.03741_semantic_0000,What percentage of an agent's interactions with the environment require human feedback according to the passage?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1610.00001_semantic_0001,What are the two steady state modes of operation of STATCOM?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1610.00001_semantic_0002,What is the goal of incorporating PSS and STATCOM into the SMIB system?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1710.05465_semantic_0000,What is the maximum improvement in system-level velocity achieved by learned control laws with 4-7% autonomous vehicle adoption?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1710.05465_semantic_0001,"What is the maximum potential increase in energy consumption once autonomous fleets of vehicles are rolled out, according to the passage?",0.0,0.0,0.0,1.0,0.16666666666666666,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1004.2027_semantic_0004,"In dynamic policy programming (DPP), what is the asymptotic performance-loss bound expressed in terms of?",1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1004.2027_semantic_0005,What is the name of the new RL algorithm introduced in the DPP paper that relies on a sampling-based variant of DPP?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1004.2027_semantic_0006,What does the Boltzmann soft-max Mη replace in the more tractable version of the DPP equation?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,1004.2027_semantic_0000,What is the name of the policy iteration method proposed in the Dynamic Policy Programming paper?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,,What is the capital of Australia?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,,Who won the 2023 FIFA World Cup?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,,What is the current population of Tokyo?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,,What is the chemical formula for table salt?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank0,,In what year did the first moon landing occur?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1704.01148_semantic_0004,What does the quantitative model produce when it encounters something unquantifiable?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1805.04419_semantic_0006,Why are exact belief updates considered impractical in POMDPs according to the passage?,0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1805.04419_semantic_0009,"What does the pair {ot, θM} represent according to the passage?",1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1807.01739_semantic_0002,What is the worst-case complexity scaling of generic solvers for the SDP-representable problems described in the passage?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1809.01898_semantic_0003,What do True Positive (TP) and True Negative (TN) represent according to the passage?,0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1809.01898_semantic_0000,What are the two case studies presented to demonstrate the Propheticus framework?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1705.03338_semantic_0000,By what factor was the model complexity reduced compared to the base model?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1707.04459_semantic_0005,What is the formula for calculating the influenced neighbors score (INS) of a vertex v?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1808.10024_semantic_0000,What has hard non-monotonic attention previously required for gradient computation?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1703.03161_semantic_0000,What procedures is the fuzzy controller modified to contain so that its output is a membership function representing the behavior's objective?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1803.03407_semantic_0016,How are scripts described in relation to prior agent deliberations according to the passage?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1711.10166_semantic_0005,"What does discretisation replace precise numerical values with, according to the passage?",1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1711.10166_semantic_0001,What is a major impediment of existing association rule-based classification algorithms according to the passage?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1808.08720_semantic_0003,What does organizing hidden dimensions into N disjoint segments do to the Whh matrix?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1808.08720_semantic_0001,What are the three contributions of the paper 'Predefined Sparseness in Recurrent Sequence Models'?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1612.07139_semantic_0000,What are the three main categories of Imitation Learning discussed in the survey?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1708.08133_semantic_0013,What is the title of reference [17]?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1706.03741_semantic_0000,What percentage of an agent's interactions with the environment require human feedback according to the passage?,0.0,0.0,0.0,1.0,0.14285714285714285,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1610.00001_semantic_0001,What are the two steady state modes of operation of STATCOM?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1610.00001_semantic_0002,What is the goal of incorporating PSS and STATCOM into the SMIB system?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1710.05465_semantic_0000,What is the maximum improvement in system-level velocity achieved by learned control laws with 4-7% autonomous vehicle adoption?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1710.05465_semantic_0001,"What is the maximum potential increase in energy consumption once autonomous fleets of vehicles are rolled out, according to the passage?",1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1004.2027_semantic_0004,"In dynamic policy programming (DPP), what is the asymptotic performance-loss bound expressed in terms of?",1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1004.2027_semantic_0005,What is the name of the new RL algorithm introduced in the DPP paper that relies on a sampling-based variant of DPP?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1004.2027_semantic_0006,What does the Boltzmann soft-max Mη replace in the more tractable version of the DPP equation?,0.0,1.0,1.0,1.0,0.5,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,1004.2027_semantic_0000,What is the name of the policy iteration method proposed in the Dynamic Policy Programming paper?,1.0,1.0,1.0,1.0,1.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,,What is the capital of Australia?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,,Who won the 2023 FIFA World Cup?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,,What is the current population of Tokyo?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,,What is the chemical formula for table salt?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
+semantic_hybrid_rerank1,,In what year did the first moon landing occur?,0.0,0.0,0.0,0.0,0.0,,,,,,,,False,[],retrieval_only
