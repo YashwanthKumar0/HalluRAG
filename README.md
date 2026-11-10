@@ -278,8 +278,7 @@ hallurag/
 
 ## Team
 
-- **Yashwanth Kumar E** (ENG24AM0115)
-- **T Vishnu Karthik** (ENG24AM0301)
+- **Yashwanth Kumar E** 
 
 ## License
 
